@@ -39,7 +39,9 @@ export default async function handler(req, res) {
     };
 
     // Respuesta exitosa
-    return res.status(200).json({
+   return res.status(200)
+  .setHeader('Content-Type', 'application/json; charset=utf-8')
+  .json({
       success: true,
       message: 'Análisis generado correctamente',
       analisisId: `analisis_${Date.now()}`,
