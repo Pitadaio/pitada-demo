@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitada.io - Análisis Táctico con IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo img {
+            height: 50px;
+        }
+        
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .whatsapp-btn {
+            display: inline-block;
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s;
+        }
+        
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .dashboard {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+        
+        .card h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .stat .label {
+            color: #666;
+        }
+        
+        .stat .value {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.1em;
+        }
+        
+        .video-upload {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+        }
+        
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #5a6fd8;
+            transform: scale(1.05);
+        }
+        
+        .recomendaciones {
+            grid-column: span 2;
+        }
+        
+        .recomendacion {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .recomendacion.prioridad {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .video-upload, .recomendaciones {
+                grid-column: span 1;
+            }
+            
+            header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                ⚽ Pitada.io
+            </div>
+            <div class="tagline">
+                Análisis táctico de fútbol con IA para entrenadores chilenos
+            </div>
+            <a href="https://wa.me/56912345678?text=Hola%20Pitada,%20quiero%20analizar%20un%20partido" 
+               class="whatsapp-btn" target="_blank">
+                📱 Enviar video por WhatsApp
+            </a>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>📊 Estadísticas del Partido</h3>
+                <div id="estadisticas">
+                    <!-- Datos cargados por JavaScript -->
+                    <div class="stat">
+                        <span class="label">Posesión Local</span>
+                        <span class="value">62%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Tiros al Arco</span>
+                        <span class="value">14</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Corners</span>
+                        <span class="value">6</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Faltas Cometidas</span>
+                        <span class="value">18</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Jugadores Detectados</span>
+                        <span class="value">22/22</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📈 Rendimiento por Tiempo</h3>
+                <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; padding: 20px 0;">
+                    <!-- Gráfico simple de barras -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                        <div style="background: #667eea; width: 80%; height: 150px; border-radius: 5px 5px 0 0;"></div>
+                        <span style="margin-top: 5px; font-size: 0.9em;">1°T</span>
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                        <div style="background: #764ba2; width: 80%; height: 120px; border-radius: 5px 5px 0 0;"></div>
+                        <span style="margin-top: 5px; font-size: 0.9em;">2°T</span>
+                    </div>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 15px;">
+                    <strong>Mejor desempeño en primer tiempo</strong>
+                </p>
+            </div>
+            
+            <div class="video-upload">
+                <h3>🎥 Subir Nuevo Partido</h3>
+                <p>Sube un video de 5-10 minutos para análisis automático</p>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('videoInput').click()">
+                    Seleccionar Video
+                </button>
+                <div id="uploadStatus" style="margin-top: 15px;"></div>
+            </div>
+            
+            <div class="card recomendaciones">
+                <h3>🎯 Recomendaciones Tácticas</h3>
+                <div id="recomendacionesLista">
+                    <div class="recomendacion prioridad">
+                        <strong>🚨 Prioridad Alta:</strong> Reforzar marca en jugador #10 rival
+                    </div>
+                    <div class="recomendacion">
+                        <strong>✅ Acción:</strong> Aumentar presión en medio campo
+                    </div>
+                    <div class="recomendacion">
+                        <strong>💡 Sugerencia:</strong> Aprovechar laterales para desborde
+                    </div>
+                    <div class="recomendacion">
+                        <strong>📊 Dato:</strong> 80% de ataques fueron por centro
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Pitada.io © 2026 - Análisis con IA para fútbol chileno</p>
+            <p>Contacto: +56 9 1234 5678 | hola@pitada.io</p>
+            <p style="margin-top: 10px; font-size: 0.8em;">
+                <a href="/api/analizar" style="color: #667eea;">API</a> | 
+                <a href="/api/whatsapp" style="color: #667eea;">Webhook WhatsApp</a>
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Cargar datos del último análisis
+        async function cargarAnalisis() {
+            try {
+                const response = await fetch('/api/analizar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        videoUrl: 'demo',
+                        clubId: 'demo_club',
+                        nombrePartido: 'Demo Partido'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Actualizar estadísticas
+                    const stats = data.datos.estadisticas;
+                    document.querySelectorAll('.stat .value')[0].textContent = stats.posesionEquipoA + '%';
+                    document.querySelectorAll('.stat .value')[1].textContent = stats.tirosAlArco;
+                    document.querySelectorAll('.stat .value')[2].textContent = stats.corners;
+                    document.querySelectorAll('.stat .value')[3].textContent = stats.faltas;
+                    document.querySelectorAll('.stat .value')[4].textContent = stats.jugadoresPromedio + '/22';
+                    
+                    // Actualizar recomendaciones
+                    const recList = document.getElementById('recomendacionesLista');
+                    recList.innerHTML = '';
+                    data.datos.recomendaciones.forEach((rec, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'recomendacion' + (index === 0 ? ' prioridad' : '');
+                        div.innerHTML = `<strong>${index === 0 ? '🚨 Prioridad:' : '✅ Acción:'}</strong> ${rec}`;
+                        recList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.log('Usando datos de demostración');
+            }
+        }
+        
+        // Manejar subida de video
+        document.getElementById('videoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const status = document.getElementById('uploadStatus');
+                status.innerHTML = `<p style="color: #667eea;">📤 Subiendo ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)...</p>`;
+                
+                // Simular subida
+                setTimeout(() => {
+                    status.innerHTML = `
+                        <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px;">
+                            <p>✅ Video subido correctamente</p>
+                            <p>🔍 Analizando con IA... (30 segundos)</p>
+                        </div>
+                    `;
+                    
+                    // Simular análisis
+                    setTimeout(() => {
+                        status.innerHTML = `
+                            <div style="background: #cce5ff; color: #004085; padding: 15px; border-radius: 10px;">
+                                <p>🎉 Análisis completado</p>
+                                <p><a href="#" style="color: #004085; text-decoration: underline;" onclick="cargarAnalisis()">
+                                    Ver resultados
+                                </a></p>
+                            </div>
+                        `;
+                    }, 3000);
+                }, 1500);
+            }
+        });
+        
+        // Cargar datos al iniciar
+        cargarAnalisis();
+    </script>
+</body>
+</html>
