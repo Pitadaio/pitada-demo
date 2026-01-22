@@ -1,357 +1,992 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitada.io - Análisis Táctico con IA</title>
+    <title>Pitada.io ⚽ | Análisis Táctico con IA</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
+        :root {
+            /* Colores principales 2026 */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            
+            /* Tema oscuro moderno */
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #475569;
+            
+            /* Efectos */
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            --glow: 0 0 20px rgba(99, 102, 241, 0.3);
+            
+            /* Bordes */
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(90deg, #1e3c72, #2a5298);
-            color: white;
-            padding: 30px 40px;
-            text-align: center;
+        /* ===== NAVBAR MODERNA ===== */
+        .navbar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .logo {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            font-size: 1.2rem;
         }
         
-        .logo img {
-            height: 50px;
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
         }
         
-        .tagline {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-        
-        .whatsapp-btn {
-            display: inline-block;
-            background: #25D366;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
+        .nav-link {
+            color: var(--text-secondary);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
-            transition: transform 0.3s;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
-        .whatsapp-btn:hover {
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+        
+        .cta-button:hover {
             transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), var(--glow);
         }
         
+        .whatsapp-button {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+        }
+        
+        /* ===== DASHBOARD GRID ===== */
         .dashboard {
-            padding: 40px;
+            padding: 0 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
         }
         
         .card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid #e9ecef;
-        }
-        
-        .card h3 {
-            color: #1e3c72;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-        
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-        }
-        
-        .stat .label {
-            color: #666;
-        }
-        
-        .stat .value {
-            font-weight: bold;
-            color: #1e3c72;
-            font-size: 1.1em;
-        }
-        
-        .video-upload {
-            grid-column: span 2;
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-        }
-        
-        .upload-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
             transition: all 0.3s;
         }
         
-        .upload-btn:hover {
-            background: #5a6fd8;
-            transform: scale(1.05);
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
         }
         
-        .recomendaciones {
-            grid-column: span 2;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
         
-        .recomendacion {
-            background: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
         
-        .recomendacion.prioridad {
-            border-left-color: #ff6b6b;
-            background: #fff5f5;
+        .card-icon {
+            color: var(--primary);
+            font-size: 1.2rem;
         }
         
-        footer {
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-1 .stat-icon { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .stat-2 .stat-icon { background: rgba(16, 185, 129, 0.2); color: var(--secondary); }
+        .stat-3 .stat-icon { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .stat-4 .stat-icon { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* ===== CHARTS ===== */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .col-span-6 { grid-column: span 6; }
+        .col-span-8 { grid-column: span 8; }
+        .col-span-4 { grid-column: span 4; }
+        .col-span-12 { grid-column: span 12; }
+        
+        @media (max-width: 1024px) {
+            .col-span-6, .col-span-8, .col-span-4 { grid-column: span 12; }
+        }
+        
+        /* ===== RECOMENDACIONES ===== */
+        .recomendacion-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), transparent);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            transition: all 0.3s;
+        }
+        
+        .recomendacion-card:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), transparent);
+            transform: translateX(5px);
+        }
+        
+        .recomendacion-card.prioridad {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+        }
+        
+        .recomendacion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recomendacion-tag {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .prioridad .recomendacion-tag {
+            background: var(--danger);
+        }
+        
+        /* ===== UPLOAD AREA ===== */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 3rem;
             text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9em;
-            border-top: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.5);
         }
         
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        /* ===== TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-pendiente { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .status-procesando { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .status-completado { background: rgba(16, 185, 129, 0.2); color: var(--secondary); }
+        
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary);
+        }
+        
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 3rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
             .dashboard {
+                padding: 0 1rem 2rem;
+            }
+            
+            .stats-grid {
                 grid-template-columns: 1fr;
-                padding: 20px;
-            }
-            
-            .video-upload, .recomendaciones {
-                grid-column: span 1;
-            }
-            
-            header {
-                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                ⚽ Pitada.io
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-futbol"></i>
             </div>
-            <div class="tagline">
-                Análisis táctico de fútbol con IA para entrenadores chilenos
-            </div>
-            <a href="https://wa.me/56912345678?text=Hola%20Pitada,%20quiero%20analizar%20un%20partido" 
-               class="whatsapp-btn" target="_blank">
-                📱 Enviar video por WhatsApp
-            </a>
-        </header>
+            <span>Pitada.io</span>
+        </div>
         
-        <div class="dashboard">
-            <div class="card">
-                <h3>📊 Estadísticas del Partido</h3>
-                <div id="estadisticas">
-                    <!-- Datos cargados por JavaScript -->
-                    <div class="stat">
-                        <span class="label">Posesión Local</span>
-                        <span class="value">62%</span>
+        <div class="nav-links">
+            <a href="#" class="nav-link active">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-history"></i>
+                Historial
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-chart-line"></i>
+                Estadísticas
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-cog"></i>
+                Configuración
+            </a>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-avatar">
+                DT
+            </div>
+            <div>
+                <div style="font-weight: 600;">Entrenador Demo</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Club Demo</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Análisis Táctico con IA</h1>
+        <p class="hero-subtitle">
+            Transforma videos de partidos en insights accionables. Detecta patrones, analiza rendimiento 
+            y mejora tu estrategia con inteligencia artificial especializada en fútbol chileno.
+        </p>
+        <button class="cta-button whatsapp-button" onclick="openWhatsApp()">
+            <i class="fab fa-whatsapp"></i>
+            Analizar Nuevo Partido
+        </button>
+    </section>
+
+    <!-- DASHBOARD -->
+    <main class="dashboard">
+        <div class="dashboard-grid">
+            
+            <!-- STATS CARDS -->
+            <div class="stats-grid">
+                <div class="card stat-card stat-1">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat">
-                        <span class="label">Tiros al Arco</span>
-                        <span class="value">14</span>
+                    <div class="stat-content">
+                        <h3 id="stat-jugadores">22</h3>
+                        <p>Jugadores Detectados</p>
                     </div>
-                    <div class="stat">
-                        <span class="label">Corners</span>
-                        <span class="value">6</span>
+                </div>
+                
+                <div class="card stat-card stat-2">
+                    <div class="stat-icon">
+                        <i class="fas fa-bullseye"></i>
                     </div>
-                    <div class="stat">
-                        <span class="label">Faltas Cometidas</span>
-                        <span class="value">18</span>
+                    <div class="stat-content">
+                        <h3 id="stat-posesion">62%</h3>
+                        <p>Posesión Local</p>
                     </div>
-                    <div class="stat">
-                        <span class="label">Jugadores Detectados</span>
-                        <span class="value">22/22</span>
+                </div>
+                
+                <div class="card stat-card stat-3">
+                    <div class="stat-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-tiros">14</h3>
+                        <p>Tiros al Arco</p>
+                    </div>
+                </div>
+                
+                <div class="card stat-card stat-4">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-tiempo">3.2s</h3>
+                        <p>Procesamiento por Frame</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="card">
-                <h3>📈 Rendimiento por Tiempo</h3>
-                <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; padding: 20px 0;">
-                    <!-- Gráfico simple de barras -->
-                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                        <div style="background: #667eea; width: 80%; height: 150px; border-radius: 5px 5px 0 0;"></div>
-                        <span style="margin-top: 5px; font-size: 0.9em;">1°T</span>
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                        <div style="background: #764ba2; width: 80%; height: 120px; border-radius: 5px 5px 0 0;"></div>
-                        <span style="margin-top: 5px; font-size: 0.9em;">2°T</span>
-                    </div>
+
+            <!-- CHART 1: Posesión por Tiempo -->
+            <div class="card col-span-8">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-pie card-icon"></i>
+                        Posesión por Segmento
+                    </h2>
+                    <select class="card-select" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); padding: 0.5rem; border-radius: var(--radius);">
+                        <option>Último Partido</option>
+                        <option>Última Semana</option>
+                        <option>Último Mes</option>
+                    </select>
                 </div>
-                <p style="text-align: center; color: #666; margin-top: 15px;">
-                    <strong>Mejor desempeño en primer tiempo</strong>
-                </p>
+                <div class="chart-container">
+                    <canvas id="posesionChart"></canvas>
+                </div>
             </div>
-            
-            <div class="video-upload">
-                <h3>🎥 Subir Nuevo Partido</h3>
-                <p>Sube un video de 5-10 minutos para análisis automático</p>
-                <input type="file" id="videoInput" accept="video/*" style="display: none;">
-                <button class="upload-btn" onclick="document.getElementById('videoInput').click()">
-                    Seleccionar Video
-                </button>
-                <div id="uploadStatus" style="margin-top: 15px;"></div>
+
+            <!-- CHART 2: Detección de Jugadores -->
+            <div class="card col-span-4">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line card-icon"></i>
+                        Detección en Tiempo
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="deteccionChart"></canvas>
+                </div>
             </div>
-            
-            <div class="card recomendaciones">
-                <h3>🎯 Recomendaciones Tácticas</h3>
+
+            <!-- RECOMENDACIONES -->
+            <div class="card col-span-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-lightbulb card-icon"></i>
+                        Recomendaciones Tácticas
+                    </h2>
+                    <span class="recomendacion-tag">IA Generada</span>
+                </div>
                 <div id="recomendacionesLista">
-                    <div class="recomendacion prioridad">
-                        <strong>🚨 Prioridad Alta:</strong> Reforzar marca en jugador #10 rival
+                    <div class="recomendacion-card prioridad">
+                        <div class="recomendacion-header">
+                            <strong>🚨 Prioridad Alta</strong>
+                            <span class="recomendacion-tag">Crítico</span>
+                        </div>
+                        <p>Reforzar banda izquierda: 68% de ataques rivales vinieron por esta zona</p>
                     </div>
-                    <div class="recomendacion">
-                        <strong>✅ Acción:</strong> Aumentar presión en medio campo
+                    
+                    <div class="recomendacion-card">
+                        <div class="recomendacion-header">
+                            <strong>✅ Mantener</strong>
+                            <span class="recomendacion-tag">Fortaleza</span>
+                        </div>
+                        <p>Buena presión alta: equipo mantuvo 68% de presión en campo rival</p>
                     </div>
-                    <div class="recomendacion">
-                        <strong>💡 Sugerencia:</strong> Aprovechar laterales para desborde
+                    
+                    <div class="recomendacion-card">
+                        <div class="recomendacion-header">
+                            <strong>💡 Oportunidad</strong>
+                            <span class="recomendacion-tag">Mejora</span>
+                        </div>
+                        <p>Transiciones defensa-ataque: pueden ser 1.5 segundos más rápidas</p>
                     </div>
-                    <div class="recomendacion">
-                        <strong>📊 Dato:</strong> 80% de ataques fueron por centro
+                </div>
+            </div>
+
+            <!-- UPLOAD AREA -->
+            <div class="card col-span-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-cloud-upload-alt card-icon"></i>
+                        Subir Nuevo Partido
+                    </h2>
+                </div>
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-video"></i>
                     </div>
+                    <h3 style="margin-bottom: 0.5rem;">Arrastra o haz click para subir</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Sube un video de 5-15 minutos en formato MP4, MOV o AVI
+                    </p>
+                    <div class="cta-button" style="display: inline-flex;">
+                        <i class="fas fa-folder-open"></i>
+                        Seleccionar Archivo
+                    </div>
+                    <input type="file" id="fileInput" accept="video/*" style="display: none;">
+                </div>
+                <div id="uploadStatus" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- HISTORIAL DE PARTIDOS -->
+            <div class="card col-span-12">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-history card-icon"></i>
+                        Historial de Partidos
+                    </h2>
+                    <button class="cta-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Partido</th>
+                                <th>Fecha</th>
+                                <th>Duración</th>
+                                <th>Estado</th>
+                                <th>Precisión IA</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Amistoso vs Colegio Alerce</strong>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Sub-17</div>
+                                </td>
+                                <td>21/01/2026</td>
+                                <td>10:32 min</td>
+                                <td><span class="status-badge status-completado">Completado</span></td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div style="width: 100px; height: 6px; background: var(--border); border-radius: 3px;">
+                                            <div style="width: 92%; height: 100%; background: var(--secondary); border-radius: 3px;"></div>
+                                        </div>
+                                        <span>92%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="cta-button" style="padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+                                        <i class="fas fa-eye"></i>
+                                        Ver
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Torneo Municipal Macul</strong>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Cuartos de final</div>
+                                </td>
+                                <td>18/01/2026</td>
+                                <td>15:45 min</td>
+                                <td><span class="status-badge status-completado">Completado</span></td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div style="width: 100px; height: 6px; background: var(--border); border-radius: 3px;">
+                                            <div style="width: 88%; height: 100%; background: var(--secondary); border-radius: 3px;"></div>
+                                        </div>
+                                        <span>88%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="cta-button" style="padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+                                        <i class="fas fa-download"></i>
+                                        PDF
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Entrenamiento Táctico</strong>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Ejercicio 11 vs 11</div>
+                                </td>
+                                <td>15/01/2026</td>
+                                <td>8:20 min</td>
+                                <td><span class="status-badge status-procesando">Procesando</span></td>
+                                <td>
+                                    <div style="color: var(--text-secondary);">—</div>
+                                </td>
+                                <td>
+                                    <button class="cta-button" style="padding: 0.25rem 0.75rem; font-size: 0.85rem; background: var(--bg-hover);" disabled>
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        Esperando
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        
-        <footer>
-            <p>Pitada.io © 2026 - Análisis con IA para fútbol chileno</p>
-            <p>Contacto: +56 9 1234 5678 | hola@pitada.io</p>
-            <p style="margin-top: 10px; font-size: 0.8em;">
-                <a href="/api/analizar" style="color: #667eea;">API</a> | 
-                <a href="/api/whatsapp" style="color: #667eea;">Webhook WhatsApp</a>
-            </p>
-        </footer>
-    </div>
-    
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#" class="footer-link">Términos</a>
+            <a href="#" class="footer-link">Privacidad</a>
+            <a href="#" class="footer-link">API</a>
+            <a href="#" class="footer-link">Soporte</a>
+        </div>
+        <p>Pitada.io © 2026 - Análisis con IA para fútbol chileno</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--border);">
+            <i class="fas fa-bolt" style="color: var(--accent);"></i>
+            Procesado con YOLOv8 optimizado para fútbol chileno
+        </p>
+    </footer>
+
     <script>
-        // Cargar datos del último análisis
-        async function cargarAnalisis() {
-            try {
-                const response = await fetch('/api/analizar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+        // ====================
+        // GRÁFICOS CON CHART.JS
+        // ====================
+        
+        // Gráfico de Posesión
+        const posesionCtx = document.getElementById('posesionChart').getContext('2d');
+        const posesionChart = new Chart(posesionCtx, {
+            type: 'line',
+            data: {
+                labels: ['0-15', '16-30', '31-45', '46-60', '61-75', '76-90'],
+                datasets: [
+                    {
+                        label: 'Posesión Local',
+                        data: [58, 62, 55, 65, 63, 60],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
                     },
-                    body: JSON.stringify({
-                        videoUrl: 'demo',
-                        clubId: 'demo_club',
-                        nombrePartido: 'Demo Partido'
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Actualizar estadísticas
-                    const stats = data.datos.estadisticas;
-                    document.querySelectorAll('.stat .value')[0].textContent = stats.posesionEquipoA + '%';
-                    document.querySelectorAll('.stat .value')[1].textContent = stats.tirosAlArco;
-                    document.querySelectorAll('.stat .value')[2].textContent = stats.corners;
-                    document.querySelectorAll('.stat .value')[3].textContent = stats.faltas;
-                    document.querySelectorAll('.stat .value')[4].textContent = stats.jugadoresPromedio + '/22';
-                    
-                    // Actualizar recomendaciones
-                    const recList = document.getElementById('recomendacionesLista');
-                    recList.innerHTML = '';
-                    data.datos.recomendaciones.forEach((rec, index) => {
-                        const div = document.createElement('div');
-                        div.className = 'recomendacion' + (index === 0 ? ' prioridad' : '');
-                        div.innerHTML = `<strong>${index === 0 ? '🚨 Prioridad:' : '✅ Acción:'}</strong> ${rec}`;
-                        recList.appendChild(div);
-                    });
+                    {
+                        label: 'Posesión Rival',
+                        data: [42, 38, 45, 35, 37, 40],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#94a3b8'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#94a3b8'
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)'
+                        }
+                    }
                 }
+            }
+        });
+
+        // Gráfico de Detección
+        const deteccionCtx = document.getElementById('deteccionChart').getContext('2d');
+        const deteccionChart = new Chart(deteccionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jugadores', 'Balón', 'Arbitro', 'Fuera Juego'],
+                datasets: [{
+                    label: 'Precisión de Detección',
+                    data: [98, 82, 95, 88],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(239, 68, 68, 0.8)'
+                    ],
+                    borderColor: [
+                        '#6366f1',
+                        '#10b981',
+                        '#f59e0b',
+                        '#ef4444'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#94a3b8'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ====================
+        // FUNCIONALIDAD
+        // ====================
+        
+        function openWhatsApp() {
+            const phone = "56912345678";
+            const message = "Hola Pitada, quiero analizar un partido";
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+        
+        // Manejar subida de archivos
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const status = document.getElementById('uploadStatus');
+                const fileName = file.name;
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                
+                status.innerHTML = `
+                    <div class="recomendacion-card" style="background: rgba(16, 185, 129, 0.1); border-left-color: #10b981;">
+                        <div class="recomendacion-header">
+                            <strong>📤 Subiendo archivo...</strong>
+                            <span class="recomendacion-tag" style="background: #10b981;">${fileSize} MB</span>
+                        </div>
+                        <p>${fileName}</p>
+                        <div style="margin-top: 0.5rem; width: 100%; height: 4px; background: var(--border); border-radius: 2px;">
+                            <div id="progressBar" style="width: 0%; height: 100%; background: #10b981; border-radius: 2px; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Simular progreso
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    document.getElementById('progressBar').style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            status.innerHTML = `
+                                <div class="recomendacion-card" style="background: rgba(99, 102, 241, 0.1);">
+                                    <div class="recomendacion-header">
+                                        <strong>✅ Video subido correctamente</strong>
+                                        <span class="recomendacion-tag">Listo</span>
+                                    </div>
+                                    <p>El video está siendo procesado por nuestra IA. Te notificaremos cuando esté listo.</p>
+                                    <button class="cta-button" style="margin-top: 0.5rem; padding: 0.5rem 1rem;" onclick="checkStatus()">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Ver Estado
+                                    </button>
+                                </div>
+                            `;
+                            
+                            // Actualizar estadísticas
+                            actualizarEstadisticas();
+                        }, 500);
+                    }
+                }, 200);
+            }
+        });
+        
+        function actualizarEstadisticas() {
+            // Simular actualización de datos
+            document.getElementById('stat-jugadores').textContent = Math.floor(Math.random() * 5) + 20;
+            document.getElementById('stat-posesion').textContent = Math.floor(Math.random() * 10) + 55 + '%';
+            document.getElementById('stat-tiros').textContent = Math.floor(Math.random() * 5) + 12;
+            
+            // Animación
+            const stats = document.querySelectorAll('.stat-card h3');
+            stats.forEach(stat => {
+                stat.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    stat.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }
+        
+        function checkStatus() {
+            alert('Estado del procesamiento: En cola (posición #2)\nTiempo estimado: 3-5 minutos');
+        }
+        
+        // Actualizar datos cada 30 segundos (simulación)
+        setInterval(actualizarEstadisticas, 30000);
+        
+        // Cargar datos iniciales desde API
+        async function cargarDatosIniciales() {
+            try {
+                // Aquí iría la llamada a tu API real
+                // const response = await fetch('/api/ultimo-analisis');
+                // const data = await response.json();
+                
+                // Por ahora datos simulados
+                console.log('📊 Dashboard cargado - Conectado a Pitada.io');
             } catch (error) {
                 console.log('Usando datos de demostración');
             }
         }
         
-        // Manejar subida de video
-        document.getElementById('videoInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const status = document.getElementById('uploadStatus');
-                status.innerHTML = `<p style="color: #667eea;">📤 Subiendo ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)...</p>`;
-                
-                // Simular subida
-                setTimeout(() => {
-                    status.innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px;">
-                            <p>✅ Video subido correctamente</p>
-                            <p>🔍 Analizando con IA... (30 segundos)</p>
-                        </div>
-                    `;
-                    
-                    // Simular análisis
-                    setTimeout(() => {
-                        status.innerHTML = `
-                            <div style="background: #cce5ff; color: #004085; padding: 15px; border-radius: 10px;">
-                                <p>🎉 Análisis completado</p>
-                                <p><a href="#" style="color: #004085; text-decoration: underline;" onclick="cargarAnalisis()">
-                                    Ver resultados
-                                </a></p>
-                            </div>
-                        `;
-                    }, 3000);
-                }, 1500);
-            }
-        });
-        
-        // Cargar datos al iniciar
-        cargarAnalisis();
+        // Inicializar
+        cargarDatosIniciales();
     </script>
 </body>
 </html>
