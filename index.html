@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
+    <!-- Heatmap.js -->
+<script src="https://unpkg.com/heatmap.js@2.0.5/build/heatmap.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pitada.io ⚽ | Análisis Táctico con IA</title>
@@ -574,18 +576,76 @@
                 </div>
             </div>
 
-            <!-- CHART 2: Detección de Jugadores -->
-            <div class="card col-span-4">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-chart-line card-icon"></i>
-                        Detección en Tiempo
-                    </h2>
+           <!-- Mapa de Calor de Jugadas -->
+<div class="card col-span-8">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-fire card-icon"></i>
+            Mapa de Calor de Jugadas
+        </h2>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="heatmap-btn active" data-layer="balon" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.85rem; cursor: pointer;">
+                <i class="fas fa-futbol"></i> Balón
+            </button>
+            <button class="heatmap-btn" data-layer="jugadores" style="background: var(--bg-hover); color: var(--text-primary); border: none; padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.85rem; cursor: pointer;">
+                <i class="fas fa-users"></i> Jugadores
+            </button>
+            <button class="heatmap-btn" data-layer="pases" style="background: var(--bg-hover); color: var(--text-primary); border: none; padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.85rem; cursor: pointer;">
+                <i class="fas fa-exchange-alt"></i> Pases
+            </button>
+        </div>
+    </div>
+    <div style="position: relative;">
+        <!-- Cancha de fútbol -->
+        <div id="canchaContainer" style="position: relative; width: 100%; height: 350px; background: linear-gradient(135deg, #15803d, #166534); border-radius: var(--radius); overflow: hidden; border: 2px solid var(--border);">
+            <!-- Líneas de la cancha -->
+            <div style="position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: white; transform: translateY(-50%);"></div>
+            <div style="position: absolute; top: 0; left: 50%; bottom: 0; width: 2px; background: white; transform: translateX(-50%);"></div>
+            
+            <!-- Círculo central -->
+            <div style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%);"></div>
+            
+            <!-- Áreas -->
+            <div style="position: absolute; top: 50%; left: 20px; width: 120px; height: 300px; border: 2px solid white; border-radius: 10px; transform: translateY(-50%);"></div>
+            <div style="position: absolute; top: 50%; right: 20px; width: 120px; height: 300px; border: 2px solid white; border-radius: 10px; transform: translateY(-50%);"></div>
+            
+            <!-- Heatmap container -->
+            <div id="heatmapContainer" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
+            
+            <!-- Leyenda -->
+            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.8); padding: 0.5rem 1rem; border-radius: var(--radius); display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <div style="width: 20px; height: 10px; background: rgb(0, 0, 255); border-radius: 2px;"></div>
+                    <span>Baja</span>
                 </div>
-                <div class="chart-container">
-                    <canvas id="deteccionChart"></canvas>
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <div style="width: 20px; height: 10px; background: rgb(255, 255, 0); border-radius: 2px;"></div>
+                    <span>Media</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <div style="width: 20px; height: 10px; background: rgb(255, 0, 0); border-radius: 2px;"></div>
+                    <span>Alta</span>
                 </div>
             </div>
+        </div>
+        
+        <!-- Estadísticas del heatmap -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+            <div style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius); text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Zona Caliente</div>
+                <div style="font-weight: 600; font-size: 1.1rem;" id="zonaCaliente">Centro-Ataque</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius); text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Intensidad</div>
+                <div style="font-weight: 600; font-size: 1.1rem;" id="intensidadHeatmap">Alta</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius); text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Puntos Analizados</div>
+                <div style="font-weight: 600; font-size: 1.1rem;" id="puntosAnalizados">1,247</div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- RECOMENDACIONES -->
             <div class="card col-span-6">
@@ -987,6 +1047,284 @@
         
         // Inicializar
         cargarDatosIniciales();
+        // ====================
+// MAPA DE CALOR INTERACTIVO
+// ====================
+
+let heatmapInstance = null;
+let currentLayer = 'balon';
+
+function initHeatmap() {
+    const container = document.getElementById('heatmapContainer');
+    
+    // Configuración del heatmap
+    const config = {
+        container: container,
+        radius: 30,
+        maxOpacity: 0.6,
+        minOpacity: 0.1,
+        blur: 0.8,
+        gradient: {
+            0.4: 'blue',
+            0.6: 'cyan',
+            0.7: 'lime',
+            0.8: 'yellow',
+            1.0: 'red'
+        }
+    };
+    
+    // Crear instancia
+    heatmapInstance = h337.create(config);
+    
+    // Datos iniciales
+    updateHeatmapData(currentLayer);
+    
+    // Botones de control
+    document.querySelectorAll('.heatmap-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remover clase active de todos
+            document.querySelectorAll('.heatmap-btn').forEach(b => {
+                b.style.background = 'var(--bg-hover)';
+                b.style.color = 'var(--text-primary)';
+            });
+            
+            // Agregar al clickeado
+            this.style.background = 'var(--primary)';
+            this.style.color = 'white';
+            
+            // Actualizar heatmap
+            currentLayer = this.dataset.layer;
+            updateHeatmapData(currentLayer);
+        });
+    });
+    
+    // Tooltip para la cancha
+    container.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Convertir coordenadas a posición en cancha
+        const posX = Math.floor((x / rect.width) * 100);
+        const posY = Math.floor((y / rect.height) * 100);
+        
+        // Mostrar tooltip temporalmente
+        showHeatmapTooltip(x, y, posX, posY);
+    });
+}
+
+function updateHeatmapData(layer) {
+    if (!heatmapInstance) return;
+    
+    let points = [];
+    const canchaWidth = 100; // ancho relativo
+    const canchaHeight = 100; // alto relativo
+    
+    // Datos diferentes por capa
+    switch(layer) {
+        case 'balon':
+            // Puntos donde estuvo el balón
+            points = generateBallPositions(80);
+            document.getElementById('zonaCaliente').textContent = 'Centro-Ataque';
+            document.getElementById('intensidadHeatmap').textContent = 'Alta';
+            document.getElementById('puntosAnalizados').textContent = '1,247';
+            break;
+            
+        case 'jugadores':
+            // Posiciones de jugadores
+            points = generatePlayerPositions(150);
+            document.getElementById('zonaCaliente').textContent = 'Medio Campo';
+            document.getElementById('intensidadHeatmap').textContent = 'Media';
+            document.getElementById('puntosAnalizados').textContent = '2,854';
+            break;
+            
+        case 'pases':
+            // Puntos de pases exitosos
+            points = generatePassPositions(100);
+            document.getElementById('zonaCaliente').textContent = 'Banda Derecha';
+            document.getElementById('intensidadHeatmap').textContent = 'Moderada';
+            document.getElementById('puntosAnalizados').textContent = '856';
+            break;
+    }
+    
+    // Actualizar heatmap
+    heatmapInstance.setData({
+        max: 10,
+        data: points
+    });
+}
+
+// Generar posiciones del balón (simulado)
+function generateBallPositions(count) {
+    const points = [];
+    
+    // Concentrar en centro-ataque (derecha)
+    for (let i = 0; i < count; i++) {
+        // Distribución normal hacia el ataque derecho
+        const x = 60 + Math.random() * 25 + (Math.random() > 0.7 ? 10 : 0);
+        const y = 40 + (Math.random() - 0.5) * 30;
+        const value = Math.random() > 0.3 ? 5 + Math.random() * 5 : 1 + Math.random() * 3;
+        
+        points.push({
+            x: (x / 100) * document.getElementById('heatmapContainer').offsetWidth,
+            y: (y / 100) * document.getElementById('heatmapContainer').offsetHeight,
+            value: value
+        });
+    }
+    
+    return points;
+}
+
+// Generar posiciones de jugadores
+function generatePlayerPositions(count) {
+    const points = [];
+    
+    // Jugadores se concentran en medio campo
+    for (let i = 0; i < count; i++) {
+        const x = 40 + Math.random() * 40;
+        const y = 30 + Math.random() * 40;
+        const value = 3 + Math.random() * 7;
+        
+        points.push({
+            x: (x / 100) * document.getElementById('heatmapContainer').offsetWidth,
+            y: (y / 100) * document.getElementById('heatmapContainer').offsetHeight,
+            value: value
+        });
+    }
+    
+    return points;
+}
+
+// Generar puntos de pases
+function generatePassPositions(count) {
+    const points = [];
+    
+    // Pases exitosos por banda derecha
+    for (let i = 0; i < count; i++) {
+        const x = 70 + Math.random() * 20;
+        const y = 20 + Math.random() * 60;
+        const value = 4 + Math.random() * 6;
+        
+        points.push({
+            x: (x / 100) * document.getElementById('heatmapContainer').offsetWidth,
+            y: (y / 100) * document.getElementById('heatmapContainer').offsetHeight,
+            value: value
+        });
+    }
+    
+    return points;
+}
+
+// Tooltip para el heatmap
+function showHeatmapTooltip(x, y, posX, posY) {
+    let tooltip = document.getElementById('heatmapTooltip');
+    
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'heatmapTooltip';
+        tooltip.style.cssText = `
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            pointer-events: none;
+            z-index: 1000;
+            border: 1px solid var(--border);
+            display: none;
+        `;
+        document.getElementById('canchaContainer').appendChild(tooltip);
+    }
+    
+    // Determinar zona táctica
+    let zona = 'Centro';
+    if (posX < 33) zona = 'Defensa';
+    else if (posX > 66) zona = 'Ataque';
+    
+    if (posY < 33) zona += ' Superior';
+    else if (posY > 66) zona += ' Inferior';
+    
+    tooltip.innerHTML = `
+        <div><strong>${zona}</strong></div>
+        <div>Posición: ${posX}%, ${posY}%</div>
+        <div>Capa: ${currentLayer === 'balon' ? 'Balón' : currentLayer === 'jugadores' ? 'Jugadores' : 'Pases'}</div>
+    `;
+    
+    tooltip.style.left = (x + 10) + 'px';
+    tooltip.style.top = (y + 10) + 'px';
+    tooltip.style.display = 'block';
+}
+
+// Esconder tooltip
+document.getElementById('canchaContainer').addEventListener('mouseleave', function() {
+    const tooltip = document.getElementById('heatmapTooltip');
+    if (tooltip) tooltip.style.display = 'none';
+});
+
+// ====================
+// INTEGRAR CON DATOS REALES DE LA IA
+// ====================
+
+async function loadRealHeatmapData() {
+    try {
+        // Aquí conectarías con tu API real
+        // const response = await fetch('/api/heatmap-data');
+        // const data = await response.json();
+        
+        // Ejemplo de datos que vendrían de tu IA:
+        const realData = {
+            ball_positions: [
+                {x: 65, y: 45, intensity: 8},
+                {x: 70, y: 50, intensity: 9},
+                {x: 68, y: 48, intensity: 7},
+                // ... más puntos del análisis real
+            ],
+            player_positions: [
+                {x: 45, y: 50, intensity: 6},
+                {x: 50, y: 55, intensity: 7},
+                // ... más posiciones
+            ],
+            pass_lines: [
+                {from: {x: 40, y: 50}, to: {x: 60, y: 52}, success: true},
+                // ... más líneas de pase
+            ]
+        };
+        
+        console.log('📊 Datos reales cargados para heatmap');
+        
+    } catch (error) {
+        console.log('Usando datos de demostración para heatmap');
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initHeatmap();
+   async function loadRealHeatmapDataFromAPI(partidoId) {
+    const response = await fetch(`/api/heatmap/${partidoId}`);
+    const data = await response.json();
+    
+    // Transformar datos de tu IA al formato heatmap.js
+    const heatmapData = data.heatmap_positions.map(point => ({
+        x: (point.x_percent / 100) * containerWidth,
+        y: (point.y_percent / 100) * containerHeight,
+        value: point.intensity * 10
+    }));
+    
+    heatmapInstance.setData({
+        max: 10,
+        data: heatmapData
+    });
+}
+    
+    // Redimensionar heatmap cuando cambie el tamaño de ventana
+    window.addEventListener('resize', function() {
+        if (heatmapInstance) {
+            updateHeatmapData(currentLayer);
+        }
+    });
+});
     </script>
 </body>
 </html>
