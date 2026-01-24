@@ -103,17 +103,20 @@
         .layer-overlay { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: opacity 0.3s; }
         .hidden-layer { opacity: 0; pointer-events: none; }
         
+        /* SHOT MARKERS */
         .shot-marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; transform: translate(-50%, -50%); box-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 10; }
         .shot-marker:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 20; }
         .shot-gol { background-color: var(--success); }
         .shot-atajada { background-color: var(--warning); border-radius: 3px; }
         .shot-fuera { background-color: var(--danger); }
 
+        /* PASS NETWORK */
         .player-node { position: absolute; width: 30px; height: 30px; background: var(--bg-card); border: 2px solid var(--text-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--text-main); transform: translate(-50%, -50%); box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15; transition: all 0.3s ease; cursor: pointer; }
         .player-node:hover { transform: translate(-50%, -50%) scale(1.2); border-color: var(--primary); background: var(--primary); color: white; z-index: 20; }
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
         .pass-line:hover { stroke: var(--primary); opacity: 1; cursor: pointer; }
 
+        /* ACTION ZONES */
         .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
         .action-zone:hover { fill-opacity: 0.4; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
         .zone-def { fill: var(--primary); stroke: var(--primary); }
@@ -121,8 +124,10 @@
         .zone-fwd { fill: var(--danger); stroke: var(--danger); }
         .action-center { fill: white; stroke: none; pointer-events: none; }
 
+        /* TOOLTIP TÁCTICO */
         .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 100; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; }
 
+        /* CONTROLES */
         .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; overflow-x: auto; }
         .mode-btn { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap; }
         .mode-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -134,11 +139,11 @@
         .legend-item { display: flex; align-items: center; gap: 0.4rem; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* === RADAR PLAYER CARD (NUEVO) === */
-        .radar-card { grid-column: span 8; }
+        /* === RADAR PLAYER CARD === */
+        .radar-card { grid-column: span 6; }
         .radar-wrapper { display: flex; gap: 2rem; align-items: center; justify-content: center; min-height: 300px; }
         .player-info-panel { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-        .player-selector { padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-family: 'Inter'; outline: none; }
+        .player-selector { padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-family: 'Inter'; outline: none; width: 100%; }
         .player-detail { display: flex; gap: 1rem; align-items: center; }
         .player-photo-lg { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700; border: 4px solid var(--bg-card); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
         .player-stats-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
@@ -146,6 +151,11 @@
         .p-stat strong { color: var(--text-main); }
         .chart-radar-container { flex: 1; height: 300px; position: relative; }
 
+        /* === COMPARISON SECTION (NUEVO) === */
+        .comparison-card { grid-column: span 6; }
+        .comparison-controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+        .comparison-controls select { flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-family: 'Inter'; }
+        
         /* PANEL LATERAL & UPLOAD */
         .side-panel { grid-column: span 4; display: flex; flex-direction: column; gap: 1.5rem; }
         .reco-item { background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--primary); padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 0.75rem; }
@@ -160,7 +170,7 @@
         @media (max-width: 1024px) {
             .app-container { grid-template-columns: 1fr; }
             .sidebar { display: none; }
-            .tactical-board, .radar-card { grid-column: span 12; }
+            .tactical-board, .radar-card, .comparison-card { grid-column: span 12; }
             .radar-wrapper { flex-direction: column; }
             .side-panel { grid-column: span 12; display: flex; flex-direction: row; gap: 1rem; }
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -333,11 +343,12 @@
 
             <div class="card radar-card">
                 <div class="card-header">
-                    <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chart-pie"></i> Rendimiento Individual</div>
+                    <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chart-pie"></i> Rendimiento</div>
                     <select id="playerSelector" class="player-selector" onchange="changePlayer(this.value)">
-                        <option value="7">Alexis Sánchez (DEL)</option>
-                        <option value="8">Arturo Vidal (MED)</option>
-                        <option value="17">Gary Medel (DEF)</option>
+                        <option value="7">Alexis Sánchez</option>
+                        <option value="8">Arturo Vidal</option>
+                        <option value="17">Gary Medel</option>
+                        <option value="10">Ben Brereton</option>
                     </select>
                 </div>
                 
@@ -351,16 +362,38 @@
                             </div>
                         </div>
                         <div class="player-stats-list">
-                            <div class="p-stat"><span>Goles Esperados (xG)</span> <strong id="statXG">0.45</strong></div>
-                            <div class="p-stat"><span>Pases Completados</span> <strong id="statPass">82%</strong></div>
-                            <div class="p-stat"><span>Duelos Ganados</span> <strong id="statDuel">45%</strong></div>
-                            <div class="p-stat"><span>Distancia (km)</span> <strong id="statDist">10.2</strong></div>
+                            <div class="p-stat"><span>xG</span> <strong id="statXG">0.45</strong></div>
+                            <div class="p-stat"><span>Pases</span> <strong id="statPass">82%</strong></div>
+                            <div class="p-stat"><span>Duelos</span> <strong id="statDuel">45%</strong></div>
+                            <div class="p-stat"><span>Km</span> <strong id="statDist">10.2</strong></div>
                         </div>
                     </div>
 
                     <div class="chart-radar-container">
                         <canvas id="playerRadarChart"></canvas>
                     </div>
+                </div>
+            </div>
+
+            <div class="card comparison-card">
+                <div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+                    <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-balance-scale"></i> Comparación VS</div>
+                    <div class="comparison-controls" style="width: 100%;">
+                        <select id="compPlayer1" onchange="updateComparison()">
+                            <option value="7">Alexis Sánchez</option>
+                            <option value="10">Ben Brereton</option>
+                            <option value="11">Eduardo Vargas</option>
+                        </select>
+                        <span style="color: var(--text-muted); font-weight: 700;">VS</span>
+                        <select id="compPlayer2" onchange="updateComparison()">
+                            <option value="10">Ben Brereton</option>
+                            <option value="7">Alexis Sánchez</option>
+                            <option value="11">Eduardo Vargas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-radar-container" style="height: 300px;">
+                    <canvas id="comparisonChart"></canvas>
                 </div>
             </div>
 
@@ -373,6 +406,7 @@
     let currentMode = 'heatmap';
     let heatmapInstance;
     let radarChartInstance = null;
+    let comparisonChartInstance = null;
     
     // === DATOS SIMULADOS ===
     const shotData = [
@@ -431,6 +465,16 @@
             name: "Gary Medel", pos: "Defensa", initials: "GM",
             stats: { xg: "0.02", pass: "91%", duel: "88%", dist: "9.1" },
             radar: [40, 50, 80, 60, 95, 90]
+        },
+        "10": {
+            name: "Ben Brereton", pos: "Delantero", initials: "BB",
+            stats: { xg: "0.55", pass: "75%", duel: "60%", dist: "10.8" },
+            radar: [88, 75, 70, 70, 55, 85]
+        },
+        "11": {
+            name: "Eduardo Vargas", pos: "Delantero", initials: "EV",
+            stats: { xg: "0.60", pass: "70%", duel: "40%", dist: "9.5" },
+            radar: [90, 70, 65, 60, 40, 60]
         }
     };
 
@@ -441,6 +485,7 @@
         updateLegend();
         renderShotMap();
         changePlayer("7"); // Cargar radar inicial
+        updateComparison(); // Cargar comparación inicial
     };
 
     // === LÓGICA DE MODOS ===
@@ -561,7 +606,7 @@
         });
     }
 
-    // === RADAR CHART ===
+    // === RADAR CHART INDIVIDUAL ===
     function changePlayer(id) {
         const p = playersRadarData[id];
         document.getElementById('playerName').innerText = p.name;
@@ -601,6 +646,63 @@
                     backgroundColor: 'rgba(128, 128, 128, 0.2)',
                     borderColor: 'rgba(128, 128, 128, 0.5)',
                     pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: gridColor },
+                        grid: { color: gridColor },
+                        pointLabels: { color: textColor, font: { size: 11, family: 'Inter' } },
+                        ticks: { display: false, backdropColor: 'transparent' },
+                        suggestedMin: 0, suggestedMax: 100
+                    }
+                },
+                plugins: { legend: { display: true, labels: { color: textColor } } }
+            }
+        });
+    }
+
+    // === RADAR CHART COMPARATIVO (NUEVO) ===
+    function updateComparison() {
+        const p1Id = document.getElementById('compPlayer1').value;
+        const p2Id = document.getElementById('compPlayer2').value;
+        const p1 = playersRadarData[p1Id];
+        const p2 = playersRadarData[p2Id];
+
+        renderComparisonChart(p1, p2);
+    }
+
+    function renderComparisonChart(p1, p2) {
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        if (comparisonChartInstance) comparisonChartInstance.destroy();
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const textColor = isDark ? '#e5e7eb' : '#374151';
+
+        comparisonChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Ataque', 'Regate', 'Pase', 'Visión', 'Defensa', 'Físico'],
+                datasets: [{
+                    label: p1.name,
+                    data: p1.radar,
+                    fill: true,
+                    backgroundColor: 'rgba(16, 185, 129, 0.4)', // Verde
+                    borderColor: '#10b981',
+                    pointBackgroundColor: '#10b981',
+                    borderWidth: 2
+                }, {
+                    label: p2.name,
+                    data: p2.radar,
+                    fill: true,
+                    backgroundColor: 'rgba(239, 68, 68, 0.4)', // Rojo
+                    borderColor: '#ef4444',
+                    pointBackgroundColor: '#ef4444',
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -703,7 +805,8 @@
         document.getElementById('themeIcon').className = isDark ? "fas fa-sun" : "fas fa-moon";
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         initChart();
-        changePlayer(document.getElementById('playerSelector').value); // Recargar radar con nuevos colores
+        changePlayer(document.getElementById('playerSelector').value);
+        updateComparison();
     }
 
     function initChart() {
