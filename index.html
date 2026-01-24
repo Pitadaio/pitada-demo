@@ -104,6 +104,7 @@
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
         .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
         .zone-def { fill: var(--primary); stroke: var(--primary); } .zone-mid { fill: var(--warning); stroke: var(--warning); } .zone-fwd { fill: var(--danger); stroke: var(--danger); }
+        .action-center { fill: white; stroke: none; pointer-events: none; }
         .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 100; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; }
 
         /* Controls */
@@ -150,16 +151,17 @@
         .p-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
         .p-number { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; font-weight: 800; color: rgba(255,255,255,0.05); font-family: 'Outfit'; }
         .player-card-body { padding: 0 1.5rem 1.5rem; }
-        .p-tags { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .p-tags { display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center; }
         .tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
         .tag-pos { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-muted); }
         
         /* Botón de estado interactivo */
-        .status-btn { border: none; cursor: pointer; transition: all 0.2s; }
+        .status-btn { border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
         .status-btn:hover { filter: brightness(1.1); transform: scale(1.05); }
         .tag-fit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
         .tag-injured { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .tag-susp { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .tag-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* RESPONSIVE */
         @media (max-width: 1024px) {
@@ -386,7 +388,7 @@
             <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Plantilla del Equipo</h2>
-                    <p style="color: var(--text-muted);">Gestiona los jugadores y sus estados físicos.</p>
+                    <p style="color: var(--text-muted);">Gestiona los jugadores, tarjetas y lesiones.</p>
                 </div>
                 <button class="btn-primary"><i class="fas fa-plus"></i> Añadir Jugador</button>
             </div>
@@ -425,15 +427,16 @@
     let momentumChartInstance = null, radarChartInstance = null, comparisonChartInstance = null;
     let currentFilter = 'all';
     
-    // === BASE DE DATOS PLANTILLA ===
+    // === BASE DE DATOS PLANTILLA (ACTUALIZADA) ===
+    // Status: fit (apto), injured (lesionado), yellow (amarilla), red (roja/susp)
     const squadDB = [
         { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' },
-        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'fit' },
+        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' },
         { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' },
         { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' },
         { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' },
         { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' },
-        { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'susp' },
+        { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' },
         { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' },
         { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' },
         { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' },
@@ -441,7 +444,7 @@
         { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' },
     ];
 
-    // === GESTIÓN PLANTILLA ===
+    // === GESTIÓN PLANTILLA (MEJORADA) ===
     function filterSquad(category, btn) {
         currentFilter = category;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -450,11 +453,14 @@
     }
 
     function changeStatus(id) {
-        const player = squadDB.find(p => p.id === id);
-        if (player.status === 'fit') player.status = 'injured';
-        else if (player.status === 'injured') player.status = 'susp';
-        else player.status = 'fit';
-        renderSquad(); // Re-renderizar para ver cambio
+        const p = squadDB.find(x => x.id === id);
+        // Ciclo: Fit -> Injured -> Yellow -> Red -> Fit
+        if (p.status === 'fit') p.status = 'injured';
+        else if (p.status === 'injured') p.status = 'yellow';
+        else if (p.status === 'yellow') p.status = 'red';
+        else p.status = 'fit';
+        
+        renderSquad(); // Re-renderizar
     }
 
     function renderSquad() {
@@ -466,9 +472,10 @@
             : squadDB.filter(p => p.pos === currentFilter);
         
         filtered.forEach(p => {
-            let statusClass = 'tag-fit', statusText = 'Apto';
-            if (p.status === 'injured') { statusClass = 'tag-injured'; statusText = 'Lesionado'; }
-            if (p.status === 'susp') { statusClass = 'tag-susp'; statusText = 'Sancionado'; }
+            let statusClass = 'tag-fit', statusText = 'Apto', statusIcon = '✅';
+            if (p.status === 'injured') { statusClass = 'tag-injured'; statusText = 'Lesionado'; statusIcon = '🚑'; }
+            if (p.status === 'yellow') { statusClass = 'tag-yellow'; statusText = 'Amarilla'; statusIcon = '🟨'; }
+            if (p.status === 'red') { statusClass = 'tag-red'; statusText = 'Roja'; statusIcon = '🟥'; }
             
             const card = document.createElement('div');
             card.className = 'player-card';
@@ -480,8 +487,9 @@
                 </div>
                 <div class="player-card-body">
                     <div class="p-tags">
-                        <button class="tag status-btn ${statusClass}" onclick="changeStatus(${p.id})">${statusText} <i class="fas fa-sync-alt" style="font-size:0.7em; margin-left:3px;"></i></button>
-                        <span class="tag tag-pos">${p.pos}</span>
+                        <button class="tag status-btn ${statusClass}" onclick="changeStatus(${p.id})">
+                            ${statusIcon} ${statusText}
+                        </button>
                     </div>
                 </div>
             `;
