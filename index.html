@@ -87,7 +87,7 @@
         .kpi-value { font-size: 1.75rem; font-weight: 700; font-family: 'Outfit', sans-serif; color: var(--text-main); }
         .kpi-label { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* === TACTICAL BOARD (HEATMAP + SHOTMAP) === */
+        /* === TACTICAL BOARD (HEATMAP + SHOTMAP + PASSMAP) === */
         .tactical-board { grid-column: span 8; }
         .cancha-wrapper { 
             width: 100%; height: 400px; 
@@ -114,8 +114,22 @@
         }
         .shot-marker:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 20; }
         .shot-gol { background-color: var(--success); }
-        .shot-atajada { background-color: var(--warning); border-radius: 3px; } /* Cuadrado */
-        .shot-fuera { background-color: var(--danger); clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%); border: none; } /* X shape simulada o simple */
+        .shot-atajada { background-color: var(--warning); border-radius: 3px; }
+        .shot-fuera { background-color: var(--danger); }
+
+        /* PASS NETWORK */
+        .player-node {
+            position: absolute; width: 30px; height: 30px;
+            background: var(--bg-card); border: 2px solid var(--text-main);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; color: var(--text-main);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .player-node:hover { transform: translate(-50%, -50%) scale(1.2); border-color: var(--primary); background: var(--primary); color: white; z-index: 20; }
+        .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
+        .pass-line:hover { stroke: var(--primary); opacity: 1; cursor: pointer; }
 
         /* TOOLTIP TÁCTICO */
         .tactical-tooltip {
@@ -130,6 +144,7 @@
             border: 1px solid var(--border);
             display: none;
             backdrop-filter: blur(4px);
+            white-space: nowrap;
         }
 
         /* CONTROLES */
@@ -155,45 +170,6 @@
             .side-panel { grid-column: span 12; display: flex; flex-direction: row; gap: 1rem; }
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        /* === PASS NETWORK STYLES === */
-.player-node {
-    position: absolute;
-    width: 30px; height: 30px;
-    background: var(--bg-card);
-    border: 2px solid var(--text-main);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 700; color: var(--text-main);
-    transform: translate(-50%, -50%);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    z-index: 10;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-.player-node:hover {
-    transform: translate(-50%, -50%) scale(1.2);
-    border-color: var(--primary);
-    background: var(--primary);
-    color: white;
-    z-index: 20;
-}
-/* Colores por posición (Opcional) */
-.node-def { border-color: var(--primary); }
-.node-mid { border-color: var(--warning); }
-.node-fwd { border-color: var(--danger); }
-
-/* Líneas SVG */
-.pass-line {
-    stroke: var(--text-muted);
-    stroke-linecap: round;
-    transition: all 0.3s;
-    opacity: 0.4;
-}
-.pass-line:hover {
-    stroke: var(--primary);
-    opacity: 1;
-    cursor: pointer;
-}
     </style>
 </head>
 <body>
@@ -276,16 +252,16 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chess-board"></i> Pizarra Táctica</div>
                         
                         <div class="mode-switch">
-    <button class="mode-btn active" onclick="setBoardMode('heatmap', this)">
-        <i class="fas fa-fire"></i> Calor
-    </button>
-    <button class="mode-btn" onclick="setBoardMode('shotmap', this)">
-        <i class="fas fa-crosshairs"></i> Tiros
-    </button>
-    <button class="mode-btn" onclick="setBoardMode('passmap', this)">
-        <i class="fas fa-project-diagram"></i> Red
-    </button>
-</div>
+                            <button class="mode-btn active" onclick="setBoardMode('heatmap', this)">
+                                <i class="fas fa-fire"></i> Calor
+                            </button>
+                            <button class="mode-btn" onclick="setBoardMode('shotmap', this)">
+                                <i class="fas fa-crosshairs"></i> Tiros
+                            </button>
+                            <button class="mode-btn" onclick="setBoardMode('passmap', this)">
+                                <i class="fas fa-project-diagram"></i> Red
+                            </button>
+                        </div>
 
                         <div class="sub-controls" id="heatmapControls">
                             <button class="sub-btn active" onclick="updateHeatmap('balon', this)">Balón</button>
@@ -302,12 +278,12 @@
                     
                     <div id="heatmapContainer" class="layer-overlay"></div>
                     
-                    <div id="shotmapContainer" class="layer-overlay hidden-layer">
-                        </div>
+                    <div id="shotmapContainer" class="layer-overlay hidden-layer"></div>
+
                     <div id="passmapContainer" class="layer-overlay hidden-layer" style="z-index: 5;">
-    <svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
-    <div id="passNodesLayer"></div>
-</div>
+                        <svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
+                        <div id="passNodesLayer"></div>
+                    </div>
 
                     <div id="tacticalTooltip" class="tactical-tooltip"></div>
                 </div>
@@ -340,10 +316,10 @@
 
 <script>
     // === ESTADO GLOBAL ===
-    let currentMode = 'heatmap'; // 'heatmap' o 'shotmap'
+    let currentMode = 'heatmap'; // 'heatmap' o 'shotmap' o 'passmap'
     let heatmapInstance;
     
-    // Datos Simulados de Tiros (x, y en porcentaje 0-100)
+    // DATOS DE PRUEBA
     const shotData = [
         { x: 92, y: 48, result: 'gol', player: 'J. Pérez', xG: 0.78 },
         { x: 88, y: 35, result: 'atajada', player: 'M. Soto', xG: 0.12 },
@@ -353,66 +329,60 @@
         { x: 70, y: 20, result: 'fuera', player: 'A. Vidal', xG: 0.02 },
         { x: 90, y: 50, result: 'atajada', player: 'J. Pérez', xG: 0.45 },
     ];
-    // === DATOS RED DE PASES (SIMULADOS) ===
-// Jugadores: x,y son posiciones promedio en %
-const passPlayers = [
-    { id: 1, name: 'C. Bravo', number: 1, x: 10, y: 50, pos: 'gk' },
-    { id: 2, name: 'G. Medel', number: 17, x: 30, y: 30, pos: 'def' },
-    { id: 3, name: 'G. Maripán', number: 3, x: 30, y: 70, pos: 'def' },
-    { id: 4, name: 'M. Isla', number: 4, x: 45, y: 15, pos: 'def' },
-    { id: 5, name: 'G. Suazo', number: 2, x: 45, y: 85, pos: 'def' },
-    { id: 6, name: 'E. Pulgar', number: 13, x: 50, y: 50, pos: 'mid' },
-    { id: 8, name: 'A. Vidal', number: 8, x: 65, y: 40, pos: 'mid' },
-    { id: 20, name: 'C. Aránguiz', number: 20, x: 65, y: 60, pos: 'mid' },
-    { id: 7, name: 'A. Sánchez', number: 7, x: 80, y: 30, pos: 'fwd' },
-    { id: 10, name: 'Ben Brereton', number: 22, x: 80, y: 70, pos: 'fwd' },
-    { id: 11, name: 'E. Vargas', number: 11, x: 85, y: 50, pos: 'fwd' }
-];
 
-// Conexiones: Grosor de línea = cantidad de pases
-const passConnections = [
-    { from: 1, to: 2, count: 12 }, { from: 1, to: 3, count: 10 },
-    { from: 2, to: 4, count: 15 }, { from: 3, to: 5, count: 18 },
-    { from: 2, to: 6, count: 20 }, { from: 3, to: 6, count: 22 },
-    { from: 6, to: 8, count: 25 }, { from: 6, to: 20, count: 24 },
-    { from: 4, to: 7, count: 12 }, { from: 5, to: 10, count: 14 },
-    { from: 8, to: 7, count: 18 }, { from: 20, to: 10, count: 16 },
-    { from: 8, to: 11, count: 10 }, { from: 20, to: 11, count: 10 },
-    { from: 7, to: 11, count: 8 },  { from: 10, to: 11, count: 8 }
-];
+    const passPlayers = [
+        { id: 1, name: 'C. Bravo', number: 1, x: 10, y: 50, pos: 'gk' },
+        { id: 2, name: 'G. Medel', number: 17, x: 30, y: 30, pos: 'def' },
+        { id: 3, name: 'G. Maripán', number: 3, x: 30, y: 70, pos: 'def' },
+        { id: 4, name: 'M. Isla', number: 4, x: 45, y: 15, pos: 'def' },
+        { id: 5, name: 'G. Suazo', number: 2, x: 45, y: 85, pos: 'def' },
+        { id: 6, name: 'E. Pulgar', number: 13, x: 50, y: 50, pos: 'mid' },
+        { id: 8, name: 'A. Vidal', number: 8, x: 65, y: 40, pos: 'mid' },
+        { id: 20, name: 'C. Aránguiz', number: 20, x: 65, y: 60, pos: 'mid' },
+        { id: 7, name: 'A. Sánchez', number: 7, x: 80, y: 30, pos: 'fwd' },
+        { id: 10, name: 'Ben Brereton', number: 22, x: 80, y: 70, pos: 'fwd' },
+        { id: 11, name: 'E. Vargas', number: 11, x: 85, y: 50, pos: 'fwd' }
+    ];
+
+    const passConnections = [
+        { from: 1, to: 2, count: 12 }, { from: 1, to: 3, count: 10 },
+        { from: 2, to: 4, count: 15 }, { from: 3, to: 5, count: 18 },
+        { from: 2, to: 6, count: 20 }, { from: 3, to: 6, count: 22 },
+        { from: 6, to: 8, count: 25 }, { from: 6, to: 20, count: 24 },
+        { from: 4, to: 7, count: 12 }, { from: 5, to: 10, count: 14 },
+        { from: 8, to: 7, count: 18 }, { from: 20, to: 10, count: 16 },
+        { from: 8, to: 11, count: 10 }, { from: 20, to: 11, count: 10 },
+        { from: 7, to: 11, count: 8 },  { from: 10, to: 11, count: 8 }
+    ];
 
     window.onload = function() {
         initTheme();
         initHeatmap();
         initChart();
         updateLegend();
-        renderShotMap(); // Pre-renderizar tiros
+        renderShotMap();
+        // passmap se renderiza on demand
     };
 
-    // === LÓGICA DE MODOS (HEATMAP vs SHOTMAP) ===
-   function setBoardMode(mode, btn) {
+    // === LÓGICA DE MODOS ===
+    function setBoardMode(mode, btn) {
         currentMode = mode;
         
-        // 1. Botones
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // 2. Contenedores
         const hmContainer = document.getElementById('heatmapContainer');
         const smContainer = document.getElementById('shotmapContainer');
-        const pmContainer = document.getElementById('passmapContainer'); // Nuevo
+        const pmContainer = document.getElementById('passmapContainer');
         const hmControls = document.getElementById('heatmapControls');
 
-        // Ocultar todo primero
+        // Reset
         hmContainer.classList.add('hidden-layer');
         smContainer.classList.add('hidden-layer');
         pmContainer.classList.add('hidden-layer');
-        
-        // Resetear controles
         hmControls.style.opacity = '0.3';
         hmControls.style.pointerEvents = 'none';
 
-        // Lógica de activación
         if (mode === 'heatmap') {
             hmContainer.classList.remove('hidden-layer');
             hmControls.style.opacity = '1';
@@ -421,174 +391,122 @@ const passConnections = [
             smContainer.classList.remove('hidden-layer');
         } else if (mode === 'passmap') {
             pmContainer.classList.remove('hidden-layer');
-            renderPassNetwork(); // Renderizar al activar
-        }
-
-        updateLegend();
-    }
-        
-        // 1. Actualizar botones superiores
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // 2. Mostrar/Ocultar Capas
-        const hmContainer = document.getElementById('heatmapContainer');
-        const smContainer = document.getElementById('shotmapContainer');
-        const hmControls = document.getElementById('heatmapControls');
-
-        if (mode === 'heatmap') {
-            hmContainer.classList.remove('hidden-layer');
-            smContainer.classList.add('hidden-layer');
-            hmControls.style.opacity = '1';
-            hmControls.style.pointerEvents = 'auto';
-        } else {
-            hmContainer.classList.add('hidden-layer');
-            smContainer.classList.remove('hidden-layer');
-            hmControls.style.opacity = '0.3'; // Deshabilitar visualmente controles de heatmap
-            hmControls.style.pointerEvents = 'none';
+            renderPassNetwork();
         }
 
         updateLegend();
     }
 
-    // === RENDERIZAR MAPA DE TIROS ===
+    // === RENDERIZADORES ===
     function renderShotMap() {
         const container = document.getElementById('shotmapContainer');
-        container.innerHTML = ''; // Limpiar
-
+        container.innerHTML = '';
         shotData.forEach(shot => {
             const el = document.createElement('div');
             el.className = `shot-marker shot-${shot.result}`;
-            
-            // Posicionar (Asumiendo que atacamos hacia la derecha ->)
             el.style.left = `${shot.x}%`;
             el.style.top = `${shot.y}%`;
-
-            // Eventos para Tooltip
             el.addEventListener('mouseenter', (e) => showTooltip(e, shot));
             el.addEventListener('mouseleave', hideTooltip);
-
             container.appendChild(el);
         });
     }
 
-    // === TOOLTIP ===
+    function renderPassNetwork() {
+        const svgContainer = document.getElementById('passLinesSvg');
+        const nodesContainer = document.getElementById('passNodesLayer');
+        svgContainer.innerHTML = '';
+        nodesContainer.innerHTML = '';
+
+        passConnections.forEach(conn => {
+            const p1 = passPlayers.find(p => p.id === conn.from);
+            const p2 = passPlayers.find(p => p.id === conn.to);
+            if (p1 && p2) {
+                const strokeWidth = Math.max(1, Math.min(conn.count / 3, 8));
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", `${p1.x}%`); line.setAttribute("y1", `${p1.y}%`);
+                line.setAttribute("x2", `${p2.x}%`); line.setAttribute("y2", `${p2.y}%`);
+                line.setAttribute("stroke-width", strokeWidth);
+                line.setAttribute("class", "pass-line");
+                line.addEventListener('mousemove', (e) => showTooltipSimple(e, `↔️ ${conn.count} Pases`, `${p1.name} - ${p2.name}`));
+                line.addEventListener('mouseleave', hideTooltip);
+                svgContainer.appendChild(line);
+            }
+        });
+
+        passPlayers.forEach(p => {
+            const node = document.createElement('div');
+            node.className = `player-node`;
+            node.style.left = `${p.x}%`;
+            node.style.top = `${p.y}%`;
+            node.textContent = p.number;
+            node.addEventListener('mouseenter', (e) => showTooltip(e, { result: 'jugador', player: p.name, xG: p.pos.toUpperCase(), x: p.x, y: p.y }));
+            node.addEventListener('mouseleave', hideTooltip);
+            nodesContainer.appendChild(node);
+        });
+    }
+
+    // === TOOLTIP INTELIGENTE (FLIP LOGIC) ===
     function showTooltip(e, data) {
         const tooltip = document.getElementById('tacticalTooltip');
         const container = document.getElementById('canchaWrapper');
         
-        // 1. Llenar contenido primero (para que el navegador calcule el tamaño)
-        let icon = data.result === 'gol' ? '⚽' : (data.result === 'fuera' ? '❌' : '🧤');
+        let icon = data.result === 'gol' ? '⚽' : (data.result === 'fuera' ? '❌' : (data.result === 'jugador' ? '👤' : '🧤'));
+        tooltip.innerHTML = `<div style="font-weight:600; margin-bottom:2px;">${icon} ${data.result.toUpperCase()}</div><div style="color:#ccc;">${data.player}</div><div style="color:#ccc; font-size:0.75rem;">Info: ${data.xG}</div>`;
         
-        tooltip.innerHTML = `
-            <div style="font-weight:600; margin-bottom:2px;">${icon} ${data.result.toUpperCase()}</div>
-            <div style="color:#ccc;">Jugador: ${data.player}</div>
-            <div style="color:#ccc; font-size:0.75rem;">xG: ${data.xG}</div>
-        `;
-
-        // 2. Mostrarlo pero invisible para medirlo
         tooltip.style.display = 'block';
         tooltip.style.visibility = 'hidden';
 
-        // 3. Calcular posiciones matemáticas
         const containerRect = container.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
         
-        // Posición del punto (en píxeles relativos al contenedor)
-        // Convertimos el porcentaje (data.x) a píxeles reales
         const markerX = (data.x / 100) * containerRect.width;
         const markerY = (data.y / 100) * containerRect.height;
-
-        // Espacio de separación
         const offset = 15;
 
-        // 4. Lógica de "Flip" Horizontal (Derecha/Izquierda)
-        let finalLeft;
-        // ¿Si lo pongo a la derecha, se sale del ancho total?
-        if (markerX + offset + tooltipRect.width > containerRect.width) {
-            // SÍ se sale -> Ponlo a la IZQUIERDA del punto
-            finalLeft = markerX - tooltipRect.width - offset;
-        } else {
-            // NO se sale -> Ponlo a la DERECHA (comportamiento normal)
-            finalLeft = markerX + offset;
-        }
+        let finalLeft = (markerX + offset + tooltipRect.width > containerRect.width) ? markerX - tooltipRect.width - offset : markerX + offset;
+        let finalTop = (markerY - offset - tooltipRect.height < 0) ? markerY + offset : markerY - tooltipRect.height - offset;
 
-        // 5. Lógica de "Flip" Vertical (Abajo/Arriba) - Opcional pero recomendado
-        let finalTop;
-        // ¿Si lo pongo arriba (default), se sale por el techo?
-        if (markerY - offset - tooltipRect.height < 0) {
-             // SÍ se sale por arriba -> Ponlo ABAJO del punto
-             finalTop = markerY + offset;
-        } else {
-             // NO se sale -> Ponlo ARRIBA (comportamiento normal)
-             finalTop = markerY - tooltipRect.height - offset; // Restamos altura para que suba
-        }
-
-        // 6. Aplicar coordenadas finales
         tooltip.style.left = `${finalLeft}px`;
-        tooltip.style.top = `${finalTop}px`; // Nota: el CSS original usaba calc() raro, esto es más preciso
-
-        // 7. Hacer visible
+        tooltip.style.top = `${finalTop}px`;
         tooltip.style.visibility = 'visible';
     }
 
-    function hideTooltip() {
-        document.getElementById('tacticalTooltip').style.display = 'none';
+    function showTooltipSimple(e, title, subtitle) {
+        const tooltip = document.getElementById('tacticalTooltip');
+        tooltip.innerHTML = `<div style="font-weight:600; color:var(--primary);">${title}</div><div style="color:#ccc; font-size:0.8rem;">${subtitle}</div>`;
+        tooltip.style.display = 'block';
+        tooltip.style.visibility = 'visible';
+        tooltip.style.left = `${e.layerX + 15}px`;
+        tooltip.style.top = `${e.layerY - 15}px`;
     }
 
-    // === HEATMAP ===
+    function hideTooltip() { document.getElementById('tacticalTooltip').style.display = 'none'; }
+
+    // === HEATMAP & GENERAL ===
     function initHeatmap() {
-        heatmapInstance = h337.create({
-            container: document.getElementById('heatmapContainer'),
-            radius: 25, maxOpacity: 0.6, minOpacity: 0.1, blur: 0.85,
-            gradient: { 0.2: '#6366f1', 0.5: '#10b981', 0.8: '#f59e0b', 1.0: '#ef4444' }
-        });
+        heatmapInstance = h337.create({ container: document.getElementById('heatmapContainer'), radius: 25, maxOpacity: 0.6, minOpacity: 0.1, blur: 0.85, gradient: { 0.2: '#6366f1', 0.5: '#10b981', 0.8: '#f59e0b', 1.0: '#ef4444' } });
         updateHeatmap('balon', null);
     }
 
     function updateHeatmap(type, btn) {
-        if(btn) {
-            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        
+        if(btn) { document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         const w = document.getElementById('heatmapContainer').offsetWidth;
         const h = document.getElementById('heatmapContainer').offsetHeight;
         let points = [];
-        let count = type === 'balon' ? 80 : 150;
-        
-        for(let i=0; i<count; i++) {
-            points.push({
-                x: Math.floor(Math.random() * w),
-                y: Math.floor(Math.random() * h),
-                value: 5
-            });
-        }
+        for(let i=0; i<(type==='balon'?80:150); i++) points.push({ x: Math.floor(Math.random()*w), y: Math.floor(Math.random()*h), value: 5 });
         heatmapInstance.setData({ max: 10, data: points });
     }
 
-    // === UTILIDADES UI ===
     function updateLegend() {
         const legend = document.getElementById('boardLegend');
-        legend.innerHTML = ''; // Limpiar
-
+        legend.innerHTML = '';
         if (currentMode === 'heatmap') {
-            legend.innerHTML = `
-                <div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div>
-                <div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div>
-                <div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>
-            `;
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
         } else if (currentMode === 'shotmap') {
-            legend.innerHTML = `
-                <div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div>
-                <div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div>
-                <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>
-            `;
-        } else if (currentMode === 'passmap') {
-            legend.innerHTML = `
-                <div class="legend-item"><div class="dot" style="border: 2px solid var(--primary); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div>
-                <div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Volumen de Pases</div>
-            `;
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
+        } else {
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="border: 2px solid var(--text-main); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div><div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Conexión de Pases</div>`;
         }
     }
 
@@ -616,102 +534,12 @@ const passConnections = [
         const ctx = document.getElementById('fitnessChart').getContext('2d');
         if(window.myChart) window.myChart.destroy();
         const color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280';
-        
         window.myChart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: ['0-15', '30', '45', '60', '75', '90'],
-                datasets: [{
-                    label: 'Intensidad', data: [65, 78, 80, 85, 75, 90],
-                    borderColor: '#6366f1', tension: 0.4, fill: true,
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)'
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { ticks: { color: color }, grid: { color: 'rgba(128,128,128,0.1)' } },
-                    x: { ticks: { color: color }, grid: { display: false } }
-                }
-            }
+            data: { labels: ['0-15', '30', '45', '60', '75', '90'], datasets: [{ label: 'Intensidad', data: [65, 78, 80, 85, 75, 90], borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: color }, grid: { color: 'rgba(128,128,128,0.1)' } }, x: { ticks: { color: color }, grid: { display: false } } } }
         });
     }
-    // === LÓGICA RED DE PASES ===
-
-function renderPassNetwork() {
-    const svgContainer = document.getElementById('passLinesSvg');
-    const nodesContainer = document.getElementById('passNodesLayer');
-    const containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
-    
-    // Limpiar
-    svgContainer.innerHTML = '';
-    nodesContainer.innerHTML = '';
-
-    // 1. DIBUJAR LÍNEAS (CONEXIONES)
-    passConnections.forEach(conn => {
-        const p1 = passPlayers.find(p => p.id === conn.from);
-        const p2 = passPlayers.find(p => p.id === conn.to);
-
-        if (p1 && p2) {
-            // Calcular grosor basado en cantidad de pases (min 1px, max 8px)
-            const strokeWidth = Math.max(1, Math.min(conn.count / 3, 8));
-            
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", `${p1.x}%`);
-            line.setAttribute("y1", `${p1.y}%`);
-            line.setAttribute("x2", `${p2.x}%`);
-            line.setAttribute("y2", `${p2.y}%`);
-            line.setAttribute("stroke-width", strokeWidth);
-            line.setAttribute("class", "pass-line");
-            
-            // Tooltip para la línea
-            line.addEventListener('mousemove', (e) => {
-                // Truco para tooltip en SVG: Usamos las coordenadas del mouse
-                showTooltipSimple(e, `↔️ ${conn.count} Pases`, `${p1.name} - ${p2.name}`);
-            });
-            line.addEventListener('mouseleave', hideTooltip);
-
-            svgContainer.appendChild(line);
-        }
-    });
-
-    // 2. DIBUJAR NODOS (JUGADORES)
-    passPlayers.forEach(p => {
-        const node = document.createElement('div');
-        node.className = `player-node node-${p.pos}`;
-        node.style.left = `${p.x}%`;
-        node.style.top = `${p.y}%`;
-        node.textContent = p.number;
-
-        // Tooltip Jugador
-        node.addEventListener('mouseenter', (e) => {
-            // Reutilizamos tu tooltip inteligente
-            showTooltip(e, { 
-                result: 'jugador', // Un "tipo" falso para el color
-                player: p.name, 
-                xG: p.pos.toUpperCase(), // Usamos el campo xG para la posición
-                x: p.x, y: p.y 
-            });
-        });
-        node.addEventListener('mouseleave', hideTooltip);
-
-        nodesContainer.appendChild(node);
-    });
-}
-
-// Tooltip simple para líneas (porque no tienen coordenadas x/y fijas como los puntos)
-function showTooltipSimple(e, title, subtitle) {
-    const tooltip = document.getElementById('tacticalTooltip');
-    tooltip.innerHTML = `
-        <div style="font-weight:600; color:var(--primary);">${title}</div>
-        <div style="color:#ccc; font-size:0.8rem;">${subtitle}</div>
-    `;
-    tooltip.style.display = 'block';
-    tooltip.style.visibility = 'visible';
-    tooltip.style.left = `${e.layerX + 15}px`;
-    tooltip.style.top = `${e.layerY - 15}px`;
-}
 </script>
 
 </body>
