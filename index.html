@@ -41,6 +41,28 @@
             min-height: 100vh;
             transition: background 0.3s, color 0.3s;
         }
+        /* === ACTION RADIUS STYLES === */
+.action-zone {
+    fill-opacity: 0.2;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.action-zone:hover {
+    fill-opacity: 0.4;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+}
+/* Colores por rol */
+.zone-def { fill: var(--primary); stroke: var(--primary); }
+.zone-mid { fill: var(--warning); stroke: var(--warning); }
+.zone-fwd { fill: var(--danger); stroke: var(--danger); }
+
+/* Punto central del jugador en modo radio */
+.action-center {
+    fill: white;
+    stroke: none;
+    pointer-events: none; /* Click through */
+}
 
         /* === LAYOUT === */
         .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
@@ -284,6 +306,9 @@
                             <button class="mode-btn" onclick="setBoardMode('passmap', this)">
                                 <i class="fas fa-project-diagram"></i> Red
                             </button>
+                            <button class="mode-btn" onclick="setBoardMode('actionmap', this)">
+    <i class="fas fa-bullseye"></i> Radio
+</button>
                         </div>
 
                         <div class="sub-controls" id="heatmapControls">
@@ -307,6 +332,9 @@
                         <svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
                         <div id="passNodesLayer"></div>
                     </div>
+                    <div id="actionmapContainer" class="layer-overlay hidden-layer" style="z-index: 4;">
+    <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
+</div>
 
                     <div id="tacticalTooltip" class="tactical-tooltip"></div>
                 </div>
@@ -397,7 +425,7 @@
     };
 
     // === LÓGICA DE MODOS ===
-    function setBoardMode(mode, btn) {
+   function setBoardMode(mode, btn) {
         currentMode = mode;
         
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -406,7 +434,34 @@
         const hmContainer = document.getElementById('heatmapContainer');
         const smContainer = document.getElementById('shotmapContainer');
         const pmContainer = document.getElementById('passmapContainer');
+        const amContainer = document.getElementById('actionmapContainer'); // Nuevo
         const hmControls = document.getElementById('heatmapControls');
+
+        // Ocultar todo
+        hmContainer.classList.add('hidden-layer');
+        smContainer.classList.add('hidden-layer');
+        pmContainer.classList.add('hidden-layer');
+        amContainer.classList.add('hidden-layer'); // Nuevo
+        
+        hmControls.style.opacity = '0.3';
+        hmControls.style.pointerEvents = 'none';
+
+        if (mode === 'heatmap') {
+            hmContainer.classList.remove('hidden-layer');
+            hmControls.style.opacity = '1';
+            hmControls.style.pointerEvents = 'auto';
+        } else if (mode === 'shotmap') {
+            smContainer.classList.remove('hidden-layer');
+        } else if (mode === 'passmap') {
+            pmContainer.classList.remove('hidden-layer');
+            renderPassNetwork();
+        } else if (mode === 'actionmap') { // Nuevo Caso
+            amContainer.classList.remove('hidden-layer');
+            renderActionMap();
+        }
+
+        updateLegend();
+    }
 
         // Reset
         hmContainer.classList.add('hidden-layer');
@@ -429,6 +484,14 @@
         updateLegend();
     }
 
+    // === DATOS RADIOS DE ACCIÓN (SIMULADOS) ===
+// Representan el área de influencia efectiva (polígonos simplificados)
+const actionZones = [
+    { id: 2, name: 'G. Medel', role: 'def', stats: 'Recuperaciones: 12', points: '20,20 40,25 45,40 25,45 15,35' }, // Zona defensiva amplia
+    { id: 6, name: 'E. Pulgar', role: 'mid', stats: 'Intercepciones: 8', points: '40,40 60,40 65,60 45,65 35,50' }, // Círculo central
+    { id: 7, name: 'A. Sánchez', role: 'fwd', stats: 'Regates: 15', points: '60,20 90,15 95,45 75,55 65,35' }, // Libertad en ataque
+    { id: 4, name: 'M. Isla', role: 'def', stats: 'Desbordes: 9', points: '40,5 90,5 90,20 45,25' } // Carril derecho
+];
     // === RENDERIZADORES ===
     function renderShotMap() {
         const container = document.getElementById('shotmapContainer');
@@ -532,13 +595,23 @@
 
     function updateLegend() {
         const legend = document.getElementById('boardLegend');
-        legend.innerHTML = '';
+        legend.innerHTML = ''; // Limpiar
+
         if (currentMode === 'heatmap') {
-            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
+            // ... (código anterior) ...
+             legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
         } else if (currentMode === 'shotmap') {
-            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
-        } else {
-            legend.innerHTML = `<div class="legend-item"><div class="dot" style="border: 2px solid var(--text-main); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div><div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Conexión de Pases</div>`;
+            // ... (código anterior) ...
+             legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
+        } else if (currentMode === 'passmap') {
+            // ... (código anterior) ...
+             legend.innerHTML = `<div class="legend-item"><div class="dot" style="border: 2px solid var(--text-main); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div><div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Conexión de Pases</div>`;
+        } else if (currentMode === 'actionmap') { // Nuevo
+            legend.innerHTML = `
+                <div class="legend-item"><div class="dot" style="background:var(--primary); opacity:0.6;"></div> Cobertura Defensiva</div>
+                <div class="legend-item"><div class="dot" style="background:var(--warning); opacity:0.6;"></div> Creación</div>
+                <div class="legend-item"><div class="dot" style="background:var(--danger); opacity:0.6;"></div> Ataque/Ruptura</div>
+            `;
         }
     }
 
@@ -572,6 +645,44 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: color }, grid: { color: 'rgba(128,128,128,0.1)' } }, x: { ticks: { color: color }, grid: { display: false } } } }
         });
     }
+    // === RENDERIZAR RADIOS DE ACCIÓN ===
+function renderActionMap() {
+    const svgContainer = document.getElementById('actionSvg');
+    svgContainer.innerHTML = ''; // Limpiar
+
+    actionZones.forEach(zone => {
+        // 1. Dibujar el Polígono (Zona)
+        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        
+        // Convertir coordenadas % a puntos del SVG (asumiendo viewBox 0 0 100 100 para simplificar o usar %)
+        // Para que funcione responsive, usaremos porcentajes directos en los puntos
+        const pointsArray = zone.points.split(' ').map(p => {
+            const [x, y] = p.split(',');
+            return `${x}%,${y}%`;
+        }).join(' ');
+
+        polygon.setAttribute("points", pointsArray);
+        polygon.setAttribute("class", `action-zone zone-${zone.role}`);
+        
+        // Tooltip Interactivo
+        polygon.addEventListener('mousemove', (e) => {
+            showTooltipSimple(e, `${zone.name}`, `${zone.stats} | Influencia Alta`);
+        });
+        polygon.addEventListener('mouseleave', hideTooltip);
+
+        svgContainer.appendChild(polygon);
+
+        // 2. (Opcional) Dibujar icono/punto central
+        // Calculamos centro aproximado para poner un punto
+        const coords = zone.points.split(' ')[0].split(','); // Usamos el primer punto como ancla simple
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", `${coords[0]}%`);
+        circle.setAttribute("cy", `${coords[1]}%`);
+        circle.setAttribute("r", "3");
+        circle.setAttribute("class", "action-center");
+        svgContainer.appendChild(circle);
+    });
+}
 </script>
 
 </body>
