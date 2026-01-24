@@ -502,27 +502,44 @@
 
     function renderActionMap() {
         const svgContainer = document.getElementById('actionSvg');
+        
+        // CORRECCIÓN CLAVE: Definir el sistema de coordenadas de 0 a 100
+        svgContainer.setAttribute("viewBox", "0 0 100 100");
+        svgContainer.setAttribute("preserveAspectRatio", "none");
+        
         svgContainer.innerHTML = '';
 
         actionZones.forEach(zone => {
             const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            
+            // CORRECCIÓN: Quitamos el "%" porque el viewBox ya maneja la escala
             const pointsArray = zone.points.split(' ').map(p => {
                 const [x, y] = p.split(',');
-                return `${x}%,${y}%`;
+                return `${x},${y}`; // Sin símbolos extra
             }).join(' ');
 
             polygon.setAttribute("points", pointsArray);
             polygon.setAttribute("class", `action-zone zone-${zone.role}`);
             
+            // Tooltip
             polygon.addEventListener('mousemove', (e) => {
                 showTooltipSimple(e, `${zone.name}`, `${zone.stats}`);
             });
             polygon.addEventListener('mouseleave', hideTooltip);
 
             svgContainer.appendChild(polygon);
+            
+            // Punto central (Icono)
+            const coords = zone.points.split(' ')[0].split(',');
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            // Aquí usamos coordenadas del viewBox (0-100)
+            circle.setAttribute("cx", coords[0]); 
+            circle.setAttribute("cy", coords[1]);
+            circle.setAttribute("r", "1.5"); // Radio relativo al viewBox (1.5% del ancho)
+            circle.setAttribute("class", "action-center");
+            svgContainer.appendChild(circle);
         });
     }
-
     // === TOOLTIP INTELIGENTE ===
     function showTooltip(e, data) {
         const tooltip = document.getElementById('tacticalTooltip');
