@@ -368,26 +368,61 @@
     // === TOOLTIP ===
     function showTooltip(e, data) {
         const tooltip = document.getElementById('tacticalTooltip');
-        const rect = document.getElementById('canchaWrapper').getBoundingClientRect();
+        const container = document.getElementById('canchaWrapper');
         
-        let colorClass = data.result === 'gol' ? 'text-success' : (data.result === 'fuera' ? 'text-danger' : 'text-warning');
+        // 1. Llenar contenido primero (para que el navegador calcule el tamaño)
         let icon = data.result === 'gol' ? '⚽' : (data.result === 'fuera' ? '❌' : '🧤');
-
+        
         tooltip.innerHTML = `
             <div style="font-weight:600; margin-bottom:2px;">${icon} ${data.result.toUpperCase()}</div>
             <div style="color:#ccc;">Jugador: ${data.player}</div>
             <div style="color:#ccc; font-size:0.75rem;">xG: ${data.xG}</div>
         `;
 
+        // 2. Mostrarlo pero invisible para medirlo
         tooltip.style.display = 'block';
+        tooltip.style.visibility = 'hidden';
+
+        // 3. Calcular posiciones matemáticas
+        const containerRect = container.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
         
-        // Posicionar relativo a la cancha
-        let left = e.target.style.left;
-        let top = e.target.style.top;
-        
-        // Ajuste fino
-        tooltip.style.left = `calc(${left} + 15px)`;
-        tooltip.style.top = `calc(${top} - 15px)`;
+        // Posición del punto (en píxeles relativos al contenedor)
+        // Convertimos el porcentaje (data.x) a píxeles reales
+        const markerX = (data.x / 100) * containerRect.width;
+        const markerY = (data.y / 100) * containerRect.height;
+
+        // Espacio de separación
+        const offset = 15;
+
+        // 4. Lógica de "Flip" Horizontal (Derecha/Izquierda)
+        let finalLeft;
+        // ¿Si lo pongo a la derecha, se sale del ancho total?
+        if (markerX + offset + tooltipRect.width > containerRect.width) {
+            // SÍ se sale -> Ponlo a la IZQUIERDA del punto
+            finalLeft = markerX - tooltipRect.width - offset;
+        } else {
+            // NO se sale -> Ponlo a la DERECHA (comportamiento normal)
+            finalLeft = markerX + offset;
+        }
+
+        // 5. Lógica de "Flip" Vertical (Abajo/Arriba) - Opcional pero recomendado
+        let finalTop;
+        // ¿Si lo pongo arriba (default), se sale por el techo?
+        if (markerY - offset - tooltipRect.height < 0) {
+             // SÍ se sale por arriba -> Ponlo ABAJO del punto
+             finalTop = markerY + offset;
+        } else {
+             // NO se sale -> Ponlo ARRIBA (comportamiento normal)
+             finalTop = markerY - tooltipRect.height - offset; // Restamos altura para que suba
+        }
+
+        // 6. Aplicar coordenadas finales
+        tooltip.style.left = `${finalLeft}px`;
+        tooltip.style.top = `${finalTop}px`; // Nota: el CSS original usaba calc() raro, esto es más preciso
+
+        // 7. Hacer visible
+        tooltip.style.visibility = 'visible';
     }
 
     function hideTooltip() {
