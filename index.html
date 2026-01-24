@@ -153,6 +153,7 @@
         .tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
         .tag-pos { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-muted); }
         
+        /* Botón de estado interactivo */
         .status-btn { border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
         .status-btn:hover { filter: brightness(1.1); transform: scale(1.05); }
         .tag-fit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
@@ -160,7 +161,7 @@
         .tag-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
         .tag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        /* MODAL NUEVO JUGADOR (NUEVO) */
+        /* MODAL NUEVO JUGADOR */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); animation: fadeIn 0.2s; }
         .modal-content { background-color: var(--bg-card); margin: 10% auto; padding: 2rem; border: 1px solid var(--border); width: 100%; max-width: 400px; border-radius: var(--radius-md); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
@@ -428,7 +429,7 @@
             <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Plantilla del Equipo</h2>
-                    <p style="color: var(--text-muted);">Gestiona los jugadores, tarjetas y lesiones.</p>
+                    <p style="color: var(--text-muted);">Gestiona los jugadores y sus estados físicos.</p>
                 </div>
                 <button class="btn-primary" onclick="openAddPlayerModal()"><i class="fas fa-plus"></i> Añadir Jugador</button>
             </div>
@@ -470,18 +471,18 @@
     // === BASE DE DATOS PLANTILLA (ACTUALIZADA) ===
     // Status: fit (apto), injured (lesionado), yellow (amarilla), red (roja/susp)
     const squadDB = [
-        { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit', stats: { pac: 65, phy: 78, tec: 85 } },
-        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow', stats: { pac: 70, phy: 92, tec: 75 } },
-        { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit', stats: { pac: 68, phy: 88, tec: 72 } },
-        { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit', stats: { pac: 82, phy: 80, tec: 78 } },
-        { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured', stats: { pac: 72, phy: 84, tec: 82 } },
-        { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit', stats: { pac: 75, phy: 90, tec: 85 } },
-        { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red', stats: { pac: 74, phy: 78, tec: 88 } },
-        { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit', stats: { pac: 85, phy: 72, tec: 90 } },
-        { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit', stats: { pac: 84, phy: 85, tec: 78 } },
-        { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit', stats: { pac: 80, phy: 75, tec: 80 } },
-        { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit', stats: { pac: 78, phy: 80, tec: 75 } },
-        { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit', stats: { pac: 75, phy: 85, tec: 74 } },
+        { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' },
+        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' },
+        { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' },
+        { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' },
+        { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' },
+        { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' },
+        { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' },
+        { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' },
+        { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' },
+        { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' },
+        { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' },
+        { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' },
     ];
 
     // === GESTIÓN PLANTILLA (MEJORADA) ===
@@ -512,16 +513,12 @@
         const pos = document.getElementById('newPlayerPos').value;
 
         if (name && num) {
-            // Stats base aleatorias para demo
-            const stats = { pac: Math.floor(Math.random()*30)+60, phy: Math.floor(Math.random()*30)+60, tec: Math.floor(Math.random()*30)+60 };
-            
             squadDB.push({
                 id: Date.now(), // ID único temporal
                 name: name,
                 num: num,
                 pos: pos,
-                status: 'fit',
-                stats: stats
+                status: 'fit'
             });
             
             closeAddPlayerModal();
@@ -562,11 +559,6 @@
                         <button class="tag status-btn ${statusClass}" onclick="changeStatus(${p.id})">
                             ${statusIcon} ${statusText}
                         </button>
-                    </div>
-                    <div class="p-stats-mini">
-                        <div class="mini-stat"><div>Físico</div><div>${p.stats.phy}</div></div>
-                        <div class="mini-stat"><div>Velocidad</div><div>${p.stats.pac}</div></div>
-                        <div class="mini-stat"><div>Técnica</div><div>${p.stats.tec}</div></div>
                     </div>
                 </div>
             `;
