@@ -329,10 +329,23 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header"><div class="card-title" style="color: var(--text-main);">Intensidad</div></div>
-                    <div style="height: 150px;"><canvas id="fitnessChart"></canvas></div>
-                </div>
+                <div class="card" style="grid-column: span 12;">
+    <div class="card-header">
+        <div class="card-title" style="color: var(--text-main); font-weight: 600;">
+            <i class="fas fa-wave-square"></i> Historia del Partido
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem;">
+            <span style="display: flex; align-items: center; gap: 0.3rem;"><div style="width: 10px; height: 10px; background: var(--primary); border-radius: 2px;"></div> Nosotros</span>
+            <span style="display: flex; align-items: center; gap: 0.3rem;"><div style="width: 10px; height: 10px; background: var(--danger); border-radius: 2px;"></div> Rival</span>
+        </div>
+    </div>
+    
+    <div style="position: relative; height: 250px; width: 100%;">
+        <div id="timelineEvents" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
+            </div>
+        <canvas id="momentumChart"></canvas>
+    </div>
+</div>
 
                 <div class="card">
                     <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
@@ -523,16 +536,16 @@
         }
     };
 
-    window.onload = function() {
+   window.onload = function() {
         initTheme();
-        initHeatmap(); // Pizarra
-        initIndividualHeatmap(); // Nueva sección
-        initChart();
+        initHeatmap();
+        initIndividualHeatmap();
+        initMomentumChart(); // <--- AGREGADO AQUÍ
         updateLegend();
         renderShotMap();
         changePlayer("7");
         updateComparison();
-        updateIndividualHeatmap("17"); // Cargar heatmap inicial
+        updateIndividualHeatmap("17");
     };
 
     // === LÓGICA DE MODOS PIZARRA ===
@@ -887,14 +900,185 @@
         updateIndividualHeatmap(document.getElementById('indivPlayerSelector').value);
     }
 
-    function initChart() {
-        const ctx = document.getElementById('fitnessChart').getContext('2d');
-        if(window.myChart) window.myChart.destroy();
-        const color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280';
-        window.myChart = new Chart(ctx, {
+    // === MOMENTUM CHART (NUEVO) ===
+    let momentumChartInstance = null;
+
+    function initMomentumChart() {
+        const ctx = document.getElementById('momentumChart').getContext('2d');
+        if (momentumChartInstance) momentumChartInstance.destroy();
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+        const textColor = isDark ? '#9ca3af' : '#6b7280';
+
+        // Datos simulados de dominio (Positivo = Nosotros, Negativo = Rival)
+        // 90 minutos (un punto cada 2 min aprox)
+        const dominanceData = [
+            5, 10, 15, 8, 12, 20, 25, 15, 10, 5, // Inicio fuerte
+            -5, -10, -15, -20, -15, -5, 0, 5, 10, // Rival presiona
+            15, 25, 35, 40, 30, 20, 10, 5, 0, -5, // Nuestro mejor momento
+            -10, -20, -30, -25, -15, -10, -5, 0, 10, // Sufrimos al final
+            15, 20, 10, 5, 0 // Cierre tranquilo
+        ];
+
+        // Eventos (Goles, Tarjetas)
+        const events = [
+            { min: 15, type: 'gol', team: 'home', title: 'Gol - A. Sánchez' },
+            { min: 32, type: 'yellow', team: 'away', title: 'Amarilla - Rival #4' },
+            { min: 65, type: 'gol', team: 'away', title: 'Gol - Rival #9' },
+            { min: 78, type: 'red', team: 'away', title: 'Roja - Rival #5' },
+            { min: 88, type: 'gol', team: 'home', title: 'Gol - B. Brereton' }
+        ];
+
+        // Renderizar eventos en el DOM (Iconos flotantes)
+        const eventsContainer = document.getElementById('timelineEvents');
+        eventsContainer.innerHTML = '';
+        
+        events.forEach(ev => {
+            const el = document.createElement('div');
+            // Calcular posición % basada en minuto (0-90)
+            const leftPos = (ev.min / 90) * 100;
+            
+            let icon = ev.type === 'gol' ? '⚽' : (ev.type === 'yellow' ? '🟨' : '🟥');
+            let topPos = ev.team === 'home' ? '20%' : '70%'; // Arriba nosotros, abajo ellos
+            
+            el.innerHTML = `<div style="font-size: 1.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); cursor: pointer;" title="${ev.title} (${ev.min}')">${icon}</div>`;
+            el.style.position = 'absolute';
+            el.style.left = `${leftPos}%`;
+            el.style.top = topPos;
+            el.style.transform = 'translateX(-50%)';
+            
+            // Tooltip simple nativo
+            el.setAttribute('title', `${ev.min}': ${ev.title}`);
+            
+            eventsContainer.appendChild(el);
+        });
+
+        // Configurar Gradiente Verde (Nosotros) y Rojo (Rival)
+        const gradientHome = ctx.createLinearGradient(0, 0, 0, 125);
+        gradientHome.addColorStop(0, 'rgba(99, 102, 241, 0.6)');
+        gradientHome.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+        const gradientAway = ctx.createLinearGradient(0, 125, 0, 250);
+        gradientAway.addColorStop(0, 'rgba(239, 68, 68, 0.0)');
+        gradientAway.addColorStop(1, 'rgba(239, 68, 68, 0.6)');
+
+        momentumChartInstance = new Chart(ctx, {
             type: 'line',
-            data: { labels: ['0-15', '30', '45', '60', '75', '90'], datasets: [{ label: 'Intensidad', data: [65, 78, 80, 85, 75, 90], borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: color }, grid: { color: 'rgba(128,128,128,0.1)' } }, x: { ticks: { color: color }, grid: { display: false } } } }
+            data: {
+                labels: Array.from({length: 45}, (_, i) => i * 2), // Etiquetas cada 2 min
+                datasets: [{
+                    label: 'Dominio',
+                    data: dominanceData,
+                    borderColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        // Gradiente de línea dinámico
+                        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        gradient.addColorStop(0, '#6366f1'); // Azul arriba
+                        gradient.addColorStop(0.5, '#9ca3af'); // Gris medio
+                        gradient.addColorStop(1, '#ef4444'); // Rojo abajo
+                        return gradient;
+                    },
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        // Gradiente de relleno dividido
+                        // Truco: Usamos un patrón o simplemente el color del punto para rellenar hacia el eje 0
+                        return 'rgba(0,0,0,0)'; // Lo manejamos con plugin o simplificamos
+                    },
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                let val = context.raw;
+                                return val > 0 ? `Dominio Local: +${val}` : `Dominio Rival: ${val}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: gridColor, drawBorder: false },
+                        ticks: { color: textColor, maxTicksLimit: 10 }
+                    },
+                    y: {
+                        display: false, // Ocultar eje Y
+                        min: -50,
+                        max: 50
+                    }
+                }
+            },
+            plugins: [{
+                // Plugin personalizado para pintar áreas verde/rojo
+                id: 'customFill',
+                beforeDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const yAxis = chart.scales.y;
+                    const zeroY = yAxis.getPixelForValue(0);
+                    const topY = yAxis.top;
+                    const bottomY = yAxis.bottom;
+                    const xAxis = chart.scales.x;
+
+                    ctx.save();
+                    
+                    // Área Local (Arriba de 0) - Azul/Indigo
+                    const gradientH = ctx.createLinearGradient(0, topY, 0, zeroY);
+                    gradientH.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+                    gradientH.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+                    
+                    // Área Rival (Abajo de 0) - Rojo
+                    const gradientA = ctx.createLinearGradient(0, zeroY, 0, bottomY);
+                    gradientA.addColorStop(0, 'rgba(239, 68, 68, 0.0)');
+                    gradientA.addColorStop(1, 'rgba(239, 68, 68, 0.4)');
+
+                    // Rellenar curva
+                    const meta = chart.getDatasetMeta(0);
+                    const points = meta.data;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, zeroY);
+                    for(let i=0; i<points.length; i++) {
+                        ctx.lineTo(points[i].x, points[i].y);
+                    }
+                    ctx.lineTo(points[points.length-1].x, zeroY);
+                    ctx.closePath();
+                    ctx.clip(); // Usar la línea como máscara
+
+                    // Pintar fondo completo con los gradientes divididos
+                    ctx.fillStyle = gradientH;
+                    ctx.fillRect(xAxis.left, topY, xAxis.width, zeroY - topY);
+                    ctx.fillStyle = gradientA;
+                    ctx.fillRect(xAxis.left, zeroY, xAxis.width, bottomY - zeroY);
+
+                    ctx.restore();
+                    
+                    // Dibujar línea central
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(xAxis.left, zeroY);
+                    ctx.lineTo(xAxis.right, zeroY);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }]
         });
     }
 </script>
