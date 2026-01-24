@@ -23,7 +23,7 @@
             --radius-md: 16px; --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        /* === MODO OSCURO === */
+        /* === MODO OSCURO (Default) === */
         html.dark {
             --bg-body: #0b0f19; --bg-card: #111827; --sidebar-bg: #111827;
             --text-main: #f3f4f6; --text-muted: #9ca3af; --border: #374151;
@@ -60,33 +60,61 @@
         /* UI ELEMENTS */
         .btn-primary { background: linear-gradient(135deg, var(--primary), #4f46e5); color: white; padding: 0.75rem 1.5rem; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px var(--primary-glow); transition: transform 0.2s; }
         .btn-primary:hover { transform: translateY(-2px); }
+        
         .profile-btn { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; padding: 0.5rem; border-radius: 50px; transition: background 0.2s; }
         .profile-btn:hover { background: rgba(255,255,255,0.05); }
         .avatar { width: 42px; height: 42px; background: linear-gradient(to right, #8b5cf6, #d946ef); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; border: 2px solid var(--bg-card); }
+        
+        /* DROPDOWNS & MODALS */
         .dropdown-menu { position: absolute; top: 120%; right: 0; width: 240px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.5rem; display: none; z-index: 1000; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease; }
         .dropdown-menu.show { display: block; }
         .menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 0.9rem; }
         .menu-item:hover { background: rgba(99, 102, 241, 0.1); color: var(--text-main); }
         .menu-header { padding: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
         
+        /* === CORRECCIÓN ESTILO SELECTS (DROPDOWNS) === */
+        select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-body); /* Fondo oscuro */
+            color: var(--text-main); /* Texto claro */
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            /* Truco para flecha personalizada y borrar estilo default */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem top 50%;
+            background-size: 0.65rem auto;
+            padding-right: 2.5rem;
+        }
+        select:focus, .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
+
         .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GRID SYSTEM (FIX PARA LAYOUT) */
+        /* GRID SYSTEM (FIX LAYOUT) */
         .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; width: 100%; }
-        /* IMPORTANTE: min-width: 0 evita que el grid se rompa con contenido ancho */
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; position: relative; transition: border-color 0.3s; min-width: 0; }
+        /* Fix desorden: min-width 0 fuerza a las cards a no romper el grid */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; position: relative; transition: border-color 0.3s; min-width: 0; overflow: visible; }
         .card:hover { border-color: var(--primary); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 
+        /* DASHBOARD ELEMENTS */
         .stat-grid { grid-column: span 12; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
         .kpi-card { background: linear-gradient(145deg, var(--bg-card), rgba(99, 102, 241, 0.03)); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--shadow-card); }
         .kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
         .kpi-value { font-size: 1.75rem; font-weight: 700; font-family: 'Outfit'; color: var(--text-main); }
         .kpi-label { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* TACTICAL BOARD & SIDE PANEL */
         .tactical-board { grid-column: span 8; }
         .side-panel { grid-column: span 4; display: flex; flex-direction: column; gap: 1.5rem; }
         
@@ -95,53 +123,81 @@
             background: linear-gradient(to bottom right, #1a4d2e, #14532d); 
             border-radius: 8px; 
             position: relative; 
-            /* CORRECCIÓN TOOLTIP: Permitir overflow visible para tooltips, pero usar border-radius en un hijo */
+            /* Fix tooltip cortado: permitir visible en wrapper, recortar en hijo */
             overflow: visible; 
             box-shadow: inset 0 0 50px rgba(0,0,0,0.5); 
             cursor: crosshair; 
             border: 2px solid rgba(255,255,255,0.1);
         }
-        /* Contenedor interno para recortar el fondo pero no los tooltips */
         .cancha-bg-clip { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; border-radius: 6px; pointer-events: none; }
         
         .layer-overlay { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: opacity 0.3s; pointer-events: none; }
-        .layer-overlay > * { pointer-events: auto; } /* Permitir interacción con hijos */
+        .layer-overlay > * { pointer-events: auto; }
         .hidden-layer { opacity: 0; pointer-events: none !important; }
         
-        /* Markers */
         .shot-marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; transform: translate(-50%, -50%); transition: transform 0.2s; z-index: 10; cursor: pointer; }
         .shot-gol { background-color: var(--success); } .shot-atajada { background-color: var(--warning); border-radius: 3px; } .shot-fuera { background-color: var(--danger); }
         
         .player-node { position: absolute; width: 30px; height: 30px; background: var(--bg-card); border: 2px solid var(--text-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--text-main); transform: translate(-50%, -50%); box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15; transition: all 0.3s ease; cursor: pointer; }
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
+        
         .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
         .zone-def { fill: var(--primary); stroke: var(--primary); } .zone-mid { fill: var(--warning); stroke: var(--warning); } .zone-fwd { fill: var(--danger); stroke: var(--danger); }
+        .action-center { fill: white; stroke: none; pointer-events: none; }
         
-        /* CORRECCIÓN TOOLTIP: Z-index alto y sin clipping */
-        .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 9999; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 9999; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 
         .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; overflow-x: auto; }
         .mode-btn { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap; }
         .mode-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
         .sub-controls { display: flex; gap: 0.5rem; margin-left: 1rem; }
         .sub-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         .sub-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        
         .legend-container { display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 0.4rem; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* Leaders, Heatmap, Radar */
+        /* LEADERS */
         .leaders-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
         .leader-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; position: relative; transition: transform 0.2s; }
-        .leader-avatar { position: relative; flex-shrink: 0; } .avatar-img { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .leader-info { flex: 1; min-width: 0; } .leader-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .leader-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.05); border-color: var(--primary); }
+        .leader-rank { position: absolute; top: -5px; right: 10px; font-size: 3rem; font-weight: 800; color: rgba(255, 255, 255, 0.03); pointer-events: none; }
+        .leader-avatar { position: relative; flex-shrink: 0; }
+        .avatar-img { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .leader-medal { position: absolute; bottom: -5px; right: -5px; background: var(--bg-card); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .leader-info { flex: 1; min-width: 0; }
+        .leader-metric { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .leader-name { font-weight: 600; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .leader-value { font-weight: 700; color: var(--text-main); font-family: 'Outfit'; font-size: 1.1rem; }
+        .progress-mini { width: 100%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 5px; } .progress-mini .bar { height: 100%; border-radius: 2px; }
+
+        /* CHARTS SECTION */
         .radar-card, .comparison-card { grid-column: span 6; }
-        .indiv-heatmap-card { grid-column: span 12; display: flex; gap: 1.5rem; } .indiv-heatmap-controls { width: 250px; display: flex; flex-direction: column; gap: 1rem; } .indiv-heatmap-wrapper { flex: 1; height: 350px; background: linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius: 8px; position: relative; border: 2px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
+        .radar-wrapper { display: flex; gap: 2rem; align-items: center; justify-content: center; min-height: 300px; }
+        .player-info-panel { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+        .player-detail { display: flex; gap: 1rem; align-items: center; }
+        .player-photo-lg { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700; border: 4px solid var(--bg-card); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); flex-shrink: 0; }
+        .player-stats-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+        .p-stat { background: var(--bg-body); padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .p-stat strong { color: var(--text-main); }
+        .chart-radar-container { flex: 1; height: 300px; position: relative; width: 100%; }
+        
+        .comparison-controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; width: 100%; }
+        
+        /* INDIV HEATMAP */
+        .indiv-heatmap-card { grid-column: span 12; display: flex; gap: 1.5rem; }
+        .indiv-heatmap-controls { width: 250px; display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
+        .indiv-heatmap-wrapper { flex: 1; height: 350px; background: linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius: 8px; position: relative; border: 2px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
+        .indiv-stat-row { display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-body); border-radius: 8px; font-size: 0.9rem; }
+
         .reco-item { background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--primary); padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 0.75rem; }
         .reco-item.alert { border-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
         .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; }
-        
-        /* ESTILOS PLANTILLA */
+        .upload-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+
+        /* PLANTILLA STYLES */
         .squad-filters { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
         .filter-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1.2rem; border-radius: 50px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
@@ -161,11 +217,9 @@
         .p-number { position: absolute; top: 1rem; right: 1rem; font-size: 1.2rem; font-weight: 800; color: rgba(255,255,255,0.05); font-family: 'Outfit'; }
         .player-card-body { padding: 1rem; }
         .p-tags { display: flex; gap: 0.5rem; }
-        .tag { font-size: 0.75rem; padding: 0.3rem 0.8rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
-        .tag-pos { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-muted); }
         
-        .status-btn { border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; }
-        .status-btn:hover { filter: brightness(1.1); }
+        .status-btn { border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; font-size: 0.75rem; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
+        .status-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
         .tag-fit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
         .tag-injured { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
         .tag-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -311,7 +365,7 @@
                             <div style="position: absolute; top: 50%; left: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div>
                             <div style="position: absolute; top: 50%; right: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div>
                         </div>
-
+                        
                         <div id="heatmapContainer" class="layer-overlay"></div>
                         <div id="shotmapContainer" class="layer-overlay hidden-layer"></div>
                         <div id="passmapContainer" class="layer-overlay hidden-layer" style="z-index: 5;">
@@ -321,7 +375,6 @@
                         <div id="actionmapContainer" class="layer-overlay hidden-layer" style="z-index: 4;">
                             <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                         </div>
-                        
                         <div id="tacticalTooltip" class="tactical-tooltip"></div>
                     </div>
                     <div class="legend-container" id="boardLegend"></div>
@@ -612,7 +665,7 @@
     function showTooltip(e, data) { const t=document.getElementById('tacticalTooltip'); const c=document.getElementById('canchaWrapper'); let icon=data.result==='gol'?'⚽':data.result==='fuera'?'❌':data.result==='jugador'?'👤':'🧤'; t.innerHTML=`<div style="font-weight:600;">${icon} ${data.result.toUpperCase()}</div><div style="color:#ccc;">${data.player}</div>`; t.style.display='block'; t.style.visibility='hidden'; const cr=c.getBoundingClientRect(); const tr=t.getBoundingClientRect(); const mx=(data.x/100)*cr.width; const my=(data.y/100)*cr.height; const off=15; let fl=(mx+off+tr.width>cr.width)?mx-tr.width-off:mx+off; let ft=(my-off-tr.height<0)?my+off:my-tr.height-off; t.style.left=`${fl}px`; t.style.top=`${ft}px`; t.style.visibility='visible'; }
     function showTooltipSimple(e, t1, t2) { const t=document.getElementById('tacticalTooltip'); t.innerHTML=`<div style="font-weight:600; color:var(--primary);">${t1}</div><div style="color:#ccc; font-size:0.8rem;">${t2}</div>`; t.style.display='block'; t.style.visibility='visible'; t.style.left=`${e.layerX+15}px`; t.style.top=`${e.layerY-15}px`; }
     function hideTooltip() { document.getElementById('tacticalTooltip').style.display='none'; }
-    function updateLegend() { const l=document.getElementById('boardLegend'); l.innerHTML=''; if(currentMode==='heatmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`; else if(currentMode==='shotmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div>`; else if(currentMode==='passmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="width:20px;height:2px;background:var(--text-muted)"></div> Conexión</div>`; else if(currentMode==='actionmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Defensa</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Ataque</div>`; }
+    function updateLegend() { const l=document.getElementById('boardLegend'); l.innerHTML=''; if(currentMode==='heatmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`; else if(currentMode==='shotmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div>`; else if(currentMode==='passmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="width:20px;height:2px;background:var(--text-muted)"></div> Conexión</div>`; else if(currentMode==='actionmap') l.innerHTML=`<div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Defensa</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Ataque</div>`; }
     function toggleProfileMenu() { document.getElementById('profileDropdown').classList.toggle('show'); }
     window.onclick = function(e) { if(!e.target.closest('.profile-btn')) document.getElementById('profileDropdown').classList.remove('show'); }
     function initTheme() { if(localStorage.getItem('theme') === 'light') toggleTheme(); }
