@@ -155,6 +155,45 @@
             .side-panel { grid-column: span 12; display: flex; flex-direction: row; gap: 1rem; }
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
+        /* === PASS NETWORK STYLES === */
+.player-node {
+    position: absolute;
+    width: 30px; height: 30px;
+    background: var(--bg-card);
+    border: 2px solid var(--text-main);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: var(--text-main);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.player-node:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+    z-index: 20;
+}
+/* Colores por posición (Opcional) */
+.node-def { border-color: var(--primary); }
+.node-mid { border-color: var(--warning); }
+.node-fwd { border-color: var(--danger); }
+
+/* Líneas SVG */
+.pass-line {
+    stroke: var(--text-muted);
+    stroke-linecap: round;
+    transition: all 0.3s;
+    opacity: 0.4;
+}
+.pass-line:hover {
+    stroke: var(--primary);
+    opacity: 1;
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
@@ -237,13 +276,16 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chess-board"></i> Pizarra Táctica</div>
                         
                         <div class="mode-switch">
-                            <button class="mode-btn active" onclick="setBoardMode('heatmap', this)">
-                                <i class="fas fa-fire"></i> Calor
-                            </button>
-                            <button class="mode-btn" onclick="setBoardMode('shotmap', this)">
-                                <i class="fas fa-crosshairs"></i> Tiros
-                            </button>
-                        </div>
+    <button class="mode-btn active" onclick="setBoardMode('heatmap', this)">
+        <i class="fas fa-fire"></i> Calor
+    </button>
+    <button class="mode-btn" onclick="setBoardMode('shotmap', this)">
+        <i class="fas fa-crosshairs"></i> Tiros
+    </button>
+    <button class="mode-btn" onclick="setBoardMode('passmap', this)">
+        <i class="fas fa-project-diagram"></i> Red
+    </button>
+</div>
 
                         <div class="sub-controls" id="heatmapControls">
                             <button class="sub-btn active" onclick="updateHeatmap('balon', this)">Balón</button>
@@ -262,6 +304,10 @@
                     
                     <div id="shotmapContainer" class="layer-overlay hidden-layer">
                         </div>
+                    <div id="passmapContainer" class="layer-overlay hidden-layer" style="z-index: 5;">
+    <svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
+    <div id="passNodesLayer"></div>
+</div>
 
                     <div id="tacticalTooltip" class="tactical-tooltip"></div>
                 </div>
@@ -307,6 +353,33 @@
         { x: 70, y: 20, result: 'fuera', player: 'A. Vidal', xG: 0.02 },
         { x: 90, y: 50, result: 'atajada', player: 'J. Pérez', xG: 0.45 },
     ];
+    // === DATOS RED DE PASES (SIMULADOS) ===
+// Jugadores: x,y son posiciones promedio en %
+const passPlayers = [
+    { id: 1, name: 'C. Bravo', number: 1, x: 10, y: 50, pos: 'gk' },
+    { id: 2, name: 'G. Medel', number: 17, x: 30, y: 30, pos: 'def' },
+    { id: 3, name: 'G. Maripán', number: 3, x: 30, y: 70, pos: 'def' },
+    { id: 4, name: 'M. Isla', number: 4, x: 45, y: 15, pos: 'def' },
+    { id: 5, name: 'G. Suazo', number: 2, x: 45, y: 85, pos: 'def' },
+    { id: 6, name: 'E. Pulgar', number: 13, x: 50, y: 50, pos: 'mid' },
+    { id: 8, name: 'A. Vidal', number: 8, x: 65, y: 40, pos: 'mid' },
+    { id: 20, name: 'C. Aránguiz', number: 20, x: 65, y: 60, pos: 'mid' },
+    { id: 7, name: 'A. Sánchez', number: 7, x: 80, y: 30, pos: 'fwd' },
+    { id: 10, name: 'Ben Brereton', number: 22, x: 80, y: 70, pos: 'fwd' },
+    { id: 11, name: 'E. Vargas', number: 11, x: 85, y: 50, pos: 'fwd' }
+];
+
+// Conexiones: Grosor de línea = cantidad de pases
+const passConnections = [
+    { from: 1, to: 2, count: 12 }, { from: 1, to: 3, count: 10 },
+    { from: 2, to: 4, count: 15 }, { from: 3, to: 5, count: 18 },
+    { from: 2, to: 6, count: 20 }, { from: 3, to: 6, count: 22 },
+    { from: 6, to: 8, count: 25 }, { from: 6, to: 20, count: 24 },
+    { from: 4, to: 7, count: 12 }, { from: 5, to: 10, count: 14 },
+    { from: 8, to: 7, count: 18 }, { from: 20, to: 10, count: 16 },
+    { from: 8, to: 11, count: 10 }, { from: 20, to: 11, count: 10 },
+    { from: 7, to: 11, count: 8 },  { from: 10, to: 11, count: 8 }
+];
 
     window.onload = function() {
         initTheme();
@@ -317,8 +390,42 @@
     };
 
     // === LÓGICA DE MODOS (HEATMAP vs SHOTMAP) ===
-    function setBoardMode(mode, btn) {
+   function setBoardMode(mode, btn) {
         currentMode = mode;
+        
+        // 1. Botones
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // 2. Contenedores
+        const hmContainer = document.getElementById('heatmapContainer');
+        const smContainer = document.getElementById('shotmapContainer');
+        const pmContainer = document.getElementById('passmapContainer'); // Nuevo
+        const hmControls = document.getElementById('heatmapControls');
+
+        // Ocultar todo primero
+        hmContainer.classList.add('hidden-layer');
+        smContainer.classList.add('hidden-layer');
+        pmContainer.classList.add('hidden-layer');
+        
+        // Resetear controles
+        hmControls.style.opacity = '0.3';
+        hmControls.style.pointerEvents = 'none';
+
+        // Lógica de activación
+        if (mode === 'heatmap') {
+            hmContainer.classList.remove('hidden-layer');
+            hmControls.style.opacity = '1';
+            hmControls.style.pointerEvents = 'auto';
+        } else if (mode === 'shotmap') {
+            smContainer.classList.remove('hidden-layer');
+        } else if (mode === 'passmap') {
+            pmContainer.classList.remove('hidden-layer');
+            renderPassNetwork(); // Renderizar al activar
+        }
+
+        updateLegend();
+    }
         
         // 1. Actualizar botones superiores
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -463,17 +570,24 @@
     // === UTILIDADES UI ===
     function updateLegend() {
         const legend = document.getElementById('boardLegend');
+        legend.innerHTML = ''; // Limpiar
+
         if (currentMode === 'heatmap') {
             legend.innerHTML = `
                 <div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div>
                 <div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div>
-                <div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta Intensidad</div>
+                <div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>
             `;
-        } else {
+        } else if (currentMode === 'shotmap') {
             legend.innerHTML = `
                 <div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div>
                 <div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div>
                 <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>
+            `;
+        } else if (currentMode === 'passmap') {
+            legend.innerHTML = `
+                <div class="legend-item"><div class="dot" style="border: 2px solid var(--primary); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div>
+                <div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Volumen de Pases</div>
             `;
         }
     }
@@ -523,6 +637,81 @@
             }
         });
     }
+    // === LÓGICA RED DE PASES ===
+
+function renderPassNetwork() {
+    const svgContainer = document.getElementById('passLinesSvg');
+    const nodesContainer = document.getElementById('passNodesLayer');
+    const containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
+    
+    // Limpiar
+    svgContainer.innerHTML = '';
+    nodesContainer.innerHTML = '';
+
+    // 1. DIBUJAR LÍNEAS (CONEXIONES)
+    passConnections.forEach(conn => {
+        const p1 = passPlayers.find(p => p.id === conn.from);
+        const p2 = passPlayers.find(p => p.id === conn.to);
+
+        if (p1 && p2) {
+            // Calcular grosor basado en cantidad de pases (min 1px, max 8px)
+            const strokeWidth = Math.max(1, Math.min(conn.count / 3, 8));
+            
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", `${p1.x}%`);
+            line.setAttribute("y1", `${p1.y}%`);
+            line.setAttribute("x2", `${p2.x}%`);
+            line.setAttribute("y2", `${p2.y}%`);
+            line.setAttribute("stroke-width", strokeWidth);
+            line.setAttribute("class", "pass-line");
+            
+            // Tooltip para la línea
+            line.addEventListener('mousemove', (e) => {
+                // Truco para tooltip en SVG: Usamos las coordenadas del mouse
+                showTooltipSimple(e, `↔️ ${conn.count} Pases`, `${p1.name} - ${p2.name}`);
+            });
+            line.addEventListener('mouseleave', hideTooltip);
+
+            svgContainer.appendChild(line);
+        }
+    });
+
+    // 2. DIBUJAR NODOS (JUGADORES)
+    passPlayers.forEach(p => {
+        const node = document.createElement('div');
+        node.className = `player-node node-${p.pos}`;
+        node.style.left = `${p.x}%`;
+        node.style.top = `${p.y}%`;
+        node.textContent = p.number;
+
+        // Tooltip Jugador
+        node.addEventListener('mouseenter', (e) => {
+            // Reutilizamos tu tooltip inteligente
+            showTooltip(e, { 
+                result: 'jugador', // Un "tipo" falso para el color
+                player: p.name, 
+                xG: p.pos.toUpperCase(), // Usamos el campo xG para la posición
+                x: p.x, y: p.y 
+            });
+        });
+        node.addEventListener('mouseleave', hideTooltip);
+
+        nodesContainer.appendChild(node);
+    });
+}
+
+// Tooltip simple para líneas (porque no tienen coordenadas x/y fijas como los puntos)
+function showTooltipSimple(e, title, subtitle) {
+    const tooltip = document.getElementById('tacticalTooltip');
+    tooltip.innerHTML = `
+        <div style="font-weight:600; color:var(--primary);">${title}</div>
+        <div style="color:#ccc; font-size:0.8rem;">${subtitle}</div>
+    `;
+    tooltip.style.display = 'block';
+    tooltip.style.visibility = 'visible';
+    tooltip.style.left = `${e.layerX + 15}px`;
+    tooltip.style.top = `${e.layerY - 15}px`;
+}
 </script>
 
 </body>
