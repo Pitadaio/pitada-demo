@@ -41,28 +41,6 @@
             min-height: 100vh;
             transition: background 0.3s, color 0.3s;
         }
-        /* === ACTION RADIUS STYLES === */
-.action-zone {
-    fill-opacity: 0.2;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-.action-zone:hover {
-    fill-opacity: 0.4;
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
-}
-/* Colores por rol */
-.zone-def { fill: var(--primary); stroke: var(--primary); }
-.zone-mid { fill: var(--warning); stroke: var(--warning); }
-.zone-fwd { fill: var(--danger); stroke: var(--danger); }
-
-/* Punto central del jugador en modo radio */
-.action-center {
-    fill: white;
-    stroke: none;
-    pointer-events: none; /* Click through */
-}
 
         /* === LAYOUT === */
         .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
@@ -110,7 +88,7 @@
         .kpi-value { font-size: 1.75rem; font-weight: 700; font-family: 'Outfit', sans-serif; color: var(--text-main); }
         .kpi-label { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* === TACTICAL BOARD (HEATMAP + SHOTMAP + PASSMAP) === */
+        /* === TACTICAL BOARD === */
         .tactical-board { grid-column: span 8; }
         .cancha-wrapper { 
             width: 100%; height: 400px; 
@@ -154,6 +132,14 @@
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
         .pass-line:hover { stroke: var(--primary); opacity: 1; cursor: pointer; }
 
+        /* ACTION ZONES (NUEVO) */
+        .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
+        .action-zone:hover { fill-opacity: 0.4; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
+        .zone-def { fill: var(--primary); stroke: var(--primary); }
+        .zone-mid { fill: var(--warning); stroke: var(--warning); }
+        .zone-fwd { fill: var(--danger); stroke: var(--danger); }
+        .action-center { fill: white; stroke: none; pointer-events: none; }
+
         /* TOOLTIP TÁCTICO */
         .tactical-tooltip {
             position: absolute;
@@ -171,9 +157,9 @@
         }
 
         /* CONTROLES */
-        .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; }
+        .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; overflow-x: auto; }
         .mode-btn { 
-            padding: 0.4rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; 
+            padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap;
         }
         .mode-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .sub-controls { display: flex; gap: 0.5rem; margin-left: 1rem; }
@@ -181,7 +167,7 @@
         .sub-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.1); }
 
         /* LEYENDA */
-        .legend-container { display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+        .legend-container { display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 0.4rem; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
@@ -293,8 +279,8 @@
             
             <div class="card tactical-board">
                 <div class="card-header">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chess-board"></i> Pizarra Táctica</div>
+                    <div style="display: flex; align-items: center; gap: 1rem; width: 100%;">
+                        <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         
                         <div class="mode-switch">
                             <button class="mode-btn active" onclick="setBoardMode('heatmap', this)">
@@ -307,11 +293,11 @@
                                 <i class="fas fa-project-diagram"></i> Red
                             </button>
                             <button class="mode-btn" onclick="setBoardMode('actionmap', this)">
-    <i class="fas fa-bullseye"></i> Radio
-</button>
+                                <i class="fas fa-bullseye"></i> Radio
+                            </button>
                         </div>
 
-                        <div class="sub-controls" id="heatmapControls">
+                        <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
                             <button class="sub-btn active" onclick="updateHeatmap('balon', this)">Balón</button>
                             <button class="sub-btn" onclick="updateHeatmap('jugadores', this)">Jugadores</button>
                         </div>
@@ -332,15 +318,15 @@
                         <svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
                         <div id="passNodesLayer"></div>
                     </div>
+
                     <div id="actionmapContainer" class="layer-overlay hidden-layer" style="z-index: 4;">
-    <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
-</div>
+                        <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
+                    </div>
 
                     <div id="tacticalTooltip" class="tactical-tooltip"></div>
                 </div>
 
-                <div class="legend-container" id="boardLegend">
-                    </div>
+                <div class="legend-container" id="boardLegend"></div>
             </div>
 
             <div class="side-panel">
@@ -376,17 +362,16 @@
 
 <script>
     // === ESTADO GLOBAL ===
-    let currentMode = 'heatmap'; // 'heatmap' o 'shotmap' o 'passmap'
+    let currentMode = 'heatmap';
     let heatmapInstance;
     
-    // DATOS DE PRUEBA
+    // === DATOS SIMULADOS ===
     const shotData = [
         { x: 92, y: 48, result: 'gol', player: 'J. Pérez', xG: 0.78 },
         { x: 88, y: 35, result: 'atajada', player: 'M. Soto', xG: 0.12 },
         { x: 75, y: 60, result: 'fuera', player: 'L. Díaz', xG: 0.05 },
         { x: 95, y: 52, result: 'gol', player: 'J. Pérez', xG: 0.95 },
         { x: 82, y: 45, result: 'atajada', player: 'C. Muñoz', xG: 0.33 },
-        { x: 70, y: 20, result: 'fuera', player: 'A. Vidal', xG: 0.02 },
         { x: 90, y: 50, result: 'atajada', player: 'J. Pérez', xG: 0.45 },
     ];
 
@@ -415,17 +400,23 @@
         { from: 7, to: 11, count: 8 },  { from: 10, to: 11, count: 8 }
     ];
 
+    const actionZones = [
+        { id: 2, name: 'G. Medel', role: 'def', stats: 'Recup: 12', points: '20,20 40,25 45,40 25,45 15,35' },
+        { id: 6, name: 'E. Pulgar', role: 'mid', stats: 'Int: 8', points: '40,40 60,40 65,60 45,65 35,50' },
+        { id: 7, name: 'A. Sánchez', role: 'fwd', stats: 'Regates: 15', points: '60,20 90,15 95,45 75,55 65,35' },
+        { id: 4, name: 'M. Isla', role: 'def', stats: 'Desb: 9', points: '40,5 90,5 90,20 45,25' }
+    ];
+
     window.onload = function() {
         initTheme();
         initHeatmap();
         initChart();
         updateLegend();
         renderShotMap();
-        // passmap se renderiza on demand
     };
 
     // === LÓGICA DE MODOS ===
-   function setBoardMode(mode, btn) {
+    function setBoardMode(mode, btn) {
         currentMode = mode;
         
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -434,14 +425,11 @@
         const hmContainer = document.getElementById('heatmapContainer');
         const smContainer = document.getElementById('shotmapContainer');
         const pmContainer = document.getElementById('passmapContainer');
-        const amContainer = document.getElementById('actionmapContainer'); // Nuevo
+        const amContainer = document.getElementById('actionmapContainer');
         const hmControls = document.getElementById('heatmapControls');
 
-        // Ocultar todo
-        hmContainer.classList.add('hidden-layer');
-        smContainer.classList.add('hidden-layer');
-        pmContainer.classList.add('hidden-layer');
-        amContainer.classList.add('hidden-layer'); // Nuevo
+        // Reset
+        [hmContainer, smContainer, pmContainer, amContainer].forEach(c => c.classList.add('hidden-layer'));
         
         hmControls.style.opacity = '0.3';
         hmControls.style.pointerEvents = 'none';
@@ -455,7 +443,7 @@
         } else if (mode === 'passmap') {
             pmContainer.classList.remove('hidden-layer');
             renderPassNetwork();
-        } else if (mode === 'actionmap') { // Nuevo Caso
+        } else if (mode === 'actionmap') {
             amContainer.classList.remove('hidden-layer');
             renderActionMap();
         }
@@ -463,35 +451,6 @@
         updateLegend();
     }
 
-        // Reset
-        hmContainer.classList.add('hidden-layer');
-        smContainer.classList.add('hidden-layer');
-        pmContainer.classList.add('hidden-layer');
-        hmControls.style.opacity = '0.3';
-        hmControls.style.pointerEvents = 'none';
-
-        if (mode === 'heatmap') {
-            hmContainer.classList.remove('hidden-layer');
-            hmControls.style.opacity = '1';
-            hmControls.style.pointerEvents = 'auto';
-        } else if (mode === 'shotmap') {
-            smContainer.classList.remove('hidden-layer');
-        } else if (mode === 'passmap') {
-            pmContainer.classList.remove('hidden-layer');
-            renderPassNetwork();
-        }
-
-        updateLegend();
-    }
-
-    // === DATOS RADIOS DE ACCIÓN (SIMULADOS) ===
-// Representan el área de influencia efectiva (polígonos simplificados)
-const actionZones = [
-    { id: 2, name: 'G. Medel', role: 'def', stats: 'Recuperaciones: 12', points: '20,20 40,25 45,40 25,45 15,35' }, // Zona defensiva amplia
-    { id: 6, name: 'E. Pulgar', role: 'mid', stats: 'Intercepciones: 8', points: '40,40 60,40 65,60 45,65 35,50' }, // Círculo central
-    { id: 7, name: 'A. Sánchez', role: 'fwd', stats: 'Regates: 15', points: '60,20 90,15 95,45 75,55 65,35' }, // Libertad en ataque
-    { id: 4, name: 'M. Isla', role: 'def', stats: 'Desbordes: 9', points: '40,5 90,5 90,20 45,25' } // Carril derecho
-];
     // === RENDERIZADORES ===
     function renderShotMap() {
         const container = document.getElementById('shotmapContainer');
@@ -541,7 +500,30 @@ const actionZones = [
         });
     }
 
-    // === TOOLTIP INTELIGENTE (FLIP LOGIC) ===
+    function renderActionMap() {
+        const svgContainer = document.getElementById('actionSvg');
+        svgContainer.innerHTML = '';
+
+        actionZones.forEach(zone => {
+            const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            const pointsArray = zone.points.split(' ').map(p => {
+                const [x, y] = p.split(',');
+                return `${x}%,${y}%`;
+            }).join(' ');
+
+            polygon.setAttribute("points", pointsArray);
+            polygon.setAttribute("class", `action-zone zone-${zone.role}`);
+            
+            polygon.addEventListener('mousemove', (e) => {
+                showTooltipSimple(e, `${zone.name}`, `${zone.stats}`);
+            });
+            polygon.addEventListener('mouseleave', hideTooltip);
+
+            svgContainer.appendChild(polygon);
+        });
+    }
+
+    // === TOOLTIP INTELIGENTE ===
     function showTooltip(e, data) {
         const tooltip = document.getElementById('tacticalTooltip');
         const container = document.getElementById('canchaWrapper');
@@ -595,23 +577,15 @@ const actionZones = [
 
     function updateLegend() {
         const legend = document.getElementById('boardLegend');
-        legend.innerHTML = ''; // Limpiar
-
+        legend.innerHTML = '';
         if (currentMode === 'heatmap') {
-            // ... (código anterior) ...
-             legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
         } else if (currentMode === 'shotmap') {
-            // ... (código anterior) ...
-             legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
         } else if (currentMode === 'passmap') {
-            // ... (código anterior) ...
-             legend.innerHTML = `<div class="legend-item"><div class="dot" style="border: 2px solid var(--text-main); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div><div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Conexión de Pases</div>`;
-        } else if (currentMode === 'actionmap') { // Nuevo
-            legend.innerHTML = `
-                <div class="legend-item"><div class="dot" style="background:var(--primary); opacity:0.6;"></div> Cobertura Defensiva</div>
-                <div class="legend-item"><div class="dot" style="background:var(--warning); opacity:0.6;"></div> Creación</div>
-                <div class="legend-item"><div class="dot" style="background:var(--danger); opacity:0.6;"></div> Ataque/Ruptura</div>
-            `;
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="border: 2px solid var(--text-main); width:12px; height:12px; background:transparent;"></div> Posición Promedio</div><div class="legend-item"><div class="dot" style="width:20px; height:2px; background:var(--text-muted); border-radius:0;"></div> Conexión de Pases</div>`;
+        } else if (currentMode === 'actionmap') {
+            legend.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--primary); opacity:0.6;"></div> Cobertura Defensiva</div><div class="legend-item"><div class="dot" style="background:var(--warning); opacity:0.6;"></div> Creación</div><div class="legend-item"><div class="dot" style="background:var(--danger); opacity:0.6;"></div> Ataque/Ruptura</div>`;
         }
     }
 
@@ -645,44 +619,6 @@ const actionZones = [
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: color }, grid: { color: 'rgba(128,128,128,0.1)' } }, x: { ticks: { color: color }, grid: { display: false } } } }
         });
     }
-    // === RENDERIZAR RADIOS DE ACCIÓN ===
-function renderActionMap() {
-    const svgContainer = document.getElementById('actionSvg');
-    svgContainer.innerHTML = ''; // Limpiar
-
-    actionZones.forEach(zone => {
-        // 1. Dibujar el Polígono (Zona)
-        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        
-        // Convertir coordenadas % a puntos del SVG (asumiendo viewBox 0 0 100 100 para simplificar o usar %)
-        // Para que funcione responsive, usaremos porcentajes directos en los puntos
-        const pointsArray = zone.points.split(' ').map(p => {
-            const [x, y] = p.split(',');
-            return `${x}%,${y}%`;
-        }).join(' ');
-
-        polygon.setAttribute("points", pointsArray);
-        polygon.setAttribute("class", `action-zone zone-${zone.role}`);
-        
-        // Tooltip Interactivo
-        polygon.addEventListener('mousemove', (e) => {
-            showTooltipSimple(e, `${zone.name}`, `${zone.stats} | Influencia Alta`);
-        });
-        polygon.addEventListener('mouseleave', hideTooltip);
-
-        svgContainer.appendChild(polygon);
-
-        // 2. (Opcional) Dibujar icono/punto central
-        // Calculamos centro aproximado para poner un punto
-        const coords = zone.points.split(' ')[0].split(','); // Usamos el primer punto como ancla simple
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", `${coords[0]}%`);
-        circle.setAttribute("cy", `${coords[1]}%`);
-        circle.setAttribute("r", "3");
-        circle.setAttribute("class", "action-center");
-        svgContainer.appendChild(circle);
-    });
-}
 </script>
 
 </body>
