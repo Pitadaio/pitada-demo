@@ -103,17 +103,20 @@
         .layer-overlay { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: opacity 0.3s; }
         .hidden-layer { opacity: 0; pointer-events: none; }
         
+        /* SHOT MARKERS */
         .shot-marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; transform: translate(-50%, -50%); box-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 10; }
         .shot-marker:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 20; }
         .shot-gol { background-color: var(--success); }
         .shot-atajada { background-color: var(--warning); border-radius: 3px; }
         .shot-fuera { background-color: var(--danger); }
 
+        /* PASS NETWORK */
         .player-node { position: absolute; width: 30px; height: 30px; background: var(--bg-card); border: 2px solid var(--text-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--text-main); transform: translate(-50%, -50%); box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15; transition: all 0.3s ease; cursor: pointer; }
         .player-node:hover { transform: translate(-50%, -50%) scale(1.2); border-color: var(--primary); background: var(--primary); color: white; z-index: 20; }
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
         .pass-line:hover { stroke: var(--primary); opacity: 1; cursor: pointer; }
 
+        /* ACTION ZONES */
         .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
         .action-zone:hover { fill-opacity: 0.4; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
         .zone-def { fill: var(--primary); stroke: var(--primary); }
@@ -121,9 +124,10 @@
         .zone-fwd { fill: var(--danger); stroke: var(--danger); }
         .action-center { fill: white; stroke: none; pointer-events: none; }
 
+        /* TOOLTIP TÁCTICO */
         .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 100; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; }
 
-        /* CONTROLES PIZARRA */
+        /* CONTROLES */
         .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; overflow-x: auto; }
         .mode-btn { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap; }
         .mode-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -626,7 +630,18 @@
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                responsive: true, maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true, mode: 'index', intersect: false,
+                        callbacks: {
+                            label: function(context) { return context.raw > 0 ? `Dominio Local: +${context.raw}` : `Dominio Rival: ${context.raw}`; },
+                            title: function(context) { return `Minuto ${context[0].label}`; }
+                        }
+                    }
+                },
+                interaction: { mode: 'index', intersect: false },
                 scales: { x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 10 } }, y: { display: false, min: -50, max: 50 } }
             },
             plugins: [{
@@ -743,8 +758,8 @@
     function hideTooltip() { document.getElementById('tacticalTooltip').style.display = 'none'; }
     function updateLegend() {
         const l = document.getElementById('boardLegend'); l.innerHTML = '';
-        if (currentMode === 'heatmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
-        else if (currentMode === 'shotmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
+        if (currentMode === 'heatmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="background:#6366f1"></div> Baja</div><div class="legend-item"><div class="dot" style="background:#10b981"></div> Media</div><div class="legend-item"><div class="dot" style="background:#ef4444"></div> Alta</div>`;
+        else if (currentMode === 'shotmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--success)"></div> Gol</div><div class="legend-item"><div class="dot" style="background:var(--warning)"></div> Atajada</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Fuera</div>`;
         else if (currentMode === 'passmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="width:20px;height:2px;background:var(--text-muted)"></div> Conexión</div>`;
         else if (currentMode === 'actionmap') l.innerHTML = `<div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Defensa</div><div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Ataque</div>`;
     }
