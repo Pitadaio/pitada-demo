@@ -140,6 +140,11 @@
         .filter-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1.2rem; border-radius: 50px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         
+        .search-box { margin-bottom: 1.5rem; position: relative; max-width: 400px; }
+        .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 50px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-main); font-family: 'Inter'; transition: all 0.2s; }
+        .search-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-glow); }
+
         .squad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
         .player-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: transform 0.2s, border-color 0.2s; position: relative; }
         .player-card:hover { transform: translateY(-5px); border-color: var(--primary); }
@@ -153,7 +158,6 @@
         .tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
         .tag-pos { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-muted); }
         
-        /* Botón de estado interactivo */
         .status-btn { border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
         .status-btn:hover { filter: brightness(1.1); transform: scale(1.05); }
         .tag-fit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
@@ -429,9 +433,14 @@
             <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Plantilla del Equipo</h2>
-                    <p style="color: var(--text-muted);">Gestiona los jugadores y sus estados físicos.</p>
+                    <p style="color: var(--text-muted);">Gestiona los jugadores, tarjetas y lesiones.</p>
                 </div>
                 <button class="btn-primary" onclick="openAddPlayerModal()"><i class="fas fa-plus"></i> Añadir Jugador</button>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="squadSearch" class="search-input" placeholder="Buscar por nombre..." onkeyup="filterSquadByName(this.value)">
             </div>
 
             <div class="squad-filters">
@@ -467,9 +476,9 @@
     let heatmapInstance, individualHeatmapInstance;
     let momentumChartInstance = null, radarChartInstance = null, comparisonChartInstance = null;
     let currentFilter = 'all';
+    let currentSearch = ''; // Nuevo: estado del buscador
     
-    // === BASE DE DATOS PLANTILLA (ACTUALIZADA) ===
-    // Status: fit (apto), injured (lesionado), yellow (amarilla), red (roja/susp)
+    // === BASE DE DATOS PLANTILLA ===
     const squadDB = [
         { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' },
         { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' },
@@ -485,7 +494,7 @@
         { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' },
     ];
 
-    // === GESTIÓN PLANTILLA (MEJORADA) ===
+    // === GESTIÓN PLANTILLA ===
     function filterSquad(category, btn) {
         currentFilter = category;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -493,15 +502,19 @@
         renderSquad();
     }
 
+    function filterSquadByName(text) {
+        currentSearch = text.toLowerCase();
+        renderSquad();
+    }
+
     function changeStatus(id) {
         const p = squadDB.find(x => x.id === id);
-        // Ciclo: Fit -> Injured -> Yellow -> Red -> Fit
         if (p.status === 'fit') p.status = 'injured';
         else if (p.status === 'injured') p.status = 'yellow';
         else if (p.status === 'yellow') p.status = 'red';
         else p.status = 'fit';
         
-        renderSquad(); // Re-renderizar
+        renderSquad();
     }
 
     function openAddPlayerModal() { document.getElementById('addPlayerModal').style.display = 'block'; }
@@ -514,7 +527,7 @@
 
         if (name && num) {
             squadDB.push({
-                id: Date.now(), // ID único temporal
+                id: Date.now(),
                 name: name,
                 num: num,
                 pos: pos,
@@ -536,9 +549,12 @@
         const grid = document.getElementById('squadGrid');
         grid.innerHTML = '';
         
-        const filtered = currentFilter === 'all' 
-            ? squadDB 
-            : squadDB.filter(p => p.pos === currentFilter);
+        // Filtrar por Categoría Y por Texto al mismo tiempo
+        const filtered = squadDB.filter(p => {
+            const matchesCategory = currentFilter === 'all' || p.pos === currentFilter;
+            const matchesSearch = p.name.toLowerCase().includes(currentSearch);
+            return matchesCategory && matchesSearch;
+        });
         
         filtered.forEach(p => {
             let statusClass = 'tag-fit', statusText = 'Apto', statusIcon = '✅';
