@@ -100,39 +100,20 @@
             cursor: crosshair;
         }
         
-        /* Capas superpuestas */
         .layer-overlay { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: opacity 0.3s; }
         .hidden-layer { opacity: 0; pointer-events: none; }
         
-        /* SHOT MARKERS */
-        .shot-marker {
-            position: absolute; width: 14px; height: 14px;
-            border-radius: 50%; border: 2px solid white;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            transition: transform 0.2s;
-            z-index: 10;
-        }
+        .shot-marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; transform: translate(-50%, -50%); box-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 10; }
         .shot-marker:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 20; }
         .shot-gol { background-color: var(--success); }
         .shot-atajada { background-color: var(--warning); border-radius: 3px; }
         .shot-fuera { background-color: var(--danger); }
 
-        /* PASS NETWORK */
-        .player-node {
-            position: absolute; width: 30px; height: 30px;
-            background: var(--bg-card); border: 2px solid var(--text-main);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700; color: var(--text-main);
-            transform: translate(-50%, -50%);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15;
-            transition: all 0.3s ease; cursor: pointer;
-        }
+        .player-node { position: absolute; width: 30px; height: 30px; background: var(--bg-card); border: 2px solid var(--text-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--text-main); transform: translate(-50%, -50%); box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 15; transition: all 0.3s ease; cursor: pointer; }
         .player-node:hover { transform: translate(-50%, -50%) scale(1.2); border-color: var(--primary); background: var(--primary); color: white; z-index: 20; }
         .pass-line { stroke: var(--text-muted); stroke-linecap: round; transition: all 0.3s; opacity: 0.4; }
         .pass-line:hover { stroke: var(--primary); opacity: 1; cursor: pointer; }
 
-        /* ACTION ZONES (NUEVO) */
         .action-zone { fill-opacity: 0.2; stroke-width: 2; transition: all 0.3s ease; cursor: pointer; }
         .action-zone:hover { fill-opacity: 0.4; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
         .zone-def { fill: var(--primary); stroke: var(--primary); }
@@ -140,36 +121,30 @@
         .zone-fwd { fill: var(--danger); stroke: var(--danger); }
         .action-center { fill: white; stroke: none; pointer-events: none; }
 
-        /* TOOLTIP TÁCTICO */
-        .tactical-tooltip {
-            position: absolute;
-            background: rgba(17, 24, 39, 0.95);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            pointer-events: none;
-            z-index: 100;
-            border: 1px solid var(--border);
-            display: none;
-            backdrop-filter: blur(4px);
-            white-space: nowrap;
-        }
+        .tactical-tooltip { position: absolute; background: rgba(17, 24, 39, 0.95); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 100; border: 1px solid var(--border); display: none; backdrop-filter: blur(4px); white-space: nowrap; }
 
-        /* CONTROLES */
         .mode-switch { display: flex; background: var(--border); padding: 4px; border-radius: 8px; gap: 4px; overflow-x: auto; }
-        .mode-btn { 
-            padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap;
-        }
+        .mode-btn { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); background: transparent; transition: all 0.2s; white-space: nowrap; }
         .mode-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .sub-controls { display: flex; gap: 0.5rem; margin-left: 1rem; }
         .sub-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         .sub-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.1); }
 
-        /* LEYENDA */
         .legend-container { display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 0.4rem; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* === RADAR PLAYER CARD (NUEVO) === */
+        .radar-card { grid-column: span 8; }
+        .radar-wrapper { display: flex; gap: 2rem; align-items: center; justify-content: center; min-height: 300px; }
+        .player-info-panel { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+        .player-selector { padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-family: 'Inter'; outline: none; }
+        .player-detail { display: flex; gap: 1rem; align-items: center; }
+        .player-photo-lg { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700; border: 4px solid var(--bg-card); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+        .player-stats-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+        .p-stat { background: var(--bg-body); padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .p-stat strong { color: var(--text-main); }
+        .chart-radar-container { flex: 1; height: 300px; position: relative; }
 
         /* PANEL LATERAL & UPLOAD */
         .side-panel { grid-column: span 4; display: flex; flex-direction: column; gap: 1.5rem; }
@@ -178,16 +153,15 @@
         .reco-item p { font-size: 0.85rem; color: var(--text-muted); }
         .reco-item.alert { border-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
         
-        .upload-zone {
-            border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s;
-        }
+        .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; }
         .upload-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
 
         /* RESPONSIVE */
         @media (max-width: 1024px) {
             .app-container { grid-template-columns: 1fr; }
             .sidebar { display: none; }
-            .tactical-board { grid-column: span 12; }
+            .tactical-board, .radar-card { grid-column: span 12; }
+            .radar-wrapper { flex-direction: column; }
             .side-panel { grid-column: span 12; display: flex; flex-direction: row; gap: 1rem; }
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -320,7 +294,7 @@
                     </div>
 
                     <div id="actionmapContainer" class="layer-overlay hidden-layer" style="z-index: 4;">
-                        <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg>
+                        <svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     </div>
 
                     <div id="tacticalTooltip" class="tactical-tooltip"></div>
@@ -356,6 +330,40 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card radar-card">
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chart-pie"></i> Rendimiento Individual</div>
+                    <select id="playerSelector" class="player-selector" onchange="changePlayer(this.value)">
+                        <option value="7">Alexis Sánchez (DEL)</option>
+                        <option value="8">Arturo Vidal (MED)</option>
+                        <option value="17">Gary Medel (DEF)</option>
+                    </select>
+                </div>
+                
+                <div class="radar-wrapper">
+                    <div class="player-info-panel">
+                        <div class="player-detail">
+                            <div class="player-photo-lg" id="playerInitials">AS</div>
+                            <div>
+                                <h3 id="playerName" style="margin: 0; color: var(--text-main);">Alexis Sánchez</h3>
+                                <p id="playerPosition" style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Delantero</p>
+                            </div>
+                        </div>
+                        <div class="player-stats-list">
+                            <div class="p-stat"><span>Goles Esperados (xG)</span> <strong id="statXG">0.45</strong></div>
+                            <div class="p-stat"><span>Pases Completados</span> <strong id="statPass">82%</strong></div>
+                            <div class="p-stat"><span>Duelos Ganados</span> <strong id="statDuel">45%</strong></div>
+                            <div class="p-stat"><span>Distancia (km)</span> <strong id="statDist">10.2</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-radar-container">
+                        <canvas id="playerRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 </div>
@@ -364,6 +372,7 @@
     // === ESTADO GLOBAL ===
     let currentMode = 'heatmap';
     let heatmapInstance;
+    let radarChartInstance = null;
     
     // === DATOS SIMULADOS ===
     const shotData = [
@@ -407,12 +416,31 @@
         { id: 4, name: 'M. Isla', role: 'def', stats: 'Desb: 9', points: '40,5 90,5 90,20 45,25' }
     ];
 
+    const playersRadarData = {
+        "7": {
+            name: "Alexis Sánchez", pos: "Delantero", initials: "AS",
+            stats: { xg: "0.45", pass: "82%", duel: "45%", dist: "10.2" },
+            radar: [85, 88, 75, 90, 60, 55] // Ataque, Regate, Pase, Vision, Def, Fisico
+        },
+        "8": {
+            name: "Arturo Vidal", pos: "Mediocampista", initials: "AV",
+            stats: { xg: "0.21", pass: "88%", duel: "75%", dist: "11.5" },
+            radar: [70, 75, 85, 80, 85, 95]
+        },
+        "17": {
+            name: "Gary Medel", pos: "Defensa", initials: "GM",
+            stats: { xg: "0.02", pass: "91%", duel: "88%", dist: "9.1" },
+            radar: [40, 50, 80, 60, 95, 90]
+        }
+    };
+
     window.onload = function() {
         initTheme();
         initHeatmap();
         initChart();
         updateLegend();
         renderShotMap();
+        changePlayer("7"); // Cargar radar inicial
     };
 
     // === LÓGICA DE MODOS ===
@@ -502,26 +530,20 @@
 
     function renderActionMap() {
         const svgContainer = document.getElementById('actionSvg');
-        
-        // CORRECCIÓN CLAVE: Definir el sistema de coordenadas de 0 a 100
         svgContainer.setAttribute("viewBox", "0 0 100 100");
         svgContainer.setAttribute("preserveAspectRatio", "none");
-        
         svgContainer.innerHTML = '';
 
         actionZones.forEach(zone => {
             const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            
-            // CORRECCIÓN: Quitamos el "%" porque el viewBox ya maneja la escala
             const pointsArray = zone.points.split(' ').map(p => {
                 const [x, y] = p.split(',');
-                return `${x},${y}`; // Sin símbolos extra
+                return `${x},${y}`;
             }).join(' ');
 
             polygon.setAttribute("points", pointsArray);
             polygon.setAttribute("class", `action-zone zone-${zone.role}`);
             
-            // Tooltip
             polygon.addEventListener('mousemove', (e) => {
                 showTooltipSimple(e, `${zone.name}`, `${zone.stats}`);
             });
@@ -529,17 +551,75 @@
 
             svgContainer.appendChild(polygon);
             
-            // Punto central (Icono)
             const coords = zone.points.split(' ')[0].split(',');
             const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            // Aquí usamos coordenadas del viewBox (0-100)
             circle.setAttribute("cx", coords[0]); 
             circle.setAttribute("cy", coords[1]);
-            circle.setAttribute("r", "1.5"); // Radio relativo al viewBox (1.5% del ancho)
+            circle.setAttribute("r", "1.5");
             circle.setAttribute("class", "action-center");
             svgContainer.appendChild(circle);
         });
     }
+
+    // === RADAR CHART ===
+    function changePlayer(id) {
+        const p = playersRadarData[id];
+        document.getElementById('playerName').innerText = p.name;
+        document.getElementById('playerPosition').innerText = p.pos;
+        document.getElementById('playerInitials').innerText = p.initials;
+        document.getElementById('statXG').innerText = p.stats.xg;
+        document.getElementById('statPass').innerText = p.stats.pass;
+        document.getElementById('statDuel').innerText = p.stats.duel;
+        document.getElementById('statDist').innerText = p.stats.dist;
+        renderRadarChart(p.name, p.radar);
+    }
+
+    function renderRadarChart(name, data) {
+        const ctx = document.getElementById('playerRadarChart').getContext('2d');
+        if (radarChartInstance) radarChartInstance.destroy();
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const textColor = isDark ? '#e5e7eb' : '#374151';
+
+        radarChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Ataque', 'Regate', 'Pase', 'Visión', 'Defensa', 'Físico'],
+                datasets: [{
+                    label: name,
+                    data: data,
+                    fill: true,
+                    backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                    borderColor: '#6366f1',
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#6366f1'
+                }, {
+                    label: 'Promedio Liga',
+                    data: [65, 60, 65, 60, 60, 65],
+                    fill: true,
+                    backgroundColor: 'rgba(128, 128, 128, 0.2)',
+                    borderColor: 'rgba(128, 128, 128, 0.5)',
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: gridColor },
+                        grid: { color: gridColor },
+                        pointLabels: { color: textColor, font: { size: 11, family: 'Inter' } },
+                        ticks: { display: false, backdropColor: 'transparent' },
+                        suggestedMin: 0, suggestedMax: 100
+                    }
+                },
+                plugins: { legend: { display: true, labels: { color: textColor } } }
+            }
+        });
+    }
+
     // === TOOLTIP INTELIGENTE ===
     function showTooltip(e, data) {
         const tooltip = document.getElementById('tacticalTooltip');
@@ -553,7 +633,6 @@
 
         const containerRect = container.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
-        
         const markerX = (data.x / 100) * containerRect.width;
         const markerY = (data.y / 100) * containerRect.height;
         const offset = 15;
@@ -624,6 +703,7 @@
         document.getElementById('themeIcon').className = isDark ? "fas fa-sun" : "fas fa-moon";
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         initChart();
+        changePlayer(document.getElementById('playerSelector').value); // Recargar radar con nuevos colores
     }
 
     function initChart() {
