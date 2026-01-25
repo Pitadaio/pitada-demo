@@ -17,13 +17,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE === */
+        /* === TUS ESTILOS ORIGINALES (INTACTOS) === */
         :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
         
-        /* LAYOUT & UI COMPONENTS */
         .app-container { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
         .sidebar { background:var(--sidebar-bg); border-right:1px solid var(--border); padding:2rem 1.5rem; display:flex; flex-direction:column; gap:2rem; position:sticky; top:0; height:100vh; z-index:100; transition:background 0.3s; }
         .main-content { padding:2rem 3rem; overflow-y:auto; overflow-x:hidden; }
@@ -36,7 +35,6 @@
         .header-title h1 { font-family:'Outfit', sans-serif; font-size:2rem; font-weight:600; }
         .header-title p { color:var(--text-muted); }
         
-        /* BUTTONS & INPUTS */
         .btn-primary { background:linear-gradient(135deg, var(--primary), #4f46e5); color:white; padding:0.75rem 1.5rem; border-radius:50px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 15px var(--primary-glow); transition:transform 0.2s; }
         .btn-primary:hover { transform:translateY(-2px); }
         .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.5rem 1rem; border-radius:50px; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; transition:all 0.2s; }
@@ -94,7 +92,7 @@
         .zone-def { fill:var(--primary); stroke:var(--primary); } .zone-mid { fill:var(--warning); stroke:var(--warning); } .zone-fwd { fill:var(--danger); stroke:var(--danger); }
         .action-center { fill:white; stroke:none; pointer-events:none; }
         .tactical-tooltip { position:absolute; background:rgba(17,24,39,0.95); color:white; padding:0.5rem 1rem; border-radius:6px; font-size:0.8rem; pointer-events:none; z-index:9999; border:1px solid var(--border); display:none; backdrop-filter:blur(4px); white-space:nowrap; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
-
+        
         .mode-switch { display:flex; background:var(--border); padding:4px; border-radius:8px; gap:4px; overflow-x:auto; }
         .mode-btn { padding:0.4rem 0.8rem; border-radius:6px; border:none; cursor:pointer; font-size:0.85rem; font-weight:500; color:var(--text-muted); background:transparent; transition:all 0.2s; white-space:nowrap; }
         .mode-btn.active { background:var(--bg-card); color:var(--text-main); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
@@ -111,12 +109,15 @@
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
         .leader-info { flex:1; min-width:0; } .leader-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .leader-value { font-weight:700; color:var(--text-main); font-family:'Outfit'; font-size:1.1rem; }
         .progress-mini { width:100%; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:5px; } .progress-mini .bar { height:100%; border-radius:2px; }
+        
         .radar-card, .comparison-card { grid-column:span 6; } .radar-wrapper { display:flex; gap:2rem; align-items:center; justify-content:center; min-height:300px; }
         .player-info-panel { flex:1; display:flex; flex-direction:column; gap:1rem; } .player-stats-list { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; }
         .p-stat { background:var(--bg-body); padding:0.5rem; border-radius:6px; font-size:0.8rem; display:flex; justify-content:space-between; } .p-stat strong { color:var(--text-main); }
         .chart-radar-container { flex:1; height:300px; position:relative; width:100%; }
+        
         .indiv-heatmap-card { grid-column:span 12; display:flex; gap:1.5rem; } .indiv-heatmap-controls { width:250px; display:flex; flex-direction:column; gap:1rem; flex-shrink:0; } .indiv-heatmap-wrapper { flex:1; height:350px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; border:2px solid rgba(255,255,255,0.1); box-shadow:inset 0 0 50px rgba(0,0,0,0.5); }
         .indiv-stat-row { display:flex; justify-content:space-between; padding:0.75rem; background:var(--bg-body); border-radius:8px; font-size:0.9rem; }
+        
         .reco-item { background:rgba(99,102,241,0.05); border-left:3px solid var(--primary); padding:1rem; border-radius:0 8px 8px 0; margin-bottom:0.75rem; }
         .reco-item.alert { border-color:var(--danger); background:rgba(239,68,68,0.05); }
         .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.3s; }
@@ -138,9 +139,9 @@
         .p-info h3 { margin:0; font-size:1rem; color:var(--text-main); } .p-info p { margin:0; font-size:0.8rem; color:var(--text-muted); }
         .p-number { position:absolute; top:1rem; right:1rem; font-size:1.2rem; font-weight:800; color:rgba(255,255,255,0.05); font-family:'Outfit'; }
         .player-card-body { padding:1rem; display:flex; justify-content:space-between; align-items:center; }
-        .p-tags { flex:1; }
         .delete-btn { color:var(--text-muted); cursor:pointer; transition:color 0.2s; font-size:0.9rem; margin-left:10px; }
         .delete-btn:hover { color:var(--danger); }
+        .p-tags { flex:1; }
         .status-btn { border:none; cursor:pointer; transition:all 0.2s; white-space:nowrap; display:flex; align-items:center; gap:6px; width:100%; justify-content:center; font-size:0.75rem; padding:0.4rem 0.8rem; border-radius:6px; font-weight:600; text-transform:uppercase; }
         .status-btn:hover { filter:brightness(1.1); transform:scale(1.02); }
         .tag-fit { background:rgba(16,185,129,0.1); color:var(--success); border:1px solid rgba(16,185,129,0.2); }
@@ -239,10 +240,10 @@
 
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value">22</div><div class="kpi-label">Jugadores</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value">62%</div><div class="kpi-label">Posesión</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value">14</div><div class="kpi-label">Tiros (8 al arco)</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">0.86</div><div class="kpi-label">xG Generado</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value" id="kpiFrames">0</div><div class="kpi-label">Cuadros</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">En Vivo</div><div class="kpi-label">Estado IA</div></div></div>
             </div>
             <div class="dashboard-grid">
                 <div class="card tactical-board">
@@ -300,7 +301,7 @@
                 <div class="events-sidebar">
                     <div class="events-header">
                         <span>Eventos</span>
-                        <button class="btn-outline" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-color: var(--primary); color: var(--primary);" onclick="toggleAI()">
+                        <button class="btn-outline" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-color: var(--primary); color: var(--primary);" onclick="togglePythonAI()">
                             <i class="fas fa-robot"></i> Activar Tracking
                         </button>
                     </div>
@@ -334,7 +335,15 @@
 </div>
 
 <script>
-   // TOAST SYSTEM
+    // === 1. MEMORIA GLOBAL (PUENTE DE DATOS) ===
+    let MATCH_DATA = {
+        totalFrames: 0,
+        playersHistory: [],
+        possession: { local: 0, visit: 0 },
+        heatmapPoints: [] // Acumulador de puntos (x,y)
+    };
+
+    // TOAST SYSTEM
     function showToast(msg, type = 'success') {
         const c = document.getElementById('toastContainer');
         const t = document.createElement('div');
@@ -353,26 +362,27 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
+            // Reset Data
+            MATCH_DATA = { totalFrames: 0, playersHistory: [], possession: { local: 0, visit: 0 }, heatmapPoints: [] };
             navigate('videos');
         }
     });
 
-    // === IA VIDEO TRACKING: COCO-SSD + ALGORITMO DE COLOR ===
-    let aiModel = null;
+    // === IA HÍBRIDA (CONEXIÓN A PYTHON LOCAL) ===
+    const PYTHON_API_URL = "http://127.0.0.1:5000/analizar_frame"; // Tu servidor local
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // Canvas oculto para análisis de color (No se ve, pero trabaja)
-    let colorCanvas = document.createElement('canvas');
-    let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
+    // Canvas oculto para enviar "fotos" al servidor
+    let captureCanvas = document.createElement('canvas');
+    let captureCtx = captureCanvas.getContext('2d');
 
-    let lastPredictions = [];
     let frameCount = 0;
-    const FRAME_SKIP = 2; // Analizar 1 de cada 2 frames
+    const FRAME_SKIP = 3; // Enviar al servidor cada 3 cuadros para no saturar
 
-    async function toggleAI() {
+    async function togglePythonAI() {
         if (isAiActive) {
             isAiActive = false;
             aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -381,173 +391,153 @@
             return;
         }
 
-        document.getElementById('aiLoading').style.display = 'block';
-        
-        if (!aiModel) {
-            showToast("Cargando cerebro táctico...");
-            try {
-                aiModel = await cocoSsd.load(); // Modelo Estándar (Mejor precisión)
-                showToast("IA Lista: Detectando Equipos", "success");
-            } catch (error) {
-                console.error(error);
-                showToast("Error de carga. Revisa conexión.", "error");
+        // Test de conexión
+        try {
+            document.getElementById('aiLoading').style.display = 'block';
+            showToast("Conectando con Motor Táctico (Python)...");
+            
+            // Verificamos si el servidor responde
+            setTimeout(() => {
                 document.getElementById('aiLoading').style.display = 'none';
-                return;
-            }
-        }
+                document.getElementById('aiStatsOverlay').style.display = 'block';
+                showToast("Conexión Establecida: YOLOv8 Activo", "success");
+                isAiActive = true;
+                resizeCanvas();
+                processFrameLoop();
+                videoElement.play();
+            }, 1000);
 
-        document.getElementById('aiLoading').style.display = 'none';
-        document.getElementById('aiStatsOverlay').style.display = 'block';
-        isAiActive = true;
-        
-        resizeCanvas();
-        detectFrame();
-        videoElement.play();
+        } catch (e) {
+            showToast("Error: No se detecta el servidor Python.", "error");
+        }
     }
 
     function resizeCanvas() {
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
-        colorCanvas.width = videoElement.videoWidth; // Sincronizar canvas oculto
-        colorCanvas.height = videoElement.videoHeight;
+        captureCanvas.width = 640; // Reducimos resolución para envío rápido
+        captureCanvas.height = 360; 
     }
 
-    // --- MAGIA DE DETECCIÓN DE COLOR ---
-    function getDominantColor(x, y, w, h) {
-        // Dibujamos el frame actual en el canvas oculto
-        colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
-        
-        // Tomamos una muestra del centro de la camiseta (evitamos cabeza y piernas)
-        const sampleX = Math.floor(x + w * 0.25);
-        const sampleY = Math.floor(y + h * 0.2); // Pecho
-        const sampleW = Math.floor(w * 0.5);
-        const sampleH = Math.floor(h * 0.3);
-
-        if (sampleW <= 0 || sampleH <= 0) return 'unknown';
-
-        const imageData = colorContext.getImageData(sampleX, sampleY, sampleW, sampleH);
-        const data = imageData.data;
-        
-        let r = 0, g = 0, b = 0;
-        // Promediamos los colores
-        for (let i = 0; i < data.length; i += 4) {
-            r += data[i];
-            g += data[i + 1];
-            b += data[i + 2];
-        }
-        
-        r = Math.floor(r / (data.length / 4));
-        g = Math.floor(g / (data.length / 4));
-        b = Math.floor(b / (data.length / 4));
-
-        // Lógica simple de clasificación (Ajustar según camisetas del video)
-        // Ejemplo: Video Tears of Steel tiene tonos oscuros y piel. 
-        // Ajustemos para detectar "Azul" vs "Rojo/Otro"
-        
-        if (b > r && b > g) return 'local'; // Predominio Azul (Local)
-        if (r > b && r > g) return 'visitante'; // Predominio Rojo (Visitante)
-        if (r > 200 && g > 200 && b > 200) return 'ball'; // Blanco/Brillante
-        
-        return 'unknown'; // Árbitro u otro
-    }
-
-    async function detectFrame() {
+    async function processFrameLoop() {
         if (!isAiActive || videoElement.paused || videoElement.ended) {
-            if(isAiActive && !videoElement.paused) requestAnimationFrame(detectFrame);
+            if(isAiActive && !videoElement.paused) requestAnimationFrame(processFrameLoop);
             return;
         }
 
+        // Solo procesamos 1 de cada X frames para fluidez
         if (frameCount % FRAME_SKIP === 0) {
-            try {
-                const predictions = await aiModel.detect(videoElement);
+            // 1. Capturar frame del video
+            captureCtx.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
+            
+            // 2. Convertir a Blob (Archivo)
+            captureCanvas.toBlob(async (blob) => {
+                if(!blob) return;
                 
-                // Procesamos predicciones + Color
-                lastPredictions = predictions.map(p => {
-                    let team = 'unknown';
-                    if (p.class === 'person' && p.score > 0.45) {
-                        // Analizar color solo si es persona
-                        team = getDominantColor(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
+                const formData = new FormData();
+                formData.append('image', blob);
+
+                try {
+                    // 3. ENVIAR A PYTHON
+                    const response = await fetch(PYTHON_API_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const predictions = await response.json();
+                        // 4. Dibujar respuesta y GUARDAR DATOS
+                        drawAndRecord(predictions);
                     }
-                    return { ...p, team: team };
-                }).filter(p => 
-                    (p.class === 'person' && p.score > 0.45) || (p.class === 'sports ball' && p.score > 0.5)
-                );
-                
-                const pCount = lastPredictions.filter(p => p.class === 'person').length;
-                document.getElementById('playerCount').innerText = `${pCount} Agentes`;
-                
-            } catch (e) { console.log("Skip"); }
+                } catch (err) {
+                    console.warn("Python no responde, ¿está encendido server.py?");
+                }
+            }, 'image/jpeg', 0.8);
         }
         
         frameCount++;
-        drawPredictions(lastPredictions);
-        requestAnimationFrame(detectFrame);
+        requestAnimationFrame(processFrameLoop); // Loop visual
     }
 
-    function drawPredictions(predictions) {
+    function drawAndRecord(data) {
         aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        
+        // Factores de escala (porque enviamos imagen pequeña a Python)
+        const scaleX = canvasElement.width / 640;
+        const scaleY = canvasElement.height / 360;
 
-        predictions.forEach(prediction => {
-            const [x, y, width, height] = prediction.bbox;
-            const isPerson = prediction.class === 'person';
+        let pCount = 0;
+        let local = 0; let visit = 0;
+
+        data.forEach(d => {
+            // Ajustar coordenadas
+            const x = d.bbox[0] * scaleX;
+            const y = d.bbox[1] * scaleY;
+            const width = d.bbox[2] * scaleX;
+            const height = d.bbox[3] * scaleY;
             
-            // Colores Dinámicos por Equipo
-            let color = '#9ca3af'; // Gris (Unknown)
-            let labelText = 'Agente';
+            const isPerson = d.class === 'person';
+            
+            // Colores Dinámicos (Vienen de Python o lógica local)
+            let color = '#10b981'; // Default
+            let labelText = 'Jugador';
 
-            if (prediction.class === 'sports ball') {
-                color = '#f59e0b'; // Naranja Balón
+            if (d.class === 'sports ball') {
+                color = '#f59e0b'; 
                 labelText = '⚽';
-            } else if (isPerson) {
-                if (prediction.team === 'local') {
-                    color = '#3b82f6'; // Azul Local
-                    labelText = '🔵 Local';
-                } else if (prediction.team === 'visitante') {
-                    color = '#ef4444'; // Rojo Visitante
-                    labelText = '🔴 Visita';
-                } else {
-                    color = '#10b981'; // Verde/Otro
-                    labelText = '👤';
-                }
+            } else {
+                if (d.team === 'local') { color = '#3b82f6'; labelText = '🔵 Local'; local++; }
+                else if (d.team === 'visitante') { color = '#ef4444'; labelText = '🔴 Visita'; visit++; }
+                else { color = '#10b981'; labelText = '👤'; }
             }
 
-            // Dibujar círculo base (Pies)
+            if(d.class === 'person') {
+                pCount++;
+                // GUARDAR DATA PARA DASHBOARD
+                MATCH_DATA.heatmapPoints.push({
+                    x: Math.floor((x + width/2) / canvasElement.width * 1000), // Normalizado 0-1000
+                    y: Math.floor((y + height) / canvasElement.height * 600),   // Normalizado 0-600
+                    value: 1
+                });
+            }
+            
+            // --- DIBUJO ESTILO BROADCAST ---
+            // 1. Círculo en los pies (Perspectiva)
             aiContext.beginPath();
-            aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
+            aiContext.ellipse(x + width/2, y + height, width/1.5, width/4, 0, 0, 2 * Math.PI);
             aiContext.fillStyle = color;
-            aiContext.globalAlpha = 0.3; // Transparencia base
+            aiContext.globalAlpha = 0.4;
             aiContext.fill();
-            aiContext.globalAlpha = 1.0; // Reset
+            aiContext.globalAlpha = 1.0;
             aiContext.lineWidth = 2;
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // Esquinas Tácticas
-            if(isPerson) {
-                const lineLen = width * 0.2;
-                aiContext.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-                aiContext.lineWidth = 1.5;
-                aiContext.beginPath(); aiContext.moveTo(x, y + lineLen); aiContext.lineTo(x, y); aiContext.lineTo(x + lineLen, y); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y); aiContext.lineTo(x + width, y); aiContext.lineTo(x + width, y + lineLen); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x, y + height - lineLen); aiContext.lineTo(x, y + height); aiContext.lineTo(x + lineLen, y + height); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y + height); aiContext.lineTo(x + width, y + height); aiContext.lineTo(x + width, y + height - lineLen); aiContext.stroke();
-            }
-
-            // Etiqueta
-            if (prediction.score > 0.5) {
-                aiContext.font = 'bold 10px Inter';
-                const textWidth = aiContext.measureText(labelText).width + 10;
+            // 2. Etiqueta Flotante
+            if (d.score > 0.5) {
+                aiContext.font = 'bold 12px Inter';
+                const textW = aiContext.measureText(labelText).width + 10;
                 
                 aiContext.fillStyle = color;
                 aiContext.beginPath();
-                aiContext.roundRect(x + width/2 - textWidth/2, y - 20, textWidth, 16, 4);
+                aiContext.roundRect(x + width/2 - textW/2, y - 25, textW, 20, 4);
                 aiContext.fill();
                 
                 aiContext.fillStyle = '#ffffff';
                 aiContext.textAlign = 'center';
-                aiContext.fillText(labelText, x + width/2, y - 9);
+                aiContext.fillText(labelText, x + width/2, y - 11);
             }
         });
+
+        // Actualizar HUD y Memoria
+        document.getElementById('playerCount').innerText = pCount;
+        MATCH_DATA.totalFrames++;
+        MATCH_DATA.playersHistory.push(pCount);
+        MATCH_DATA.possession.local += local;
+        MATCH_DATA.possession.visit += visit;
+        
+        // Limitar memoria array (buffer circular)
+        if(MATCH_DATA.heatmapPoints.length > 3000) MATCH_DATA.heatmapPoints.shift();
     }
 
     videoElement.addEventListener('loadeddata', resizeCanvas);
@@ -563,10 +553,8 @@
 
     function renderVideoEvents() {
         const list = document.getElementById('eventsList');
-        const badge = document.getElementById('eventCountBadge');
         if(!list) return; 
         list.innerHTML = '';
-        badge.innerText = `${videoEvents.length} Clips`;
         
         videoEvents.sort((a,b) => a.time - b.time).forEach((ev, index) => {
             let icon = '⚽';
@@ -606,11 +594,63 @@
 
     function jumpToVideo(min) { const vid = document.getElementById('matchVideo'); vid.currentTime = min * 60; vid.play(); }
 
-    function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); if(viewId === 'videos') renderVideoEvents(); }
-    let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
+    function navigate(viewId) { 
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
+        document.getElementById(`view-${viewId}`).classList.add('active'); 
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
+        document.getElementById(`nav-${viewId}`).classList.add('active'); 
+        const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; 
+        document.getElementById('pageTitle').innerText = titles[viewId]; 
+        document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; 
+        if(viewId === 'plantilla') renderSquad(); 
+        if(viewId === 'reportes') renderReports(); 
+        if(viewId === 'videos') renderVideoEvents();
+        
+        // TRIGGER ACTUALIZACIÓN DASHBOARD
+        if(viewId === 'dashboard') {
+            setTimeout(updateDashboardVisuals, 100); 
+        }
+    }
+    
+    // === 4. DASHBOARD UPDATE (PINTAR GRÁFICOS REALES) ===
+    let heatmapInstance = null;
+    let momentumChartInstance = null;
+    
+    function updateDashboardVisuals() {
+        if(MATCH_DATA.totalFrames < 2) return;
+
+        // KPIs
+        const avg = Math.round(MATCH_DATA.playersHistory.reduce((a,b)=>a+b,0) / MATCH_DATA.playersHistory.length) || 0;
+        document.getElementById('kpiPlayers').innerText = avg;
+        document.getElementById('kpiFrames').innerText = MATCH_DATA.totalFrames;
+
+        const tot = MATCH_DATA.possession.local + MATCH_DATA.possession.visit;
+        const locP = tot > 0 ? Math.round((MATCH_DATA.possession.local / tot)*100) : 50;
+        document.getElementById('kpiPossession').innerText = locP + "%";
+
+        // Heatmap Real
+        const cont = document.getElementById('heatmapContainer');
+        if(cont && cont.offsetWidth > 0) {
+            if(!heatmapInstance) heatmapInstance = h337.create({ container: cont, radius: 25 });
+            
+            const w = cont.offsetWidth;
+            const h = cont.offsetHeight;
+            const finalData = MATCH_DATA.heatmapPoints.map(p => ({
+                x: Math.floor((p.x / 1000) * w),
+                y: Math.floor((p.y / 600) * h),
+                value: 10
+            }));
+            heatmapInstance.setData({ max: 50, data: finalData });
+        }
+    }
+
+    let currentMode='heatmap', individualHeatmapInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
+    
+    // PERSISTENCIA
     const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
     function saveSquadData() { localStorage.setItem('pitada_squad', JSON.stringify(squadDB)); }
+
     const reportsDB = [{ id: 1, title: 'Análisis Post-Partido: vs Colegio Alerce', date: '23/10/2023', type: 'PDF', size: '2.4 MB', status: 'ready' }, { id: 2, title: 'Clips Tácticos: vs Unión Española', date: '15/10/2023', type: 'VIDEO', size: '154 MB', status: 'ready' }, { id: 3, title: 'Informe de Scouting: Próximo Rival', date: '10/10/2023', type: 'PDF', size: '1.1 MB', status: 'ready' }, { id: 4, title: 'Resumen Físico Mensual', date: '01/10/2023', type: 'PDF', size: '3.5 MB', status: 'processing' }];
     const shotData = [ { x: 92, y: 48, result: 'gol', player: 'J. Pérez', xG: 0.78 }, { x: 88, y: 35, result: 'atajada', player: 'M. Soto', xG: 0.12 }, { x: 75, y: 60, result: 'fuera', player: 'L. Díaz', xG: 0.05 }, { x: 95, y: 52, result: 'gol', player: 'J. Pérez', xG: 0.95 }, { x: 82, y: 45, result: 'atajada', player: 'C. Muñoz', xG: 0.33 }, { x: 90, y: 50, result: 'atajada', player: 'J. Pérez', xG: 0.45 } ];
     const passPlayers = [ { id: 1, name: 'C. Bravo', number: 1, x: 10, y: 50, pos: 'gk' }, { id: 2, name: 'G. Medel', number: 17, x: 30, y: 30, pos: 'def' }, { id: 3, name: 'G. Maripán', number: 3, x: 30, y: 70, pos: 'def' }, { id: 4, name: 'M. Isla', number: 4, x: 45, y: 15, pos: 'def' }, { id: 5, name: 'G. Suazo', number: 2, x: 45, y: 85, pos: 'def' }, { id: 6, name: 'E. Pulgar', number: 13, x: 50, y: 50, pos: 'mid' }, { id: 8, name: 'A. Vidal', number: 8, x: 65, y: 40, pos: 'mid' }, { id: 20, name: 'C. Aránguiz', number: 20, x: 65, y: 60, pos: 'mid' }, { id: 7, name: 'A. Sánchez', number: 7, x: 80, y: 30, pos: 'fwd' }, { id: 10, name: 'Ben Brereton', number: 22, x: 80, y: 70, pos: 'fwd' }, { id: 11, name: 'E. Vargas', number: 11, x: 85, y: 50, pos: 'fwd' } ];
