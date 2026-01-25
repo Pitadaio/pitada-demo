@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS ORIGINALES (INTACTOS) === */
+        /* === ESTILOS INTACTOS === */
         :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -233,8 +233,8 @@
 
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value">22</div><div class="kpi-label">Jugadores</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value">62%</div><div class="kpi-label">Posesión</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión (Local)</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value">14</div><div class="kpi-label">Tiros (8 al arco)</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">0.86</div><div class="kpi-label">xG Generado</div></div></div>
             </div>
@@ -344,6 +344,14 @@
 </div>
 
 <script>
+    // === ESTADO GLOBAL ===
+    let MATCH_DATA = {
+        totalFrames: 0,
+        playersHistory: [],
+        possession: { local: 0, visit: 0 },
+        heatmapPoints: [] 
+    };
+
     // TOAST SYSTEM
     function showToast(msg, type = 'success') {
         const c = document.getElementById('toastContainer');
@@ -366,7 +374,7 @@
         }
     });
 
-    // === IA VIDEO TRACKING: COCO-SSD + COLOR V2 ===
+    // === IA VIDEO TRACKING: COCO-SSD + ALGORITMO DE COLOR ===
     let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
@@ -377,7 +385,7 @@
     let colorCanvas = document.createElement('canvas');
     let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
 
-    // PERSISTENCIA & FILTROS
+    // PERSISTENCIA
     let trackedObjects = [];
     let frameCount = 0;
     const FRAME_SKIP = 2;
@@ -417,11 +425,12 @@
     function resizeCanvas() {
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
+        // Sincronizar canvas de color
         colorCanvas.width = videoElement.videoWidth;
         colorCanvas.height = videoElement.videoHeight;
     }
 
-    // --- MAGIA DE DETECCIÓN DE COLOR V2 (TOLERANTE) ---
+    // --- MAGIA DE DETECCIÓN DE COLOR V3 (SUPER TOLERANTE) ---
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
@@ -435,7 +444,7 @@
         // CORRECCIÓN: ZONA DE MUESTREO (CENTRO DEL TORSO)
         // Evitamos bordes para no pillar pasto
         const sx = Math.floor(x + w * 0.35); // 35% desde la izquierda (muy centrado)
-        const sy = Math.floor(y + h * 0.15); // 15% desde arriba (pecho)
+        const sy = Math.floor(y + h * 0.20); // 20% desde arriba (pecho)
         const sw = Math.floor(w * 0.3);      // solo el 30% central del ancho
         const sh = Math.floor(h * 0.3);      // solo el 30% de alto
 
@@ -458,11 +467,12 @@
         const distLocal = getColorDistance(detectedRGB, localRGB);
         const distVisit = getColorDistance(detectedRGB, visitRGB);
 
-        // LÓGICA V2: SIEMPRE ELIGEN UNO (Salvo que sea muy raro)
-        // Si la distancia es enorme (>400), probablemente no sea ninguno de los dos (árbitro/ruido)
-        if (distLocal > 380 && distVisit > 380) return '#10b981';
+        // LÓGICA V3: SIEMPRE ELIGEN UNO (A menos que sea muy, muy lejano)
+        // Distancia máxima permitida (antes era 180, ahora 350)
+        // Esto permite que aunque haya sombra, se asigne al más cercano
+        if (distLocal > 350 && distVisit > 350) return '#10b981'; 
 
-        // Si no, forzamos la elección al más cercano
+        // Asignación por proximidad simple
         if (distLocal <= distVisit) return document.getElementById('colorLocal').value;
         return document.getElementById('colorVisit').value;
     }
@@ -474,6 +484,7 @@
         }
 
         if (frameCount % FRAME_SKIP === 0) {
+            // Dibujamos el frame en el canvas oculto UNA SOLA VEZ
             colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
 
             try {
@@ -487,7 +498,7 @@
                 // 2. Filtro Anti-Gigantes
                 freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.4);
 
-                // 3. Asignar equipos
+                // 3. Asignar equipos por color
                 freshDetections = freshDetections.map(p => {
                     let teamColor = '#10b981';
                     if (p.class === 'person') {
@@ -520,7 +531,7 @@
                 match.bbox = det.bbox;
                 match.score = det.score;
                 match.life = 10;
-                match.color = det.color; 
+                match.color = det.color; // Actualizar color
             } else {
                 trackedObjects.push({
                     bbox: det.bbox,
@@ -530,11 +541,30 @@
                     color: det.color
                 });
             }
+            
+            // GUARDAR DATA PARA DASHBOARD
+            if(det.class === 'person') {
+                MATCH_DATA.heatmapPoints.push({
+                    x: Math.floor((det.bbox[0] + det.bbox[2]/2) / canvasElement.width * 1000), 
+                    y: Math.floor((det.bbox[1] + det.bbox[3]) / canvasElement.height * 600),   
+                    value: 1
+                });
+                
+                if(det.color === document.getElementById('colorLocal').value) MATCH_DATA.possession.local++;
+                else if(det.color === document.getElementById('colorVisit').value) MATCH_DATA.possession.visit++;
+            }
         });
 
-        trackedObjects = trackedObjects.filter(obj => obj.life > 0);
+        // Limitar memoria array (buffer circular)
+        if(MATCH_DATA.heatmapPoints.length > 3000) MATCH_DATA.heatmapPoints.shift();
+        
+        // Actualizar contadores
+        MATCH_DATA.totalFrames++;
         const pCount = trackedObjects.filter(o => o.class === 'person').length;
         document.getElementById('playerCount').innerText = `${pCount} Agentes`;
+        MATCH_DATA.playersHistory.push(pCount);
+
+        trackedObjects = trackedObjects.filter(obj => obj.life > 0);
     }
 
     function drawSmartTracking() {
@@ -545,7 +575,7 @@
             const isBall = obj.class === 'sports ball';
             const color = isBall ? '#f59e0b' : obj.color;
             
-            // Base
+            // Círculo
             aiContext.beginPath();
             aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
             aiContext.fillStyle = color;
@@ -556,11 +586,10 @@
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // CHIVATO DE DEPURACIÓN (CUADRADITO ARRIBA)
-            // Esto te muestra qué color está leyendo realmente la IA
+            // DEBUG VISUAL: Muestra qué color detecta (cuadradito)
             if(obj.class === 'person') {
                  aiContext.fillStyle = color;
-                 aiContext.fillRect(x + width/2 - 5, y - 15, 10, 10);
+                 aiContext.fillRect(x + width/2 - 5, y - 15, 10, 10); 
                  aiContext.strokeStyle = 'white';
                  aiContext.lineWidth = 1;
                  aiContext.strokeRect(x + width/2 - 5, y - 15, 10, 10);
@@ -572,12 +601,51 @@
                 if(isBall) label = '⚽';
                 else if(color === document.getElementById('colorLocal').value) label = 'L';
                 else if(color === document.getElementById('colorVisit').value) label = 'V';
+
+                aiContext.fillStyle = '#fff';
+                aiContext.font = '12px Arial';
+                aiContext.fillText(label, x + width/2 - 5, y - 5);
             }
         });
     }
 
-    videoElement.addEventListener('loadeddata', resizeCanvas);
-    window.addEventListener('resize', resizeCanvas);
+    // === DASHBOARD UPDATE ===
+    let heatmapInstance = null;
+    let possessionChart = null;
+
+    function updateDashboardVisuals() {
+        if(MATCH_DATA.totalFrames < 2) return;
+
+        // KPIs
+        const avg = Math.round(MATCH_DATA.playersHistory.reduce((a,b)=>a+b,0) / MATCH_DATA.playersHistory.length) || 0;
+        document.getElementById('kpiPlayers').innerText = avg;
+        document.getElementById('kpiFrames').innerText = MATCH_DATA.totalFrames;
+
+        const tot = MATCH_DATA.possession.local + MATCH_DATA.possession.visit;
+        const locP = tot > 0 ? Math.round((MATCH_DATA.possession.local / tot)*100) : 50;
+        document.getElementById('kpiPossession').innerText = locP + "%";
+
+        // Heatmap Real
+        const cont = document.getElementById('heatmapContainer');
+        if(cont && cont.offsetWidth > 0) {
+            if(!heatmapInstance) heatmapInstance = h337.create({ container: cont, radius: 25 });
+            
+            const w = cont.offsetWidth;
+            const h = cont.offsetHeight;
+            const finalData = MATCH_DATA.heatmapPoints.map(p => ({
+                x: Math.floor((p.x / 1000) * w),
+                y: Math.floor((p.y / 600) * h),
+                value: 10
+            }));
+            heatmapInstance.setData({ max: 50, data: finalData });
+        }
+        
+        // Chart Update
+        if(possessionChart) {
+            possessionChart.data.datasets[0].data = [locP, 100-locP];
+            possessionChart.update();
+        }
+    }
 
     // TAGGING MANUAL
     let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || [
@@ -621,9 +689,9 @@
 
     function jumpToVideo(min) { const vid = document.getElementById('matchVideo'); vid.currentTime = min * 60; vid.play(); }
 
-    function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); if(viewId === 'videos') renderVideoEvents(); }
+    function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); if(viewId === 'videos') renderVideoEvents(); if(viewId === 'dashboard') setTimeout(updateDashboardVisuals, 100); }
     
-    let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
+    let currentMode='heatmap', individualHeatmapInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
     
     const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
