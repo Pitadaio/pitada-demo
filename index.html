@@ -16,8 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE (INTACTOS) === */
-        :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#6366f1; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
+        /* === ESTILOS ORIGINALES (INTACTOS) === */
+        :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -374,7 +374,7 @@
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // Canvas oculto para análisis de color
+    // Canvas oculto para análisis de color (No se ve, pero trabaja)
     let colorCanvas = document.createElement('canvas');
     let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
 
@@ -424,7 +424,7 @@
         colorCanvas.height = videoElement.videoHeight;
     }
 
-    // --- MAGIA DE COLOR ---
+    // --- MAGIA DE DETECCIÓN DE COLOR ---
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
@@ -435,13 +435,13 @@
     }
 
     function getTeamByColor(x, y, w, h) {
-        // Dibujamos frame en canvas oculto
-        colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
+        // CORRECCIÓN 1: DIBUJAR SOLO 1 VEZ POR FRAME (OPTIMIZACIÓN)
+        // Ya no dibujamos aquí, asumimos que el frame ya está en colorCanvas
         
-        // Muestreamos el centro de la caja (camiseta)
-        const sx = Math.floor(x + w * 0.25);
-        const sy = Math.floor(y + h * 0.2); 
-        const sw = Math.floor(w * 0.5);
+        // CORRECCIÓN 2: ZONA DE MUESTREO (PECHO ALTO)
+        const sx = Math.floor(x + w * 0.3); // Centro horizontal
+        const sy = Math.floor(y + h * 0.15); // Parte SUPERIOR del cuerpo (evita pasto)
+        const sw = Math.floor(w * 0.4);
         const sh = Math.floor(h * 0.3);
 
         if (sw <= 0 || sh <= 0) return '#10b981'; // Default Verde
@@ -478,6 +478,9 @@
         }
 
         if (frameCount % FRAME_SKIP === 0) {
+            // Dibujamos el frame en el canvas oculto UNA SOLA VEZ
+            colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
+
             try {
                 const predictions = await aiModel.detect(videoElement);
                 
@@ -558,9 +561,14 @@
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
+            // DEBUG VISUAL: Muestra qué color está detectando la IA (cuadradito arriba a la izquierda)
+            if(obj.class === 'person') {
+                 aiContext.fillStyle = color;
+                 aiContext.fillRect(x, y - 10, 10, 10); // Cuadradito chivato
+            }
+
             // Etiqueta
             if (obj.life > 5) {
-                // Determinar label basado en el color seleccionado
                 let label = '👤';
                 if(isBall) label = '⚽';
                 else if(color === document.getElementById('colorLocal').value) label = 'L';
