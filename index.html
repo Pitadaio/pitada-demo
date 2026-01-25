@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE === */
+        /* === ESTILOS ORIGINALES (NO TOCAR) === */
         :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -45,7 +44,6 @@
         select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select { width:100%; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); background-color:var(--bg-body); color:var(--text-main); font-family:'Inter', sans-serif; font-size:0.9rem; outline:none; cursor:pointer; transition:all 0.2s; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:right 0.7rem top 50%; background-size:0.65rem auto; padding-right:2.5rem; }
         select:focus, .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-glow); }
         
-        /* DROPDOWN & MODAL */
         .dropdown-menu { position:absolute; top:120%; right:0; width:240px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.5rem; display:none; z-index:1000; box-shadow:0 10px 25px -5px rgba(0,0,0,0.5); animation:fadeIn 0.2s ease; }
         .dropdown-menu.show { display:block; }
         .menu-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:8px; transition:all 0.2s; cursor:pointer; font-size:0.9rem; }
@@ -61,18 +59,15 @@
         .form-actions { display:flex; gap:1rem; margin-top:1.5rem; }
         .btn-cancel { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.75rem; border-radius:50px; flex:1; cursor:pointer; }
 
-        /* VIEW MANAGEMENT */
         .view-section { display:none; animation:fadeIn 0.3s ease; }
         .view-section.active { display:block; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
-        /* GRID SYSTEM */
         .dashboard-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:1.5rem; width:100%; }
         .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
         .card:hover { border-color:var(--primary); }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
 
-        /* DASHBOARD ELEMENTS */
         .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
         .kpi-card { background:linear-gradient(145deg, var(--bg-card), rgba(99,102,241,0.03)); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; display:flex; align-items:center; gap:1rem; box-shadow:var(--shadow-card); }
         .kpi-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0; }
@@ -103,7 +98,6 @@
         .legend-item { display:flex; align-items:center; gap:0.4rem; }
         .dot { width:8px; height:8px; border-radius:50%; }
 
-        /* LEADERS, CHARTS */
         .leaders-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; }
         .leader-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; align-items:center; gap:1rem; position:relative; transition:transform 0.2s; }
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
@@ -114,7 +108,6 @@
         .player-info-panel { flex:1; display:flex; flex-direction:column; gap:1rem; } .player-stats-list { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; }
         .p-stat { background:var(--bg-body); padding:0.5rem; border-radius:6px; font-size:0.8rem; display:flex; justify-content:space-between; } .p-stat strong { color:var(--text-main); }
         .chart-radar-container { flex:1; height:300px; position:relative; width:100%; }
-        
         .indiv-heatmap-card { grid-column:span 12; display:flex; gap:1.5rem; } .indiv-heatmap-controls { width:250px; display:flex; flex-direction:column; gap:1rem; flex-shrink:0; } .indiv-heatmap-wrapper { flex:1; height:350px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; border:2px solid rgba(255,255,255,0.1); box-shadow:inset 0 0 50px rgba(0,0,0,0.5); }
         .indiv-stat-row { display:flex; justify-content:space-between; padding:0.75rem; background:var(--bg-body); border-radius:8px; font-size:0.9rem; }
         
@@ -123,7 +116,6 @@
         .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.3s; }
         .upload-zone:hover { border-color:var(--primary); background:rgba(99,102,241,0.05); }
 
-        /* PLANTILLA STYLES */
         .squad-filters { display:flex; gap:1rem; margin-bottom:2rem; overflow-x:auto; padding-bottom:0.5rem; }
         .filter-btn { background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); padding:0.5rem 1.2rem; border-radius:50px; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
         .filter-btn.active, .filter-btn:hover { background:var(--primary); color:white; border-color:var(--primary); }
@@ -149,7 +141,6 @@
         .tag-yellow { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3); }
         .tag-red { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
 
-        /* REPORTS */
         .reports-list { display:flex; flex-direction:column; gap:1rem; }
         .report-item { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; transition:all 0.2s; }
         .report-item:hover { border-color:var(--primary); transform:translateX(5px); }
@@ -158,7 +149,6 @@
         .report-status { font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:4px; background:rgba(16,185,129,0.1); color:var(--success); }
         .report-status.pending { background:rgba(245,158,11,0.1); color:var(--warning); }
 
-        /* VIDEO LAYOUT (IA BROADCAST) */
         .video-layout { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; height:calc(100vh - 150px); }
         .video-player-container { background:black; border-radius:12px; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
         .video-player-container video { width:100%; height:100%; object-fit:contain; }
@@ -241,7 +231,7 @@
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value">62%</div><div class="kpi-label">Posesión</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión (Local)</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value">14</div><div class="kpi-label">Tiros (8 al arco)</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">0.86</div><div class="kpi-label">xG Generado</div></div></div>
             </div>
@@ -285,11 +275,8 @@
                 <div class="video-player-container">
                     <video id="matchVideo" controls poster="https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg" crossorigin="anonymous">
                         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
-                        Tu navegador no soporta video.
                     </video>
-                    
                     <canvas id="aiCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
-                    
                     <div id="aiStatsOverlay" style="position: absolute; top: 1rem; right: 1rem; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 25; display: none; font-size: 0.8rem;">
                         <div style="display: flex; gap: 1rem; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 0.4rem; color: #a5b4fc;"><i class="fas fa-running"></i> <span id="playerCount">0</span></div>
@@ -297,12 +284,10 @@
                             <div style="display: flex; align-items: center; gap: 0.4rem; color: #10b981;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span> Live AI</div>
                         </div>
                     </div>
-
                     <div id="aiLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 1rem 2rem; border-radius: 8px; display: none; z-index: 30;">
                         <i class="fas fa-spinner fa-spin"></i> Cargando Motor Neuronal...
                     </div>
                 </div>
-                
                 <div class="events-sidebar">
                     <div class="events-header">
                         <span>Eventos</span>
@@ -310,8 +295,7 @@
                             <i class="fas fa-robot"></i> Activar Tracking
                         </button>
                     </div>
-                    <div class="events-list" id="eventsList">
-                        </div>
+                    <div class="events-list" id="eventsList"></div>
                     <div class="tagging-controls">
                         <button class="tag-btn btn-goal" onclick="tagEvent('gol')"><i class="fas fa-futbol"></i> Gol</button>
                         <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
@@ -350,7 +334,7 @@
         setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
     }
 
-    // UPLOAD VIDEO LOGIC (NUEVO)
+    // UPLOAD VIDEO LOGIC
     document.getElementById('videoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -359,42 +343,41 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
-            // No cambiamos de pestaña porque ya estamos ahí
+            // YA NO CAMBIAMOS DE PESTAÑA A LA FUERZA
         }
     });
 
-    // === IA VIDEO TRACKING (TENSORFLOW.JS REACTIVADO) ===
+    // === SMART TRACKING (IA EN EL NAVEGADOR MEJORADA) ===
     let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // Variables de optimización
-    let lastPredictions = [];
+    // PERSISTENCIA (Anti-Parpadeo)
+    let trackedObjects = []; 
     let frameCount = 0;
-    const FRAME_SKIP = 2;
+    const FRAME_SKIP = 2; // Analizar 1 de cada 2 frames para velocidad
 
     async function toggleAI() {
         if (isAiActive) {
             isAiActive = false;
             aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
             document.getElementById('aiStatsOverlay').style.display = 'none';
-            showToast("Tracking IA Pausado");
+            showToast("Tracking Pausado");
             return;
         }
 
         document.getElementById('aiLoading').style.display = 'block';
         
-        // Cargar modelo si no existe
         if (!aiModel) {
-            showToast("Iniciando Motor de Visión Artificial...");
+            showToast("Cargando cerebro táctico...");
             try {
-                aiModel = await cocoSsd.load(); 
-                showToast("Motor IA activo y listo", "success");
+                // Cargamos modelo 'lite' por velocidad, pero usamos lógica 'smart' para precisión
+                aiModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' }); 
+                showToast("IA Lista: Smart Tracking Activo", "success");
             } catch (error) {
                 console.error(error);
-                showToast("Error de conexión con librería IA", "error");
                 document.getElementById('aiLoading').style.display = 'none';
                 return;
             }
@@ -420,81 +403,93 @@
             return;
         }
 
-        // OPTIMIZACIÓN: Solo detectar cada X cuadros
+        // Detección real solo cada X frames
         if (frameCount % FRAME_SKIP === 0) {
             try {
                 const predictions = await aiModel.detect(videoElement);
-                // Filtramos para quedarnos solo con personas y balones con alta confianza (>55%)
-                lastPredictions = predictions.filter(p => 
-                    (p.class === 'person' || p.class === 'sports ball') && p.score > 0.55
+                
+                // Filtro Inteligente: Personas con confianza > 50%
+                const freshDetections = predictions.filter(p => 
+                    (p.class === 'person' && p.score > 0.5) || (p.class === 'sports ball' && p.score > 0.6)
                 );
                 
-                // Actualizar contador en vivo (Simulamos conteo de jugadores para el KPI)
-                const pCount = lastPredictions.filter(p => p.class === 'person').length;
-                document.getElementById('playerCount').innerText = `${pCount} Agentes`;
+                updateTracker(freshDetections);
                 
-                // Actualizar KPI del Dashboard si existe (Data Binding)
-                const kpi = document.getElementById('kpiPlayers');
-                if(kpi) kpi.innerText = pCount;
-                
-            } catch (e) {
-                console.log("Frame skipped");
-            }
+            } catch (e) { console.log("Skip"); }
         }
         
         frameCount++;
-
-        // DIBUJAR (Siempre dibujamos, aunque usemos predicciones viejas para suavizar)
-        drawPredictions(lastPredictions);
-
+        drawSmartTracking();
         requestAnimationFrame(detectFrame);
     }
 
-    function drawPredictions(predictions) {
+    // ALGORITMO DE PERSISTENCIA (Sigue a los jugadores aunque la IA falle un frame)
+    function updateTracker(detections) {
+        // Reducir vida de objetos viejos
+        trackedObjects.forEach(obj => obj.life--);
+        
+        detections.forEach(det => {
+            // Buscar si este objeto ya existía cerca
+            const match = trackedObjects.find(obj => {
+                const dx = obj.bbox[0] - det.bbox[0];
+                const dy = obj.bbox[1] - det.bbox[1];
+                return Math.sqrt(dx*dx + dy*dy) < 50; // Si está a menos de 50px, es el mismo
+            });
+
+            if (match) {
+                // Actualizar posición y resetear vida
+                match.bbox = det.bbox;
+                match.score = det.score;
+                match.life = 10; // Sobrevive 10 frames sin ser detectado
+            } else {
+                // Nuevo objeto
+                trackedObjects.push({
+                    bbox: det.bbox,
+                    class: det.class,
+                    score: det.score,
+                    life: 10,
+                    color: Math.random() > 0.5 ? '#3b82f6' : '#ef4444' // Asignar equipo simulado (Azul/Rojo)
+                });
+            }
+        });
+
+        // Eliminar muertos
+        trackedObjects = trackedObjects.filter(obj => obj.life > 0);
+        
+        // Actualizar KPI en Dashboard
+        const pCount = trackedObjects.filter(o => o.class === 'person').length;
+        document.getElementById('playerCount').innerText = `${pCount} Agentes`;
+        const kpi = document.getElementById('kpiPlayers');
+        if(kpi) kpi.innerText = pCount;
+    }
+
+    function drawSmartTracking() {
         aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-        predictions.forEach(prediction => {
-            const [x, y, width, height] = prediction.bbox;
-            const isPerson = prediction.class === 'person';
+        trackedObjects.forEach(obj => {
+            const [x, y, width, height] = obj.bbox;
+            const isBall = obj.class === 'sports ball';
             
-            // Colores estilo TV Broadcast
-            const color = isPerson ? '#6366f1' : '#f59e0b'; 
-            const shadowColor = isPerson ? 'rgba(99, 102, 241, 0.4)' : 'rgba(245, 158, 11, 0.6)';
-
-            // 1. Dibujar "Base" (Círculo en los pies)
+            // Colores
+            const color = isBall ? '#f59e0b' : obj.color;
+            
+            // Dibujar Círculo (Smoothed)
             aiContext.beginPath();
-            aiContext.ellipse(x + width / 2, y + height, width / 2, width / 4, 0, 0, 2 * Math.PI);
-            aiContext.fillStyle = shadowColor;
+            aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
+            aiContext.fillStyle = color;
+            aiContext.globalAlpha = 0.4;
             aiContext.fill();
+            aiContext.globalAlpha = 1.0;
             aiContext.lineWidth = 2;
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // 2. Esquinas tácticas
-            if(isPerson) {
-                const lineLen = width * 0.2;
-                aiContext.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-                aiContext.lineWidth = 2;
-                aiContext.beginPath(); aiContext.moveTo(x, y + lineLen); aiContext.lineTo(x, y); aiContext.lineTo(x + lineLen, y); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y); aiContext.lineTo(x + width, y); aiContext.lineTo(x + width, y + lineLen); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x, y + height - lineLen); aiContext.lineTo(x, y + height); aiContext.lineTo(x + lineLen, y + height); aiContext.stroke();
-                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y + height); aiContext.lineTo(x + width, y + height); aiContext.lineTo(x + width, y + height - lineLen); aiContext.stroke();
-            }
-
-            // 3. Etiqueta
-            if (prediction.score > 0.7) {
-                const label = isPerson ? `${(prediction.score*100).toFixed(0)}%` : 'BALL';
-                const labelWidth = isPerson ? 35 : 40;
-                
-                aiContext.fillStyle = color;
-                aiContext.beginPath();
-                aiContext.roundRect(x + width/2 - labelWidth/2, y - 25, labelWidth, 18, 4);
-                aiContext.fill();
-                
-                aiContext.fillStyle = '#ffffff';
-                aiContext.font = 'bold 10px Inter';
-                aiContext.textAlign = 'center';
-                aiContext.fillText(label, x + width/2, y - 12);
+            // Etiqueta (Solo si tiene mucha vida)
+            if (obj.life > 5) {
+                const label = isBall ? '⚽' : (color === '#3b82f6' ? '🔵' : '🔴');
+                aiContext.fillStyle = '#fff';
+                aiContext.font = '12px Arial';
+                aiContext.fillText(label, x + width/2 - 5, y - 5);
             }
         });
     }
@@ -502,19 +497,16 @@
     videoElement.addEventListener('loadeddata', resizeCanvas);
     window.addEventListener('resize', resizeCanvas);
 
-    // VIDEO TAGGING LOGIC
+    // TAGGING MANUAL
     let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || [
         {time: 15, type: 'gol', label: 'Gol - A. Sánchez'},
-        {time: 32, type: 'tarjeta', label: 'Amarilla - Rival'},
-        {time: 65, type: 'gol', label: 'Gol - Rival'},
-        {time: 88, type: 'gol', label: 'Gol - Brereton'}
+        {time: 32, type: 'tarjeta', label: 'Amarilla - Rival'}
     ];
 
     function renderVideoEvents() {
         const list = document.getElementById('eventsList');
-        if(!list) return; // Fix si estamos en otra vista
+        if(!list) return;
         list.innerHTML = '';
-        
         videoEvents.sort((a,b) => a.time - b.time).forEach((ev, index) => {
             let icon = '⚽';
             if(ev.type === 'falta') icon = '⚠️';
@@ -531,17 +523,12 @@
 
     function tagEvent(type) {
         const video = document.getElementById('matchVideo');
-        const time = video.currentTime / 60; // Convertir a minutos
-        let label = 'Evento';
-        if(type === 'gol') label = 'Gol Anotado';
-        if(type === 'falta') label = 'Falta Táctica';
-        if(type === 'corner') label = 'Tiro de Esquina';
-        if(type === 'tarjeta') label = 'Tarjeta Mostrada';
-        
+        const time = video.currentTime / 60; 
+        let label = type.charAt(0).toUpperCase() + type.slice(1);
         videoEvents.push({time: time, type: type, label: label});
         localStorage.setItem('pitada_video_events', JSON.stringify(videoEvents));
         renderVideoEvents();
-        showToast(`Clip guardado en el minuto ${Math.floor(time)}`);
+        showToast(`Clip guardado: ${label}`);
     }
 
     function deleteVideoEvent(index) {
@@ -550,21 +537,15 @@
         renderVideoEvents();
     }
 
-    function jumpToVideo(min) { 
-        const vid = document.getElementById('matchVideo'); 
-        vid.currentTime = min * 60; 
-        vid.play(); 
-    }
+    function jumpToVideo(min) { const vid = document.getElementById('matchVideo'); vid.currentTime = min * 60; vid.play(); }
 
     function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); if(viewId === 'videos') renderVideoEvents(); }
     
     let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
     
-    // PERSISTENCIA
     const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
     function saveSquadData() { localStorage.setItem('pitada_squad', JSON.stringify(squadDB)); }
-
     const reportsDB = [{ id: 1, title: 'Análisis Post-Partido: vs Colegio Alerce', date: '23/10/2023', type: 'PDF', size: '2.4 MB', status: 'ready' }, { id: 2, title: 'Clips Tácticos: vs Unión Española', date: '15/10/2023', type: 'VIDEO', size: '154 MB', status: 'ready' }, { id: 3, title: 'Informe de Scouting: Próximo Rival', date: '10/10/2023', type: 'PDF', size: '1.1 MB', status: 'ready' }, { id: 4, title: 'Resumen Físico Mensual', date: '01/10/2023', type: 'PDF', size: '3.5 MB', status: 'processing' }];
     const shotData = [ { x: 92, y: 48, result: 'gol', player: 'J. Pérez', xG: 0.78 }, { x: 88, y: 35, result: 'atajada', player: 'M. Soto', xG: 0.12 }, { x: 75, y: 60, result: 'fuera', player: 'L. Díaz', xG: 0.05 }, { x: 95, y: 52, result: 'gol', player: 'J. Pérez', xG: 0.95 }, { x: 82, y: 45, result: 'atajada', player: 'C. Muñoz', xG: 0.33 }, { x: 90, y: 50, result: 'atajada', player: 'J. Pérez', xG: 0.45 } ];
     const passPlayers = [ { id: 1, name: 'C. Bravo', number: 1, x: 10, y: 50, pos: 'gk' }, { id: 2, name: 'G. Medel', number: 17, x: 30, y: 30, pos: 'def' }, { id: 3, name: 'G. Maripán', number: 3, x: 30, y: 70, pos: 'def' }, { id: 4, name: 'M. Isla', number: 4, x: 45, y: 15, pos: 'def' }, { id: 5, name: 'G. Suazo', number: 2, x: 45, y: 85, pos: 'def' }, { id: 6, name: 'E. Pulgar', number: 13, x: 50, y: 50, pos: 'mid' }, { id: 8, name: 'A. Vidal', number: 8, x: 65, y: 40, pos: 'mid' }, { id: 20, name: 'C. Aránguiz', number: 20, x: 65, y: 60, pos: 'mid' }, { id: 7, name: 'A. Sánchez', number: 7, x: 80, y: 30, pos: 'fwd' }, { id: 10, name: 'Ben Brereton', number: 22, x: 80, y: 70, pos: 'fwd' }, { id: 11, name: 'E. Vargas', number: 11, x: 85, y: 50, pos: 'fwd' } ];
@@ -574,7 +555,6 @@
 
     window.onload = function() { initTheme(); initHeatmap(); initIndividualHeatmap(); initMomentumChart(); updateLegend(); renderShotMap(); changePlayer("7"); updateComparison(); updateIndividualHeatmap("17"); renderVideoEvents(); };
 
-    // SQUAD & PERSISTENCE
     function filterSquad(cat, btn) { currentFilter=cat; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSquad(); }
     function filterSquadByName(txt) { currentSearch=txt.toLowerCase(); renderSquad(); }
     function changeStatus(id) { const p=squadDB.find(x=>x.id===id); if(p.status==='fit')p.status='injured'; else if(p.status==='injured')p.status='yellow'; else if(p.status==='yellow')p.status='red'; else p.status='fit'; saveSquadData(); renderSquad(); showToast('Estado del jugador actualizado'); }
@@ -582,14 +562,7 @@
     function closeAddPlayerModal() { document.getElementById('addPlayerModal').style.display='none'; }
     function saveNewPlayer() { const n=document.getElementById('newPlayerName').value, m=document.getElementById('newPlayerNum').value, o=document.getElementById('newPlayerPos').value; if(n&&m){ squadDB.push({id:Date.now(),name:n,num:m,pos:o,status:'fit'}); saveSquadData(); closeAddPlayerModal(); renderSquad(); document.getElementById('newPlayerName').value=''; document.getElementById('newPlayerNum').value=''; showToast('Jugador fichado correctamente'); } else showToast("Faltan datos", 'error'); }
     function deletePlayer(id) { playerToDelete = id; document.getElementById('deleteModal').style.display='block'; }
-    function confirmDeletePlayer() { 
-        if(playerToDelete) { 
-            squadDB = squadDB.filter(p => p.id !== playerToDelete); 
-            saveSquadData(); renderSquad(); 
-            document.getElementById('deleteModal').style.display='none'; 
-            showToast('Jugador eliminado'); 
-        } 
-    }
+    function confirmDeletePlayer() { if(playerToDelete) { squadDB = squadDB.filter(p => p.id !== playerToDelete); saveSquadData(); renderSquad(); document.getElementById('deleteModal').style.display='none'; showToast('Jugador eliminado'); } }
     
     function renderSquad() {
         const grid=document.getElementById('squadGrid'); grid.innerHTML='';
@@ -600,10 +573,8 @@
         });
     }
 
-    // REPORTS
     function renderReports() { const l=document.getElementById('reportsList'); l.innerHTML=''; reportsDB.forEach(r => { const icon = r.type==='PDF'?'<i class="fas fa-file-pdf"></i>':'<i class="fas fa-video"></i>'; const statusBadge = r.status==='ready' ? '<span class="report-status">Disponible</span>' : '<span class="report-status pending">Procesando...</span>'; const btn = r.status==='ready' ? `<button class="btn-outline" onclick="showToast('Descargando ${r.title}...')"><i class="fas fa-download"></i> Descargar</button>` : `<button class="btn-outline" disabled style="opacity:0.5; cursor:not-allowed;"><i class="fas fa-clock"></i> Esperar</button>`; l.innerHTML += `<div class="report-item"><div style="display:flex; align-items:center;"><div class="report-icon">${icon}</div><div class="report-info"><h4>${r.title}</h4><p>${r.date} · ${r.size}</p></div></div><div style="display:flex; align-items:center; gap:1rem;">${statusBadge}${btn}</div></div>`; }); }
 
-    // DASHBOARD & CHARTS
     function setBoardMode(m, b) { currentMode=m; document.querySelectorAll('.mode-btn').forEach(btn=>btn.classList.remove('active')); b.classList.add('active'); ['heatmapContainer','shotmapContainer','passmapContainer','actionmapContainer'].forEach(id=>document.getElementById(id).classList.add('hidden-layer')); document.getElementById('heatmapControls').style.opacity='0.3'; document.getElementById('heatmapControls').style.pointerEvents='none'; if(m==='heatmap'){document.getElementById('heatmapContainer').classList.remove('hidden-layer'); document.getElementById('heatmapControls').style.opacity='1'; document.getElementById('heatmapControls').style.pointerEvents='auto';} else if(m==='shotmap')document.getElementById('shotmapContainer').classList.remove('hidden-layer'); else if(m==='passmap'){document.getElementById('passmapContainer').classList.remove('hidden-layer');renderPassNetwork();} else if(m==='actionmap'){document.getElementById('actionmapContainer').classList.remove('hidden-layer');renderActionMap();} updateLegend(); }
     function renderShotMap() { const c=document.getElementById('shotmapContainer'); c.innerHTML=''; shotData.forEach(s=>{const e=document.createElement('div');e.className=`shot-marker shot-${s.result}`;e.style.left=`${s.x}%`;e.style.top=`${s.y}%`;e.addEventListener('mouseenter',(ev)=>showTooltip(ev,s));e.addEventListener('mouseleave',hideTooltip);c.appendChild(e);}); }
     function renderPassNetwork() { const s=document.getElementById('passLinesSvg'); const n=document.getElementById('passNodesLayer'); s.innerHTML=''; n.innerHTML=''; passConnections.forEach(c=>{const p1=passPlayers.find(p=>p.id===c.from),p2=passPlayers.find(p=>p.id===c.to);if(p1&&p2){const l=document.createElementNS("http://www.w3.org/2000/svg","line");l.setAttribute("x1",`${p1.x}%`);l.setAttribute("y1",`${p1.y}%`);l.setAttribute("x2",`${p2.x}%`);l.setAttribute("y2",`${p2.y}%`);l.setAttribute("stroke-width",Math.max(1,Math.min(c.count/3,8)));l.setAttribute("class","pass-line");l.addEventListener('mousemove',(e)=>showTooltipSimple(e,`↔️ ${c.count} Pases`,`${p1.name}-${p2.name}`));l.addEventListener('mouseleave',hideTooltip);s.appendChild(l);}}); passPlayers.forEach(p=>{const el=document.createElement('div');el.className='player-node';el.style.left=`${p.x}%`;el.style.top=`${p.y}%`;el.textContent=p.number;el.addEventListener('mouseenter',(e)=>showTooltip(e,{result:'jugador',player:p.name,xG:p.pos.toUpperCase(),x:p.x,y:p.y}));el.addEventListener('mouseleave',hideTooltip);n.appendChild(el);}); }
