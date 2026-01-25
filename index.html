@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === TUS ESTILOS ORIGINALES (INTACTOS) === */
+        /* === ESTILOS BASE === */
         :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -241,9 +241,9 @@
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value" id="kpiFrames">0</div><div class="kpi-label">Cuadros</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">En Vivo</div><div class="kpi-label">Estado IA</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value">62%</div><div class="kpi-label">Posesión</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value">14</div><div class="kpi-label">Tiros (8 al arco)</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">0.86</div><div class="kpi-label">xG Generado</div></div></div>
             </div>
             <div class="dashboard-grid">
                 <div class="card tactical-board">
@@ -260,8 +260,7 @@
                 </div>
                 <div class="side-panel">
                     <div class="card"><div class="card-header"><div class="card-title" style="color: var(--text-main);"><i class="fas fa-robot"></i> Coach IA</div></div><div class="reco-item alert"><h4>🚨 Definición Imprecisa</h4><p>Solo 30% de tiros a puerta.</p></div><div class="reco-item"><h4>✅ Balón Parado</h4><p>2 ocasiones claras de córner.</p></div></div>
-                    <div class="card"><div class="upload-zone" onclick="document.getElementById('videoInput').click()"><i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i><p style="font-weight: 500; color: var(--text-main);">Subir Partido</p><input type="file" id="videoInput" hidden accept="video/*"></div></div>
-                </div>
+                    </div>
                 <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-wave-square"></i> Historia del Partido</div></div><div style="position: relative; height: 250px; width: 100%;"><div id="timelineEvents" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></div><canvas id="momentumChart"></canvas></div></div>
                 <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-trophy" style="color: var(--warning);"></i> Líderes del Partido</div></div><div class="leaders-grid"><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #FF6B6B, #EE5253);">AV</div><div class="leader-medal">🏃‍♂️</div></div><div class="leader-info"><div class="leader-metric">Distancia</div><div class="leader-name">Arturo Vidal</div><div class="leader-value">11.8 km</div><div class="progress-mini"><div class="bar" style="width: 100%; background: #EE5253;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #48DBFB, #0ABDE3);">AS</div><div class="leader-medal">⚡</div></div><div class="leader-info"><div class="leader-metric">Velocidad Máx</div><div class="leader-name">Alexis Sánchez</div><div class="leader-value">34.2 km/h</div><div class="progress-mini"><div class="bar" style="width: 95%; background: #0ABDE3;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #1DD1A1, #10AC84);">CA</div><div class="leader-medal">🎯</div></div><div class="leader-info"><div class="leader-metric">Precisión Pases</div><div class="leader-name">Charles Aránguiz</div><div class="leader-value">94%</div><div class="progress-mini"><div class="bar" style="width: 94%; background: #10AC84;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #F368E0, #C0392B);">GM</div><div class="leader-medal">🛡️</div></div><div class="leader-info"><div class="leader-metric">Recuperaciones</div><div class="leader-name">Gary Medel</div><div class="leader-value">14</div><div class="progress-mini"><div class="bar" style="width: 88%; background: #C0392B;"></div></div></div></div></div></div>
                 <div class="card indiv-heatmap-card"><div class="indiv-heatmap-controls"><div class="card-header" style="margin-bottom: 0.5rem;"><div class="card-title"><i class="fas fa-fire-alt"></i> Mapa Individual</div></div><select id="indivPlayerSelector" class="player-selector" onchange="updateIndividualHeatmap(this.value)"><option value="17">Gary Medel</option><option value="8">Arturo Vidal</option><option value="7">Alexis Sánchez</option><option value="4">Mauricio Isla</option></select><div style="margin-top: auto;"><div class="indiv-stat-row" style="margin-bottom: 0.5rem;"><span>Distancia</span><strong id="indivDist">9.2 km</strong></div><div class="indiv-stat-row"><span>Sprints</span><strong id="indivSprints">18</strong></div></div></div><div class="indiv-heatmap-wrapper"><div class="cancha-bg-clip" style="border: 2px solid rgba(255,255,255,0.1); border-radius: 8px;"></div><div id="indivHeatmapContainer" style="width: 100%; height: 100%;"></div></div></div>
@@ -271,9 +270,15 @@
         </div>
 
         <div id="view-videos" class="view-section">
-            <div style="margin-bottom: 2rem;">
-                <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Video Análisis Táctico</h2>
-                <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA de visión.</p>
+            <div style="margin-bottom: 2rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Video Análisis Táctico</h2>
+                    <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA.</p>
+                </div>
+                <button class="btn-primary" onclick="document.getElementById('videoInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i> Subir Video
+                </button>
+                <input type="file" id="videoInput" hidden accept="video/*">
             </div>
             
             <div class="video-layout">
@@ -301,7 +306,7 @@
                 <div class="events-sidebar">
                     <div class="events-header">
                         <span>Eventos</span>
-                        <button class="btn-outline" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-color: var(--primary); color: var(--primary);" onclick="togglePythonAI()">
+                        <button class="btn-outline" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-color: var(--primary); color: var(--primary);" onclick="toggleAI()">
                             <i class="fas fa-robot"></i> Activar Tracking
                         </button>
                     </div>
@@ -335,14 +340,6 @@
 </div>
 
 <script>
-    // === 1. MEMORIA GLOBAL (PUENTE DE DATOS) ===
-    let MATCH_DATA = {
-        totalFrames: 0,
-        playersHistory: [],
-        possession: { local: 0, visit: 0 },
-        heatmapPoints: [] // Acumulador de puntos (x,y)
-    };
-
     // TOAST SYSTEM
     function showToast(msg, type = 'success') {
         const c = document.getElementById('toastContainer');
@@ -353,7 +350,7 @@
         setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
     }
 
-    // UPLOAD VIDEO LOGIC
+    // UPLOAD VIDEO LOGIC (NUEVO)
     document.getElementById('videoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -362,27 +359,23 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
-            // Reset Data
-            MATCH_DATA = { totalFrames: 0, playersHistory: [], possession: { local: 0, visit: 0 }, heatmapPoints: [] };
-            navigate('videos');
+            // No cambiamos de pestaña porque ya estamos ahí
         }
     });
 
-    // === IA HÍBRIDA (CONEXIÓN A PYTHON LOCAL) ===
-    const PYTHON_API_URL = "http://127.0.0.1:5000/analizar_frame"; // Tu servidor local
+    // === IA VIDEO TRACKING (TENSORFLOW.JS REACTIVADO) ===
+    let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // Canvas oculto para enviar "fotos" al servidor
-    let captureCanvas = document.createElement('canvas');
-    let captureCtx = captureCanvas.getContext('2d');
-
+    // Variables de optimización
+    let lastPredictions = [];
     let frameCount = 0;
-    const FRAME_SKIP = 3; // Enviar al servidor cada 3 cuadros para no saturar
+    const FRAME_SKIP = 2;
 
-    async function togglePythonAI() {
+    async function toggleAI() {
         if (isAiActive) {
             isAiActive = false;
             aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -391,159 +384,125 @@
             return;
         }
 
-        // Test de conexión
-        try {
-            document.getElementById('aiLoading').style.display = 'block';
-            showToast("Conectando con Motor Táctico (Python)...");
-            
-            // Verificamos si el servidor responde
-            setTimeout(() => {
+        document.getElementById('aiLoading').style.display = 'block';
+        
+        // Cargar modelo si no existe
+        if (!aiModel) {
+            showToast("Iniciando Motor de Visión Artificial...");
+            try {
+                aiModel = await cocoSsd.load(); 
+                showToast("Motor IA activo y listo", "success");
+            } catch (error) {
+                console.error(error);
+                showToast("Error de conexión con librería IA", "error");
                 document.getElementById('aiLoading').style.display = 'none';
-                document.getElementById('aiStatsOverlay').style.display = 'block';
-                showToast("Conexión Establecida: YOLOv8 Activo", "success");
-                isAiActive = true;
-                resizeCanvas();
-                processFrameLoop();
-                videoElement.play();
-            }, 1000);
-
-        } catch (e) {
-            showToast("Error: No se detecta el servidor Python.", "error");
+                return;
+            }
         }
+
+        document.getElementById('aiLoading').style.display = 'none';
+        document.getElementById('aiStatsOverlay').style.display = 'block';
+        isAiActive = true;
+        
+        resizeCanvas();
+        detectFrame();
+        videoElement.play();
     }
 
     function resizeCanvas() {
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
-        captureCanvas.width = 640; // Reducimos resolución para envío rápido
-        captureCanvas.height = 360; 
     }
 
-    async function processFrameLoop() {
+    async function detectFrame() {
         if (!isAiActive || videoElement.paused || videoElement.ended) {
-            if(isAiActive && !videoElement.paused) requestAnimationFrame(processFrameLoop);
+            if(isAiActive && !videoElement.paused) requestAnimationFrame(detectFrame);
             return;
         }
 
-        // Solo procesamos 1 de cada X frames para fluidez
+        // OPTIMIZACIÓN: Solo detectar cada X cuadros
         if (frameCount % FRAME_SKIP === 0) {
-            // 1. Capturar frame del video
-            captureCtx.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
-            
-            // 2. Convertir a Blob (Archivo)
-            captureCanvas.toBlob(async (blob) => {
-                if(!blob) return;
+            try {
+                const predictions = await aiModel.detect(videoElement);
+                // Filtramos para quedarnos solo con personas y balones con alta confianza (>55%)
+                lastPredictions = predictions.filter(p => 
+                    (p.class === 'person' || p.class === 'sports ball') && p.score > 0.55
+                );
                 
-                const formData = new FormData();
-                formData.append('image', blob);
-
-                try {
-                    // 3. ENVIAR A PYTHON
-                    const response = await fetch(PYTHON_API_URL, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        const predictions = await response.json();
-                        // 4. Dibujar respuesta y GUARDAR DATOS
-                        drawAndRecord(predictions);
-                    }
-                } catch (err) {
-                    console.warn("Python no responde, ¿está encendido server.py?");
-                }
-            }, 'image/jpeg', 0.8);
+                // Actualizar contador en vivo (Simulamos conteo de jugadores para el KPI)
+                const pCount = lastPredictions.filter(p => p.class === 'person').length;
+                document.getElementById('playerCount').innerText = `${pCount} Agentes`;
+                
+                // Actualizar KPI del Dashboard si existe (Data Binding)
+                const kpi = document.getElementById('kpiPlayers');
+                if(kpi) kpi.innerText = pCount;
+                
+            } catch (e) {
+                console.log("Frame skipped");
+            }
         }
         
         frameCount++;
-        requestAnimationFrame(processFrameLoop); // Loop visual
+
+        // DIBUJAR (Siempre dibujamos, aunque usemos predicciones viejas para suavizar)
+        drawPredictions(lastPredictions);
+
+        requestAnimationFrame(detectFrame);
     }
 
-    function drawAndRecord(data) {
+    function drawPredictions(predictions) {
         aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        
-        // Factores de escala (porque enviamos imagen pequeña a Python)
-        const scaleX = canvasElement.width / 640;
-        const scaleY = canvasElement.height / 360;
 
-        let pCount = 0;
-        let local = 0; let visit = 0;
-
-        data.forEach(d => {
-            // Ajustar coordenadas
-            const x = d.bbox[0] * scaleX;
-            const y = d.bbox[1] * scaleY;
-            const width = d.bbox[2] * scaleX;
-            const height = d.bbox[3] * scaleY;
+        predictions.forEach(prediction => {
+            const [x, y, width, height] = prediction.bbox;
+            const isPerson = prediction.class === 'person';
             
-            const isPerson = d.class === 'person';
-            
-            // Colores Dinámicos (Vienen de Python o lógica local)
-            let color = '#10b981'; // Default
-            let labelText = 'Jugador';
+            // Colores estilo TV Broadcast
+            const color = isPerson ? '#6366f1' : '#f59e0b'; 
+            const shadowColor = isPerson ? 'rgba(99, 102, 241, 0.4)' : 'rgba(245, 158, 11, 0.6)';
 
-            if (d.class === 'sports ball') {
-                color = '#f59e0b'; 
-                labelText = '⚽';
-            } else {
-                if (d.team === 'local') { color = '#3b82f6'; labelText = '🔵 Local'; local++; }
-                else if (d.team === 'visitante') { color = '#ef4444'; labelText = '🔴 Visita'; visit++; }
-                else { color = '#10b981'; labelText = '👤'; }
-            }
-
-            if(d.class === 'person') {
-                pCount++;
-                // GUARDAR DATA PARA DASHBOARD
-                MATCH_DATA.heatmapPoints.push({
-                    x: Math.floor((x + width/2) / canvasElement.width * 1000), // Normalizado 0-1000
-                    y: Math.floor((y + height) / canvasElement.height * 600),   // Normalizado 0-600
-                    value: 1
-                });
-            }
-            
-            // --- DIBUJO ESTILO BROADCAST ---
-            // 1. Círculo en los pies (Perspectiva)
+            // 1. Dibujar "Base" (Círculo en los pies)
             aiContext.beginPath();
-            aiContext.ellipse(x + width/2, y + height, width/1.5, width/4, 0, 0, 2 * Math.PI);
-            aiContext.fillStyle = color;
-            aiContext.globalAlpha = 0.4;
+            aiContext.ellipse(x + width / 2, y + height, width / 2, width / 4, 0, 0, 2 * Math.PI);
+            aiContext.fillStyle = shadowColor;
             aiContext.fill();
-            aiContext.globalAlpha = 1.0;
             aiContext.lineWidth = 2;
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // 2. Etiqueta Flotante
-            if (d.score > 0.5) {
-                aiContext.font = 'bold 12px Inter';
-                const textW = aiContext.measureText(labelText).width + 10;
+            // 2. Esquinas tácticas
+            if(isPerson) {
+                const lineLen = width * 0.2;
+                aiContext.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                aiContext.lineWidth = 2;
+                aiContext.beginPath(); aiContext.moveTo(x, y + lineLen); aiContext.lineTo(x, y); aiContext.lineTo(x + lineLen, y); aiContext.stroke();
+                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y); aiContext.lineTo(x + width, y); aiContext.lineTo(x + width, y + lineLen); aiContext.stroke();
+                aiContext.beginPath(); aiContext.moveTo(x, y + height - lineLen); aiContext.lineTo(x, y + height); aiContext.lineTo(x + lineLen, y + height); aiContext.stroke();
+                aiContext.beginPath(); aiContext.moveTo(x + width - lineLen, y + height); aiContext.lineTo(x + width, y + height); aiContext.lineTo(x + width, y + height - lineLen); aiContext.stroke();
+            }
+
+            // 3. Etiqueta
+            if (prediction.score > 0.7) {
+                const label = isPerson ? `${(prediction.score*100).toFixed(0)}%` : 'BALL';
+                const labelWidth = isPerson ? 35 : 40;
                 
                 aiContext.fillStyle = color;
                 aiContext.beginPath();
-                aiContext.roundRect(x + width/2 - textW/2, y - 25, textW, 20, 4);
+                aiContext.roundRect(x + width/2 - labelWidth/2, y - 25, labelWidth, 18, 4);
                 aiContext.fill();
                 
                 aiContext.fillStyle = '#ffffff';
+                aiContext.font = 'bold 10px Inter';
                 aiContext.textAlign = 'center';
-                aiContext.fillText(labelText, x + width/2, y - 11);
+                aiContext.fillText(label, x + width/2, y - 12);
             }
         });
-
-        // Actualizar HUD y Memoria
-        document.getElementById('playerCount').innerText = pCount;
-        MATCH_DATA.totalFrames++;
-        MATCH_DATA.playersHistory.push(pCount);
-        MATCH_DATA.possession.local += local;
-        MATCH_DATA.possession.visit += visit;
-        
-        // Limitar memoria array (buffer circular)
-        if(MATCH_DATA.heatmapPoints.length > 3000) MATCH_DATA.heatmapPoints.shift();
     }
 
     videoElement.addEventListener('loadeddata', resizeCanvas);
     window.addEventListener('resize', resizeCanvas);
 
-    // === ETIQUETADO MANUAL ===
+    // VIDEO TAGGING LOGIC
     let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || [
         {time: 15, type: 'gol', label: 'Gol - A. Sánchez'},
         {time: 32, type: 'tarjeta', label: 'Amarilla - Rival'},
@@ -553,7 +512,7 @@
 
     function renderVideoEvents() {
         const list = document.getElementById('eventsList');
-        if(!list) return; 
+        if(!list) return; // Fix si estamos en otra vista
         list.innerHTML = '';
         
         videoEvents.sort((a,b) => a.time - b.time).forEach((ev, index) => {
@@ -568,12 +527,11 @@
             div.innerHTML = `<div class="event-time">${Math.floor(ev.time)}'</div><div class="event-icon">${icon}</div><div class="event-desc">${ev.label}</div><i class="fas fa-trash-alt" style="font-size:0.8rem; color:var(--text-muted); opacity:0.5;" onclick="event.stopPropagation(); deleteVideoEvent(${index})"></i>`;
             list.appendChild(div);
         });
-        list.scrollTop = list.scrollHeight;
     }
 
     function tagEvent(type) {
         const video = document.getElementById('matchVideo');
-        const time = video.currentTime / 60;
+        const time = video.currentTime / 60; // Convertir a minutos
         let label = 'Evento';
         if(type === 'gol') label = 'Gol Anotado';
         if(type === 'falta') label = 'Falta Táctica';
@@ -583,7 +541,7 @@
         videoEvents.push({time: time, type: type, label: label});
         localStorage.setItem('pitada_video_events', JSON.stringify(videoEvents));
         renderVideoEvents();
-        showToast(`Clip guardado: ${label} (${Math.floor(time)}')`);
+        showToast(`Clip guardado en el minuto ${Math.floor(time)}`);
     }
 
     function deleteVideoEvent(index) {
@@ -592,59 +550,15 @@
         renderVideoEvents();
     }
 
-    function jumpToVideo(min) { const vid = document.getElementById('matchVideo'); vid.currentTime = min * 60; vid.play(); }
-
-    function navigate(viewId) { 
-        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
-        document.getElementById(`view-${viewId}`).classList.add('active'); 
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
-        document.getElementById(`nav-${viewId}`).classList.add('active'); 
-        const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; 
-        document.getElementById('pageTitle').innerText = titles[viewId]; 
-        document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; 
-        if(viewId === 'plantilla') renderSquad(); 
-        if(viewId === 'reportes') renderReports(); 
-        if(viewId === 'videos') renderVideoEvents();
-        
-        // TRIGGER ACTUALIZACIÓN DASHBOARD
-        if(viewId === 'dashboard') {
-            setTimeout(updateDashboardVisuals, 100); 
-        }
-    }
-    
-    // === 4. DASHBOARD UPDATE (PINTAR GRÁFICOS REALES) ===
-    let heatmapInstance = null;
-    let momentumChartInstance = null;
-    
-    function updateDashboardVisuals() {
-        if(MATCH_DATA.totalFrames < 2) return;
-
-        // KPIs
-        const avg = Math.round(MATCH_DATA.playersHistory.reduce((a,b)=>a+b,0) / MATCH_DATA.playersHistory.length) || 0;
-        document.getElementById('kpiPlayers').innerText = avg;
-        document.getElementById('kpiFrames').innerText = MATCH_DATA.totalFrames;
-
-        const tot = MATCH_DATA.possession.local + MATCH_DATA.possession.visit;
-        const locP = tot > 0 ? Math.round((MATCH_DATA.possession.local / tot)*100) : 50;
-        document.getElementById('kpiPossession').innerText = locP + "%";
-
-        // Heatmap Real
-        const cont = document.getElementById('heatmapContainer');
-        if(cont && cont.offsetWidth > 0) {
-            if(!heatmapInstance) heatmapInstance = h337.create({ container: cont, radius: 25 });
-            
-            const w = cont.offsetWidth;
-            const h = cont.offsetHeight;
-            const finalData = MATCH_DATA.heatmapPoints.map(p => ({
-                x: Math.floor((p.x / 1000) * w),
-                y: Math.floor((p.y / 600) * h),
-                value: 10
-            }));
-            heatmapInstance.setData({ max: 50, data: finalData });
-        }
+    function jumpToVideo(min) { 
+        const vid = document.getElementById('matchVideo'); 
+        vid.currentTime = min * 60; 
+        vid.play(); 
     }
 
-    let currentMode='heatmap', individualHeatmapInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
+    function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); if(viewId === 'videos') renderVideoEvents(); }
+    
+    let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
     
     // PERSISTENCIA
     const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
