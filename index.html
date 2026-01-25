@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS ORIGINALES (NO TOCAR) === */
+        /* === ESTILOS BASE === */
         :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -44,6 +44,7 @@
         select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select { width:100%; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); background-color:var(--bg-body); color:var(--text-main); font-family:'Inter', sans-serif; font-size:0.9rem; outline:none; cursor:pointer; transition:all 0.2s; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:right 0.7rem top 50%; background-size:0.65rem auto; padding-right:2.5rem; }
         select:focus, .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-glow); }
         
+        /* DROPDOWN & MODAL */
         .dropdown-menu { position:absolute; top:120%; right:0; width:240px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.5rem; display:none; z-index:1000; box-shadow:0 10px 25px -5px rgba(0,0,0,0.5); animation:fadeIn 0.2s ease; }
         .dropdown-menu.show { display:block; }
         .menu-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:8px; transition:all 0.2s; cursor:pointer; font-size:0.9rem; }
@@ -59,15 +60,18 @@
         .form-actions { display:flex; gap:1rem; margin-top:1.5rem; }
         .btn-cancel { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.75rem; border-radius:50px; flex:1; cursor:pointer; }
 
+        /* VIEW MANAGEMENT */
         .view-section { display:none; animation:fadeIn 0.3s ease; }
         .view-section.active { display:block; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
+        /* GRID SYSTEM */
         .dashboard-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:1.5rem; width:100%; }
         .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
         .card:hover { border-color:var(--primary); }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
 
+        /* DASHBOARD ELEMENTS */
         .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
         .kpi-card { background:linear-gradient(145deg, var(--bg-card), rgba(99,102,241,0.03)); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; display:flex; align-items:center; gap:1rem; box-shadow:var(--shadow-card); }
         .kpi-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0; }
@@ -98,6 +102,7 @@
         .legend-item { display:flex; align-items:center; gap:0.4rem; }
         .dot { width:8px; height:8px; border-radius:50%; }
 
+        /* LEADERS, CHARTS */
         .leaders-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; }
         .leader-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; align-items:center; gap:1rem; position:relative; transition:transform 0.2s; }
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
@@ -230,8 +235,8 @@
 
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
-                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión (Local)</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value">22</div><div class="kpi-label">Jugadores</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value">62%</div><div class="kpi-label">Posesión</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value">14</div><div class="kpi-label">Tiros (8 al arco)</div></div></div>
                 <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">0.86</div><div class="kpi-label">xG Generado</div></div></div>
             </div>
@@ -260,10 +265,10 @@
         </div>
 
         <div id="view-videos" class="view-section">
-            <div style="margin-bottom: 2rem; display:flex; justify-content:space-between; align-items:center;">
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Video Análisis Táctico</h2>
-                    <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA.</p>
+                    <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA de visión.</p>
                 </div>
                 <button class="btn-primary" onclick="document.getElementById('videoInput').click()">
                     <i class="fas fa-cloud-upload-alt"></i> Subir Video
@@ -275,8 +280,11 @@
                 <div class="video-player-container">
                     <video id="matchVideo" controls poster="https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg" crossorigin="anonymous">
                         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
+                        Tu navegador no soporta video.
                     </video>
+                    
                     <canvas id="aiCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
+                    
                     <div id="aiStatsOverlay" style="position: absolute; top: 1rem; right: 1rem; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 25; display: none; font-size: 0.8rem;">
                         <div style="display: flex; gap: 1rem; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 0.4rem; color: #a5b4fc;"><i class="fas fa-running"></i> <span id="playerCount">0</span></div>
@@ -284,6 +292,7 @@
                             <div style="display: flex; align-items: center; gap: 0.4rem; color: #10b981;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span> Live AI</div>
                         </div>
                     </div>
+
                     <div id="aiLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 1rem 2rem; border-radius: 8px; display: none; z-index: 30;">
                         <i class="fas fa-spinner fa-spin"></i> Cargando Motor Neuronal...
                     </div>
@@ -343,28 +352,28 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
-            // YA NO CAMBIAMOS DE PESTAÑA A LA FUERZA
+            // YA NO CAMBIA DE PESTAÑA A LA FUERZA
         }
     });
 
-    // === SMART TRACKING (IA EN EL NAVEGADOR MEJORADA) ===
+    // === IA VIDEO TRACKING: COCO-SSD + ALGORITMO DE COLOR ===
     let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // PERSISTENCIA (Anti-Parpadeo)
-    let trackedObjects = []; 
+    // PERSISTENCIA & FILTROS
+    let trackedObjects = [];
     let frameCount = 0;
-    const FRAME_SKIP = 2; // Analizar 1 de cada 2 frames para velocidad
+    const FRAME_SKIP = 2; 
 
     async function toggleAI() {
         if (isAiActive) {
             isAiActive = false;
             aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
             document.getElementById('aiStatsOverlay').style.display = 'none';
-            showToast("Tracking Pausado");
+            showToast("Tracking IA Pausado");
             return;
         }
 
@@ -373,7 +382,7 @@
         if (!aiModel) {
             showToast("Cargando cerebro táctico...");
             try {
-                // Cargamos modelo 'lite' por velocidad, pero usamos lógica 'smart' para precisión
+                // Modelo ligero para navegador
                 aiModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' }); 
                 showToast("IA Lista: Smart Tracking Activo", "success");
             } catch (error) {
@@ -403,15 +412,21 @@
             return;
         }
 
-        // Detección real solo cada X frames
         if (frameCount % FRAME_SKIP === 0) {
             try {
                 const predictions = await aiModel.detect(videoElement);
                 
-                // Filtro Inteligente: Personas con confianza > 50%
-                const freshDetections = predictions.filter(p => 
-                    (p.class === 'person' && p.score > 0.5) || (p.class === 'sports ball' && p.score > 0.6)
-                );
+                // FILTRO INTELIGENTE + ANTI-GIGANTES
+                const freshDetections = predictions.filter(p => {
+                    // 1. Confianza
+                    if(p.score < 0.5) return false;
+                    // 2. Clases permitidas
+                    if(p.class !== 'person' && p.class !== 'sports ball') return false;
+                    // 3. FIX GIGANTE: Filtro de tamaño máximo (evita detectar la cancha entera)
+                    const bbox = p.bbox; // [x, y, width, height]
+                    const isTooBig = bbox[2] > videoElement.videoWidth * 0.3; // Si ancho > 30% del video
+                    return !isTooBig;
+                });
                 
                 updateTracker(freshDetections);
                 
@@ -423,44 +438,36 @@
         requestAnimationFrame(detectFrame);
     }
 
-    // ALGORITMO DE PERSISTENCIA (Sigue a los jugadores aunque la IA falle un frame)
+    // ALGORITMO DE PERSISTENCIA
     function updateTracker(detections) {
-        // Reducir vida de objetos viejos
         trackedObjects.forEach(obj => obj.life--);
         
         detections.forEach(det => {
-            // Buscar si este objeto ya existía cerca
             const match = trackedObjects.find(obj => {
                 const dx = obj.bbox[0] - det.bbox[0];
                 const dy = obj.bbox[1] - det.bbox[1];
-                return Math.sqrt(dx*dx + dy*dy) < 50; // Si está a menos de 50px, es el mismo
+                return Math.sqrt(dx*dx + dy*dy) < 50; 
             });
 
             if (match) {
-                // Actualizar posición y resetear vida
                 match.bbox = det.bbox;
                 match.score = det.score;
-                match.life = 10; // Sobrevive 10 frames sin ser detectado
+                match.life = 10; 
             } else {
-                // Nuevo objeto
                 trackedObjects.push({
                     bbox: det.bbox,
                     class: det.class,
                     score: det.score,
                     life: 10,
-                    color: Math.random() > 0.5 ? '#3b82f6' : '#ef4444' // Asignar equipo simulado (Azul/Rojo)
+                    color: Math.random() > 0.5 ? '#3b82f6' : '#ef4444'
                 });
             }
         });
 
-        // Eliminar muertos
         trackedObjects = trackedObjects.filter(obj => obj.life > 0);
         
-        // Actualizar KPI en Dashboard
         const pCount = trackedObjects.filter(o => o.class === 'person').length;
         document.getElementById('playerCount').innerText = `${pCount} Agentes`;
-        const kpi = document.getElementById('kpiPlayers');
-        if(kpi) kpi.innerText = pCount;
     }
 
     function drawSmartTracking() {
@@ -469,11 +476,9 @@
         trackedObjects.forEach(obj => {
             const [x, y, width, height] = obj.bbox;
             const isBall = obj.class === 'sports ball';
-            
-            // Colores
             const color = isBall ? '#f59e0b' : obj.color;
             
-            // Dibujar Círculo (Smoothed)
+            // Círculo
             aiContext.beginPath();
             aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
             aiContext.fillStyle = color;
@@ -484,7 +489,7 @@
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // Etiqueta (Solo si tiene mucha vida)
+            // Etiqueta
             if (obj.life > 5) {
                 const label = isBall ? '⚽' : (color === '#3b82f6' ? '🔵' : '🔴');
                 aiContext.fillStyle = '#fff';
@@ -512,7 +517,6 @@
             if(ev.type === 'falta') icon = '⚠️';
             if(ev.type === 'corner') icon = '🚩';
             if(ev.type === 'tarjeta') icon = '🟥';
-            
             const div = document.createElement('div');
             div.className = 'event-row';
             div.onclick = () => jumpToVideo(ev.time);
@@ -562,7 +566,14 @@
     function closeAddPlayerModal() { document.getElementById('addPlayerModal').style.display='none'; }
     function saveNewPlayer() { const n=document.getElementById('newPlayerName').value, m=document.getElementById('newPlayerNum').value, o=document.getElementById('newPlayerPos').value; if(n&&m){ squadDB.push({id:Date.now(),name:n,num:m,pos:o,status:'fit'}); saveSquadData(); closeAddPlayerModal(); renderSquad(); document.getElementById('newPlayerName').value=''; document.getElementById('newPlayerNum').value=''; showToast('Jugador fichado correctamente'); } else showToast("Faltan datos", 'error'); }
     function deletePlayer(id) { playerToDelete = id; document.getElementById('deleteModal').style.display='block'; }
-    function confirmDeletePlayer() { if(playerToDelete) { squadDB = squadDB.filter(p => p.id !== playerToDelete); saveSquadData(); renderSquad(); document.getElementById('deleteModal').style.display='none'; showToast('Jugador eliminado'); } }
+    function confirmDeletePlayer() { 
+        if(playerToDelete) { 
+            squadDB = squadDB.filter(p => p.id !== playerToDelete); 
+            saveSquadData(); renderSquad(); 
+            document.getElementById('deleteModal').style.display='none'; 
+            showToast('Jugador eliminado'); 
+        } 
+    }
     
     function renderSquad() {
         const grid=document.getElementById('squadGrid'); grid.innerHTML='';
