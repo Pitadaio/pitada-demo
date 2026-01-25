@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitada.io | Dashboard Táctico</title>
+    <title>Pitada.io | Suite Técnica Pro</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,7 +53,7 @@
         .menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 0.9rem; }
         .menu-item:hover { background: rgba(99, 102, 241, 0.1); color: var(--text-main); }
         .menu-header { padding: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
-
+        
         select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select { width: 100%; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border); background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none; cursor: pointer; transition: all 0.2s; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 0.7rem top 50%; background-size: 0.65rem auto; padding-right: 2.5rem; }
         select:focus, .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
 
@@ -116,7 +116,6 @@
         .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; }
         .upload-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
 
-        /* PLANTILLA */
         .squad-filters { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
         .filter-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 1.2rem; border-radius: 50px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
@@ -129,8 +128,7 @@
         .player-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .player-card-header { padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); }
         .p-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: var(--text-main); flex-shrink: 0; }
-        .p-info h3 { margin: 0; font-size: 1rem; color: var(--text-main); }
-        .p-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+        .p-info h3 { margin: 0; font-size: 1rem; color: var(--text-main); } .p-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
         .p-number { position: absolute; top: 1rem; right: 1rem; font-size: 1.2rem; font-weight: 800; color: rgba(255,255,255,0.05); font-family: 'Outfit'; }
         .player-card-body { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
         .delete-btn { color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-size: 0.9rem; margin-left: 10px; }
@@ -143,7 +141,6 @@
         .tag-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
         .tag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        /* REPORTS */
         .reports-list { display: flex; flex-direction: column; gap: 1rem; }
         .report-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
         .report-item:hover { border-color: var(--primary); transform: translateX(5px); }
@@ -152,7 +149,6 @@
         .report-status { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .report-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 
-        /* VIDEO LAYOUT (NUEVO) */
         .video-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; height: calc(100vh - 150px); }
         .video-player-container { background: black; border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .video-player-container video { width: 100%; height: 100%; object-fit: contain; }
@@ -165,7 +161,6 @@
         .event-desc { flex: 1; font-size: 0.9rem; color: var(--text-main); }
         .event-icon { font-size: 1.2rem; }
 
-        /* MODAL */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); animation: fadeIn 0.2s; }
         .modal-content { background-color: var(--bg-card); margin: 10% auto; padding: 2rem; border: 1px solid var(--border); width: 100%; max-width: 400px; border-radius: var(--radius-md); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
@@ -176,6 +171,13 @@
         .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem; border-radius: 50px; flex: 1; cursor: pointer; }
 
+        /* TOAST NOTIFICATION (NUEVO) */
+        .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 3000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--bg-card); color: var(--text-main); padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-left: 4px solid var(--primary); display: flex; align-items: center; gap: 1rem; animation: slideIn 0.3s ease; font-size: 0.9rem; font-weight: 500; }
+        .toast.success { border-color: var(--success); } .toast.error { border-color: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { to { transform: translateX(100%); opacity: 0; } }
+
         @media (max-width: 1024px) {
             .app-container { grid-template-columns: 1fr; } .sidebar { display: none; }
             .tactical-board, .radar-card, .comparison-card, .indiv-heatmap-card, .card { grid-column: span 12; }
@@ -183,13 +185,14 @@
             .side-panel { grid-column: span 12; display: flex; flex-direction: row; gap: 1rem; }
             .stat-grid, .leaders-grid { grid-template-columns: repeat(2, 1fr); }
             .video-layout { grid-template-columns: 1fr; height: auto; }
-            .video-player-container { height: 300px; }
-            .events-sidebar { height: 300px; }
+            .video-player-container { height: 300px; } .events-sidebar { height: 300px; }
         }
         @media (max-width: 600px) { .leaders-grid, .stat-grid, .squad-grid { grid-template-columns: 1fr; } .side-panel { flex-direction: column; } .report-item { flex-direction: column; align-items: flex-start; gap: 1rem; } }
     </style>
 </head>
 <body>
+
+<div id="toastContainer" class="toast-container"></div>
 
 <div id="addPlayerModal" class="modal">
     <div class="modal-content">
@@ -198,6 +201,18 @@
         <div class="form-group"><label class="form-label">Dorsal (#)</label><input type="number" id="newPlayerNum" class="form-input" placeholder="Ej: 23"></div>
         <div class="form-group"><label class="form-label">Posición</label><select id="newPlayerPos" class="form-input"><option value="POR">Portero</option><option value="DEF">Defensa</option><option value="MED">Mediocentro</option><option value="DEL">Delantero</option></select></div>
         <div class="form-actions"><button class="btn-cancel" onclick="closeAddPlayerModal()">Cancelar</button><button class="btn-primary" style="flex:1; justify-content:center;" onclick="saveNewPlayer()">Guardar Fichaje</button></div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+        <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem;">¿Estás seguro?</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Esta acción eliminará al jugador de la plantilla permanentemente.</p>
+        <div class="form-actions">
+            <button class="btn-cancel" onclick="document.getElementById('deleteModal').style.display='none'">Cancelar</button>
+            <button class="btn-primary" style="flex:1; justify-content:center; background: var(--danger);" onclick="confirmDeletePlayer()">Eliminar</button>
+        </div>
     </div>
 </div>
 
@@ -254,7 +269,7 @@
                 </div>
                 <div class="side-panel">
                     <div class="card"><div class="card-header"><div class="card-title" style="color: var(--text-main);"><i class="fas fa-robot"></i> Coach IA</div></div><div class="reco-item alert"><h4>🚨 Definición Imprecisa</h4><p>Solo 30% de tiros a puerta.</p></div><div class="reco-item"><h4>✅ Balón Parado</h4><p>2 ocasiones claras de córner.</p></div></div>
-                    <div class="card"><div class="upload-zone" onclick="document.getElementById('fileInput').click()"><i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i><p style="font-weight: 500; color: var(--text-main);">Subir Partido</p><input type="file" id="fileInput" hidden></div></div>
+                    <div class="card"><div class="upload-zone" onclick="document.getElementById('videoInput').click()"><i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i><p style="font-weight: 500; color: var(--text-main);">Subir Partido</p><input type="file" id="videoInput" hidden accept="video/*"></div></div>
                 </div>
                 <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-wave-square"></i> Historia del Partido</div></div><div style="position: relative; height: 250px; width: 100%;"><div id="timelineEvents" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></div><canvas id="momentumChart"></canvas></div></div>
                 <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-trophy" style="color: var(--warning);"></i> Líderes del Partido</div></div><div class="leaders-grid"><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #FF6B6B, #EE5253);">AV</div><div class="leader-medal">🏃‍♂️</div></div><div class="leader-info"><div class="leader-metric">Distancia</div><div class="leader-name">Arturo Vidal</div><div class="leader-value">11.8 km</div><div class="progress-mini"><div class="bar" style="width: 100%; background: #EE5253;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #48DBFB, #0ABDE3);">AS</div><div class="leader-medal">⚡</div></div><div class="leader-info"><div class="leader-metric">Velocidad Máx</div><div class="leader-name">Alexis Sánchez</div><div class="leader-value">34.2 km/h</div><div class="progress-mini"><div class="bar" style="width: 95%; background: #0ABDE3;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #1DD1A1, #10AC84);">CA</div><div class="leader-medal">🎯</div></div><div class="leader-info"><div class="leader-metric">Precisión Pases</div><div class="leader-name">Charles Aránguiz</div><div class="leader-value">94%</div><div class="progress-mini"><div class="bar" style="width: 94%; background: #10AC84;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #F368E0, #C0392B);">GM</div><div class="leader-medal">🛡️</div></div><div class="leader-info"><div class="leader-metric">Recuperaciones</div><div class="leader-name">Gary Medel</div><div class="leader-value">14</div><div class="progress-mini"><div class="bar" style="width: 88%; background: #C0392B;"></div></div></div></div></div></div>
@@ -285,24 +300,16 @@
                     </div>
                     <div class="events-list">
                         <div class="event-row" onclick="jumpToVideo(15)">
-                            <div class="event-time">15'</div>
-                            <div class="event-icon">⚽</div>
-                            <div class="event-desc">Gol - A. Sánchez</div>
+                            <div class="event-time">15'</div><div class="event-icon">⚽</div><div class="event-desc">Gol - A. Sánchez</div>
                         </div>
                         <div class="event-row" onclick="jumpToVideo(32)">
-                            <div class="event-time">32'</div>
-                            <div class="event-icon">🟨</div>
-                            <div class="event-desc">Amarilla - Rival</div>
+                            <div class="event-time">32'</div><div class="event-icon">🟨</div><div class="event-desc">Amarilla - Rival</div>
                         </div>
                         <div class="event-row" onclick="jumpToVideo(65)">
-                            <div class="event-time">65'</div>
-                            <div class="event-icon">⚽</div>
-                            <div class="event-desc">Gol - Rival</div>
+                            <div class="event-time">65'</div><div class="event-icon">⚽</div><div class="event-desc">Gol - Rival</div>
                         </div>
                         <div class="event-row" onclick="jumpToVideo(88)">
-                            <div class="event-time">88'</div>
-                            <div class="event-icon">⚽</div>
-                            <div class="event-desc">Gol - Brereton</div>
+                            <div class="event-time">88'</div><div class="event-icon">⚽</div><div class="event-desc">Gol - Brereton</div>
                         </div>
                     </div>
                 </div>
@@ -327,11 +334,34 @@
 </div>
 
 <script>
+    // TOAST SYSTEM
+    function showToast(msg, type = 'success') {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
+        c.appendChild(t);
+        setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+    }
+
+    // UPLOAD VIDEO LOGIC
+    document.getElementById('videoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            const video = document.getElementById('matchVideo');
+            video.src = url;
+            video.play();
+            showToast(`Partido "${file.name}" cargado correctamente.`);
+            navigate('videos');
+        }
+    });
+
     function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewId}`).classList.add('active'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`nav-${viewId}`).classList.add('active'); const titles = { dashboard: 'Dashboard', videos: 'Video Análisis', plantilla: 'Plantilla', reportes: 'Reportes' }; document.getElementById('pageTitle').innerText = titles[viewId]; document.getElementById('pageSubtitle').style.display = viewId === 'dashboard' ? 'block' : 'none'; if(viewId === 'plantilla') renderSquad(); if(viewId === 'reportes') renderReports(); }
     
-    let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='';
+    let currentMode='heatmap', heatmapInstance, individualHeatmapInstance, momentumChartInstance, radarChartInstance, comparisonChartInstance, currentFilter='all', currentSearch='', playerToDelete=null;
     
-    // PERSISTENCIA (LOCAL STORAGE)
+    // PERSISTENCIA
     const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
     function saveSquadData() { localStorage.setItem('pitada_squad', JSON.stringify(squadDB)); }
@@ -346,22 +376,25 @@
     window.onload = function() { initTheme(); initHeatmap(); initIndividualHeatmap(); initMomentumChart(); updateLegend(); renderShotMap(); changePlayer("7"); updateComparison(); updateIndividualHeatmap("17"); };
 
     // VIDEO CONTROL
-    function jumpToVideo(min) {
-        const vid = document.getElementById('matchVideo');
-        // Simular que el video es el partido completo (asumiendo que 1 min real = 1 min video para demo)
-        // En prod, mapearías 'minuto del partido' a 'timestamp del video'
-        vid.currentTime = min * 60; // saltar a segundos
-        vid.play();
-    }
+    function jumpToVideo(min) { const vid = document.getElementById('matchVideo'); vid.currentTime = min * 60; vid.play(); showToast(`Saltando al minuto ${min}...`); }
 
     // SQUAD & PERSISTENCE
     function filterSquad(cat, btn) { currentFilter=cat; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSquad(); }
     function filterSquadByName(txt) { currentSearch=txt.toLowerCase(); renderSquad(); }
-    function changeStatus(id) { const p=squadDB.find(x=>x.id===id); if(p.status==='fit')p.status='injured'; else if(p.status==='injured')p.status='yellow'; else if(p.status==='yellow')p.status='red'; else p.status='fit'; saveSquadData(); renderSquad(); }
+    function changeStatus(id) { const p=squadDB.find(x=>x.id===id); if(p.status==='fit')p.status='injured'; else if(p.status==='injured')p.status='yellow'; else if(p.status==='yellow')p.status='red'; else p.status='fit'; saveSquadData(); renderSquad(); showToast('Estado del jugador actualizado'); }
     function openAddPlayerModal() { document.getElementById('addPlayerModal').style.display='block'; }
     function closeAddPlayerModal() { document.getElementById('addPlayerModal').style.display='none'; }
-    function saveNewPlayer() { const n=document.getElementById('newPlayerName').value, m=document.getElementById('newPlayerNum').value, o=document.getElementById('newPlayerPos').value; if(n&&m){ squadDB.push({id:Date.now(),name:n,num:m,pos:o,status:'fit'}); saveSquadData(); closeAddPlayerModal(); renderSquad(); document.getElementById('newPlayerName').value=''; document.getElementById('newPlayerNum').value=''; } else alert("Datos incompletos"); }
-    function deletePlayer(id) { if(confirm("¿Eliminar jugador?")) { squadDB = squadDB.filter(p => p.id !== id); saveSquadData(); renderSquad(); } }
+    function saveNewPlayer() { const n=document.getElementById('newPlayerName').value, m=document.getElementById('newPlayerNum').value, o=document.getElementById('newPlayerPos').value; if(n&&m){ squadDB.push({id:Date.now(),name:n,num:m,pos:o,status:'fit'}); saveSquadData(); closeAddPlayerModal(); renderSquad(); document.getElementById('newPlayerName').value=''; document.getElementById('newPlayerNum').value=''; showToast('Jugador fichado correctamente'); } else showToast("Faltan datos", 'error'); }
+    
+    function deletePlayer(id) { playerToDelete = id; document.getElementById('deleteModal').style.display='block'; }
+    function confirmDeletePlayer() { 
+        if(playerToDelete) { 
+            squadDB = squadDB.filter(p => p.id !== playerToDelete); 
+            saveSquadData(); renderSquad(); 
+            document.getElementById('deleteModal').style.display='none'; 
+            showToast('Jugador eliminado'); 
+        } 
+    }
     
     function renderSquad() {
         const grid=document.getElementById('squadGrid'); grid.innerHTML='';
@@ -373,7 +406,7 @@
     }
 
     // REPORTS
-    function renderReports() { const l=document.getElementById('reportsList'); l.innerHTML=''; reportsDB.forEach(r => { const icon = r.type==='PDF'?'<i class="fas fa-file-pdf"></i>':'<i class="fas fa-video"></i>'; const statusBadge = r.status==='ready' ? '<span class="report-status">Disponible</span>' : '<span class="report-status pending">Procesando...</span>'; const btn = r.status==='ready' ? `<button class="btn-outline" onclick="alert('Descargando ${r.title}...')"><i class="fas fa-download"></i> Descargar</button>` : `<button class="btn-outline" disabled style="opacity:0.5; cursor:not-allowed;"><i class="fas fa-clock"></i> Esperar</button>`; l.innerHTML += `<div class="report-item"><div style="display:flex; align-items:center;"><div class="report-icon">${icon}</div><div class="report-info"><h4>${r.title}</h4><p>${r.date} · ${r.size}</p></div></div><div style="display:flex; align-items:center; gap:1rem;">${statusBadge}${btn}</div></div>`; }); }
+    function renderReports() { const l=document.getElementById('reportsList'); l.innerHTML=''; reportsDB.forEach(r => { const icon = r.type==='PDF'?'<i class="fas fa-file-pdf"></i>':'<i class="fas fa-video"></i>'; const statusBadge = r.status==='ready' ? '<span class="report-status">Disponible</span>' : '<span class="report-status pending">Procesando...</span>'; const btn = r.status==='ready' ? `<button class="btn-outline" onclick="showToast('Descargando ${r.title}...')"><i class="fas fa-download"></i> Descargar</button>` : `<button class="btn-outline" disabled style="opacity:0.5; cursor:not-allowed;"><i class="fas fa-clock"></i> Esperar</button>`; l.innerHTML += `<div class="report-item"><div style="display:flex; align-items:center;"><div class="report-icon">${icon}</div><div class="report-info"><h4>${r.title}</h4><p>${r.date} · ${r.size}</p></div></div><div style="display:flex; align-items:center; gap:1rem;">${statusBadge}${btn}</div></div>`; }); }
 
     // DASHBOARD & CHARTS
     function setBoardMode(m, b) { currentMode=m; document.querySelectorAll('.mode-btn').forEach(btn=>btn.classList.remove('active')); b.classList.add('active'); ['heatmapContainer','shotmapContainer','passmapContainer','actionmapContainer'].forEach(id=>document.getElementById(id).classList.add('hidden-layer')); document.getElementById('heatmapControls').style.opacity='0.3'; document.getElementById('heatmapControls').style.pointerEvents='none'; if(m==='heatmap'){document.getElementById('heatmapContainer').classList.remove('hidden-layer'); document.getElementById('heatmapControls').style.opacity='1'; document.getElementById('heatmapControls').style.pointerEvents='auto';} else if(m==='shotmap')document.getElementById('shotmapContainer').classList.remove('hidden-layer'); else if(m==='passmap'){document.getElementById('passmapContainer').classList.remove('hidden-layer');renderPassNetwork();} else if(m==='actionmap'){document.getElementById('actionmapContainer').classList.remove('hidden-layer');renderActionMap();} updateLegend(); }
