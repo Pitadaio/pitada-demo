@@ -435,14 +435,15 @@
     }
 
     function getTeamByColor(x, y, w, h) {
-        // CORRECCIÓN 1: DIBUJAR SOLO 1 VEZ POR FRAME (OPTIMIZACIÓN)
-        // Ya no dibujamos aquí, asumimos que el frame ya está en colorCanvas
+        // Dibujamos frame en canvas oculto
+        colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
         
-        // CORRECCIÓN 2: ZONA DE MUESTREO (PECHO ALTO)
-        const sx = Math.floor(x + w * 0.3); // Centro horizontal
-        const sy = Math.floor(y + h * 0.15); // Parte SUPERIOR del cuerpo (evita pasto)
-        const sw = Math.floor(w * 0.4);
-        const sh = Math.floor(h * 0.3);
+        // Muestreamos el centro de la caja (camiseta)
+        // MODIFICADO: Zona más alta (pecho) y más estrecha para evitar fondo
+        const sx = Math.floor(x + w * 0.3); // 30% desde la izquierda
+        const sy = Math.floor(y + h * 0.1); // 10% desde arriba (pecho alto)
+        const sw = Math.floor(w * 0.4);     // solo el 40% central del ancho
+        const sh = Math.floor(h * 0.2);     // solo el 20% de alto
 
         if (sw <= 0 || sh <= 0) return '#10b981'; // Default Verde
 
@@ -463,12 +464,13 @@
         const distLocal = getColorDistance(detectedRGB, localRGB);
         const distVisit = getColorDistance(detectedRGB, visitRGB);
 
-        // Si se parece al Local
-        if (distLocal < distVisit && distLocal < 180) return document.getElementById('colorLocal').value;
-        // Si se parece a la Visita
-        if (distVisit < distLocal && distVisit < 180) return document.getElementById('colorVisit').value;
-        
-        return '#10b981'; // Neutro/Árbitro
+        // LÓGICA DE DECISIÓN FORZADA (V37)
+        // Si la distancia es muy grande (>350), es probable que sea el árbitro o ruido -> Verde
+        if (distLocal > 350 && distVisit > 350) return '#10b981';
+
+        // Si no, asignamos al equipo MÁS CERCANO, sin importar si está lejos
+        if (distLocal < distVisit) return document.getElementById('colorLocal').value;
+        return document.getElementById('colorVisit').value;
     }
 
     async function detectFrame() {
@@ -484,12 +486,12 @@
             try {
                 const predictions = await aiModel.detect(videoElement);
                 
-                // 1. Filtrar confianza y clases
+                // 1. Filtrar confianza (BAJADA A 0.35 para captar más)
                 let freshDetections = predictions.filter(p => 
-                    (p.class === 'person' && p.score > 0.45) || (p.class === 'sports ball' && p.score > 0.6)
+                    (p.class === 'person' && p.score > 0.35) || (p.class === 'sports ball' && p.score > 0.6)
                 );
 
-                // 2. Filtro Anti-Gigantes (Tu corrección)
+                // 2. Filtro Anti-Gigantes
                 freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.3);
 
                 // 3. Asignar equipos por color
@@ -561,10 +563,10 @@
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // DEBUG VISUAL: Muestra qué color está detectando la IA (cuadradito arriba a la izquierda)
+            // DEBUG VISUAL: Muestra qué color detecta (cuadradito)
             if(obj.class === 'person') {
                  aiContext.fillStyle = color;
-                 aiContext.fillRect(x, y - 10, 10, 10); // Cuadradito chivato
+                 aiContext.fillRect(x, y - 10, 8, 8); 
             }
 
             // Etiqueta
