@@ -16,8 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE === */
-        :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#4f46e5; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
+        /* === ESTILOS BASE (INTACTOS) === */
+        :root { --bg-body:#f3f4f6; --bg-card:#ffffff; --text-main:#111827; --text-muted:#6b7280; --border:#e5e7eb; --sidebar-bg:#ffffff; --primary:#6366f1; --primary-glow:rgba(79,70,229,0.15); --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:16px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         html.dark { --bg-body:#0b0f19; --bg-card:#111827; --sidebar-bg:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --primary:#6366f1; --primary-glow:rgba(99,102,241,0.4); --shadow-card:0 10px 15px -3px rgba(0,0,0,0.5); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -108,14 +108,12 @@
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
         .leader-info { flex:1; min-width:0; } .leader-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .leader-value { font-weight:700; color:var(--text-main); font-family:'Outfit'; font-size:1.1rem; }
         .progress-mini { width:100%; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:5px; } .progress-mini .bar { height:100%; border-radius:2px; }
-        
         .radar-card, .comparison-card { grid-column:span 6; } .radar-wrapper { display:flex; gap:2rem; align-items:center; justify-content:center; min-height:300px; }
         .player-info-panel { flex:1; display:flex; flex-direction:column; gap:1rem; } .player-stats-list { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; }
         .p-stat { background:var(--bg-body); padding:0.5rem; border-radius:6px; font-size:0.8rem; display:flex; justify-content:space-between; } .p-stat strong { color:var(--text-main); }
         .chart-radar-container { flex:1; height:300px; position:relative; width:100%; }
         .indiv-heatmap-card { grid-column:span 12; display:flex; gap:1.5rem; } .indiv-heatmap-controls { width:250px; display:flex; flex-direction:column; gap:1rem; flex-shrink:0; } .indiv-heatmap-wrapper { flex:1; height:350px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; border:2px solid rgba(255,255,255,0.1); box-shadow:inset 0 0 50px rgba(0,0,0,0.5); }
         .indiv-stat-row { display:flex; justify-content:space-between; padding:0.75rem; background:var(--bg-body); border-radius:8px; font-size:0.9rem; }
-        
         .reco-item { background:rgba(99,102,241,0.05); border-left:3px solid var(--primary); padding:1rem; border-radius:0 8px 8px 0; margin-bottom:0.75rem; }
         .reco-item.alert { border-color:var(--danger); background:rgba(239,68,68,0.05); }
         .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.3s; }
@@ -265,7 +263,7 @@
         </div>
 
         <div id="view-videos" class="view-section">
-            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="margin-bottom: 2rem; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Video Análisis Táctico</h2>
                     <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA de visión.</p>
@@ -297,14 +295,27 @@
                         <i class="fas fa-spinner fa-spin"></i> Cargando Motor Neuronal...
                     </div>
                 </div>
+                
                 <div class="events-sidebar">
-                    <div class="events-header">
-                        <span>Eventos</span>
-                        <button class="btn-outline" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-color: var(--primary); color: var(--primary);" onclick="toggleAI()">
-                            <i class="fas fa-robot"></i> Activar Tracking
+                    
+                    <div class="team-setup" style="padding: 1rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Local</label>
+                                <input type="color" id="colorLocal" value="#0044ff" style="border:none; width:25px; height:25px; cursor:pointer; background:none; padding:0; border-radius:4px;">
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Visita</label>
+                                <input type="color" id="colorVisit" value="#ff0000" style="border:none; width:25px; height:25px; cursor:pointer; background:none; padding:0; border-radius:4px;">
+                            </div>
+                        </div>
+                        <button class="btn-outline" style="font-size:0.7rem; padding:0.4rem 0.8rem; border-color:var(--primary); color:var(--primary);" onclick="toggleAI()">
+                            <i class="fas fa-play"></i> Tracking
                         </button>
                     </div>
+
                     <div class="events-list" id="eventsList"></div>
+                    
                     <div class="tagging-controls">
                         <button class="tag-btn btn-goal" onclick="tagEvent('gol')"><i class="fas fa-futbol"></i> Gol</button>
                         <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
@@ -352,7 +363,7 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
-            // YA NO CAMBIA DE PESTAÑA A LA FUERZA
+            // No cambiamos de pestaña porque ya estamos ahí
         }
     });
 
@@ -363,10 +374,14 @@
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // PERSISTENCIA & FILTROS
+    // Canvas oculto para análisis de color
+    let colorCanvas = document.createElement('canvas');
+    let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
+
+    // PERSISTENCIA
     let trackedObjects = [];
     let frameCount = 0;
-    const FRAME_SKIP = 2; 
+    const FRAME_SKIP = 2;
 
     async function toggleAI() {
         if (isAiActive) {
@@ -404,6 +419,56 @@
     function resizeCanvas() {
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
+        // Sincronizar canvas de color
+        colorCanvas.width = videoElement.videoWidth;
+        colorCanvas.height = videoElement.videoHeight;
+    }
+
+    // --- MAGIA DE COLOR ---
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    }
+
+    function getColorDistance(c1, c2) {
+        return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
+    }
+
+    function getTeamByColor(x, y, w, h) {
+        // Dibujamos frame en canvas oculto
+        colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
+        
+        // Muestreamos el centro de la caja (camiseta)
+        const sx = Math.floor(x + w * 0.25);
+        const sy = Math.floor(y + h * 0.2); 
+        const sw = Math.floor(w * 0.5);
+        const sh = Math.floor(h * 0.3);
+
+        if (sw <= 0 || sh <= 0) return '#10b981'; // Default Verde
+
+        const imgData = colorContext.getImageData(sx, sy, sw, sh).data;
+        let r=0, g=0, b=0;
+        
+        for(let i=0; i<imgData.length; i+=4) {
+            r += imgData[i]; g += imgData[i+1]; b += imgData[i+2];
+        }
+        r = Math.floor(r / (imgData.length/4));
+        g = Math.floor(g / (imgData.length/4));
+        b = Math.floor(b / (imgData.length/4));
+
+        const detectedRGB = {r, g, b};
+        const localRGB = hexToRgb(document.getElementById('colorLocal').value);
+        const visitRGB = hexToRgb(document.getElementById('colorVisit').value);
+
+        const distLocal = getColorDistance(detectedRGB, localRGB);
+        const distVisit = getColorDistance(detectedRGB, visitRGB);
+
+        // Si se parece al Local
+        if (distLocal < distVisit && distLocal < 180) return document.getElementById('colorLocal').value;
+        // Si se parece a la Visita
+        if (distVisit < distLocal && distVisit < 180) return document.getElementById('colorVisit').value;
+        
+        return '#10b981'; // Neutro/Árbitro
     }
 
     async function detectFrame() {
@@ -416,16 +481,21 @@
             try {
                 const predictions = await aiModel.detect(videoElement);
                 
-                // FILTRO INTELIGENTE + ANTI-GIGANTES
-                const freshDetections = predictions.filter(p => {
-                    // 1. Confianza
-                    if(p.score < 0.5) return false;
-                    // 2. Clases permitidas
-                    if(p.class !== 'person' && p.class !== 'sports ball') return false;
-                    // 3. FIX GIGANTE: Filtro de tamaño máximo (evita detectar la cancha entera)
-                    const bbox = p.bbox; // [x, y, width, height]
-                    const isTooBig = bbox[2] > videoElement.videoWidth * 0.3; // Si ancho > 30% del video
-                    return !isTooBig;
+                // 1. Filtrar confianza y clases
+                let freshDetections = predictions.filter(p => 
+                    (p.class === 'person' && p.score > 0.45) || (p.class === 'sports ball' && p.score > 0.6)
+                );
+
+                // 2. Filtro Anti-Gigantes (Tu corrección)
+                freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.3);
+
+                // 3. Asignar equipos por color
+                freshDetections = freshDetections.map(p => {
+                    let teamColor = '#10b981';
+                    if (p.class === 'person') {
+                        teamColor = getTeamByColor(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
+                    }
+                    return { ...p, color: teamColor };
                 });
                 
                 updateTracker(freshDetections);
@@ -438,7 +508,6 @@
         requestAnimationFrame(detectFrame);
     }
 
-    // ALGORITMO DE PERSISTENCIA
     function updateTracker(detections) {
         trackedObjects.forEach(obj => obj.life--);
         
@@ -452,20 +521,20 @@
             if (match) {
                 match.bbox = det.bbox;
                 match.score = det.score;
-                match.life = 10; 
+                match.life = 10;
+                match.color = det.color; // Actualizar color
             } else {
                 trackedObjects.push({
                     bbox: det.bbox,
                     class: det.class,
                     score: det.score,
                     life: 10,
-                    color: Math.random() > 0.5 ? '#3b82f6' : '#ef4444'
+                    color: det.color
                 });
             }
         });
 
         trackedObjects = trackedObjects.filter(obj => obj.life > 0);
-        
         const pCount = trackedObjects.filter(o => o.class === 'person').length;
         document.getElementById('playerCount').innerText = `${pCount} Agentes`;
     }
@@ -491,7 +560,12 @@
 
             // Etiqueta
             if (obj.life > 5) {
-                const label = isBall ? '⚽' : (color === '#3b82f6' ? '🔵' : '🔴');
+                // Determinar label basado en el color seleccionado
+                let label = '👤';
+                if(isBall) label = '⚽';
+                else if(color === document.getElementById('colorLocal').value) label = 'L';
+                else if(color === document.getElementById('colorVisit').value) label = 'V';
+
                 aiContext.fillStyle = '#fff';
                 aiContext.font = '12px Arial';
                 aiContext.fillText(label, x + width/2 - 5, y - 5);
@@ -517,6 +591,7 @@
             if(ev.type === 'falta') icon = '⚠️';
             if(ev.type === 'corner') icon = '🚩';
             if(ev.type === 'tarjeta') icon = '🟥';
+            
             const div = document.createElement('div');
             div.className = 'event-row';
             div.onclick = () => jumpToVideo(ev.time);
