@@ -363,22 +363,21 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado correctamente.`);
-            // No cambiamos de pestaña porque ya estamos ahí
         }
     });
 
-    // === IA VIDEO TRACKING: COCO-SSD + ALGORITMO DE COLOR ===
+    // === IA VIDEO TRACKING: COCO-SSD + COLOR V2 ===
     let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
     let canvasElement = document.getElementById('aiCanvas');
     let aiContext = canvasElement.getContext('2d');
     
-    // Canvas oculto para análisis de color (No se ve, pero trabaja)
+    // Canvas oculto para análisis de color
     let colorCanvas = document.createElement('canvas');
     let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
 
-    // PERSISTENCIA
+    // PERSISTENCIA & FILTROS
     let trackedObjects = [];
     let frameCount = 0;
     const FRAME_SKIP = 2;
@@ -397,7 +396,6 @@
         if (!aiModel) {
             showToast("Cargando cerebro táctico...");
             try {
-                // Modelo ligero para navegador
                 aiModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' }); 
                 showToast("IA Lista: Smart Tracking Activo", "success");
             } catch (error) {
@@ -419,12 +417,11 @@
     function resizeCanvas() {
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
-        // Sincronizar canvas de color
         colorCanvas.width = videoElement.videoWidth;
         colorCanvas.height = videoElement.videoHeight;
     }
 
-    // --- MAGIA DE DETECCIÓN DE COLOR ---
+    // --- MAGIA DE DETECCIÓN DE COLOR V2 (TOLERANTE) ---
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
@@ -435,17 +432,14 @@
     }
 
     function getTeamByColor(x, y, w, h) {
-        // Dibujamos frame en canvas oculto
-        colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
-        
-        // Muestreamos el centro de la caja (camiseta)
-        // MODIFICADO: Zona más alta (pecho) y más estrecha para evitar fondo
-        const sx = Math.floor(x + w * 0.3); // 30% desde la izquierda
-        const sy = Math.floor(y + h * 0.1); // 10% desde arriba (pecho alto)
-        const sw = Math.floor(w * 0.4);     // solo el 40% central del ancho
-        const sh = Math.floor(h * 0.2);     // solo el 20% de alto
+        // CORRECCIÓN: ZONA DE MUESTREO (CENTRO DEL TORSO)
+        // Evitamos bordes para no pillar pasto
+        const sx = Math.floor(x + w * 0.35); // 35% desde la izquierda (muy centrado)
+        const sy = Math.floor(y + h * 0.15); // 15% desde arriba (pecho)
+        const sw = Math.floor(w * 0.3);      // solo el 30% central del ancho
+        const sh = Math.floor(h * 0.3);      // solo el 30% de alto
 
-        if (sw <= 0 || sh <= 0) return '#10b981'; // Default Verde
+        if (sw <= 0 || sh <= 0) return '#10b981'; 
 
         const imgData = colorContext.getImageData(sx, sy, sw, sh).data;
         let r=0, g=0, b=0;
@@ -464,12 +458,12 @@
         const distLocal = getColorDistance(detectedRGB, localRGB);
         const distVisit = getColorDistance(detectedRGB, visitRGB);
 
-        // LÓGICA DE DECISIÓN FORZADA (V37)
-        // Si la distancia es muy grande (>350), es probable que sea el árbitro o ruido -> Verde
-        if (distLocal > 350 && distVisit > 350) return '#10b981';
+        // LÓGICA V2: SIEMPRE ELIGEN UNO (Salvo que sea muy raro)
+        // Si la distancia es enorme (>400), probablemente no sea ninguno de los dos (árbitro/ruido)
+        if (distLocal > 380 && distVisit > 380) return '#10b981';
 
-        // Si no, asignamos al equipo MÁS CERCANO, sin importar si está lejos
-        if (distLocal < distVisit) return document.getElementById('colorLocal').value;
+        // Si no, forzamos la elección al más cercano
+        if (distLocal <= distVisit) return document.getElementById('colorLocal').value;
         return document.getElementById('colorVisit').value;
     }
 
@@ -480,21 +474,20 @@
         }
 
         if (frameCount % FRAME_SKIP === 0) {
-            // Dibujamos el frame en el canvas oculto UNA SOLA VEZ
             colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
 
             try {
                 const predictions = await aiModel.detect(videoElement);
                 
-                // 1. Filtrar confianza (BAJADA A 0.35 para captar más)
+                // 1. UMBRAL DE CONFIANZA BAJADO A 0.35 (Detecta más lejos)
                 let freshDetections = predictions.filter(p => 
-                    (p.class === 'person' && p.score > 0.35) || (p.class === 'sports ball' && p.score > 0.6)
+                    (p.class === 'person' && p.score > 0.35) || (p.class === 'sports ball' && p.score > 0.5)
                 );
 
                 // 2. Filtro Anti-Gigantes
-                freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.3);
+                freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.4);
 
-                // 3. Asignar equipos por color
+                // 3. Asignar equipos
                 freshDetections = freshDetections.map(p => {
                     let teamColor = '#10b981';
                     if (p.class === 'person') {
@@ -520,14 +513,14 @@
             const match = trackedObjects.find(obj => {
                 const dx = obj.bbox[0] - det.bbox[0];
                 const dy = obj.bbox[1] - det.bbox[1];
-                return Math.sqrt(dx*dx + dy*dy) < 50; 
+                return Math.sqrt(dx*dx + dy*dy) < 60; // Tolerancia aumentada a 60px
             });
 
             if (match) {
                 match.bbox = det.bbox;
                 match.score = det.score;
                 match.life = 10;
-                match.color = det.color; // Actualizar color
+                match.color = det.color; 
             } else {
                 trackedObjects.push({
                     bbox: det.bbox,
@@ -552,7 +545,7 @@
             const isBall = obj.class === 'sports ball';
             const color = isBall ? '#f59e0b' : obj.color;
             
-            // Círculo
+            // Base
             aiContext.beginPath();
             aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
             aiContext.fillStyle = color;
@@ -563,10 +556,14 @@
             aiContext.strokeStyle = color;
             aiContext.stroke();
 
-            // DEBUG VISUAL: Muestra qué color detecta (cuadradito)
+            // CHIVATO DE DEPURACIÓN (CUADRADITO ARRIBA)
+            // Esto te muestra qué color está leyendo realmente la IA
             if(obj.class === 'person') {
                  aiContext.fillStyle = color;
-                 aiContext.fillRect(x, y - 10, 8, 8); 
+                 aiContext.fillRect(x + width/2 - 5, y - 15, 10, 10);
+                 aiContext.strokeStyle = 'white';
+                 aiContext.lineWidth = 1;
+                 aiContext.strokeRect(x + width/2 - 5, y - 15, 10, 10);
             }
 
             // Etiqueta
@@ -575,10 +572,6 @@
                 if(isBall) label = '⚽';
                 else if(color === document.getElementById('colorLocal').value) label = 'L';
                 else if(color === document.getElementById('colorVisit').value) label = 'V';
-
-                aiContext.fillStyle = '#fff';
-                aiContext.font = '12px Arial';
-                aiContext.fillText(label, x + width/2 - 5, y - 5);
             }
         });
     }
