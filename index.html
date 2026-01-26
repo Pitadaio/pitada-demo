@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS INTACTOS === */
+        /* === ESTILOS BASE === */
         :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -66,10 +66,7 @@
         .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
         .card:hover { border-color:var(--primary); }
         
-        .card-header { 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; 
-            flex-wrap: wrap; gap: 15px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; }
         .card-title { margin-right: auto; }
 
         .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
@@ -88,6 +85,7 @@
         .shot-marker { position:absolute; width:14px; height:14px; border-radius:50%; border:2px solid white; transform:translate(-50%, -50%); transition:transform 0.2s; z-index:10; cursor:pointer; }
         .shot-gol { background-color:var(--success); } .shot-atajada { background-color:var(--warning); border-radius:3px; } .shot-fuera { background-color:var(--danger); }
         
+        /* NODOS DRAGGABLE */
         .player-node { 
             position:absolute; width:34px; height:34px; 
             background:var(--bg-card); border:2px solid var(--text-main); border-radius:50%; 
@@ -101,14 +99,7 @@
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
         
-        .action-zone { 
-            fill: var(--primary); 
-            fill-opacity: 0.15; 
-            stroke: var(--primary); 
-            stroke-width: 1; 
-            stroke-opacity: 0.4;
-            transition: all 0.3s ease; 
-        }
+        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
         .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
         .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
         .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
@@ -126,6 +117,7 @@
         .legend-item { display:flex; align-items:center; gap:0.4rem; }
         .dot { width:8px; height:8px; border-radius:50%; }
 
+        /* LEADERS, CHARTS */
         .leaders-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; }
         .leader-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; align-items:center; gap:1rem; position:relative; transition:transform 0.2s; }
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
@@ -200,6 +192,24 @@
         @keyframes slideOut { to { transform:translateX(100%); opacity:0; } }
         @keyframes pulse { 0% { opacity:1; } 50% { opacity:0.4; } 100% { opacity:1; } }
 
+        /* VIDEO PLACEHOLDER (ESTADO VACIO PROFESIONAL) */
+        #videoPlaceholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: var(--text-muted);
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+        #videoPlaceholder i { font-size: 3rem; margin-bottom: 1rem; color: var(--primary); opacity: 0.8; }
+        #videoPlaceholder h3 { color: var(--text-main); font-weight: 600; margin-bottom: 0.5rem; }
+        #videoPlaceholder p { font-size: 0.9rem; opacity: 0.7; }
+
         @media (max-width: 1024px) { .app-container { grid-template-columns:1fr; } .sidebar { display:none; } .tactical-board, .radar-card, .comparison-card, .indiv-heatmap-card, .card { grid-column:span 12; } .radar-wrapper, .indiv-heatmap-card { flex-direction:column; } .indiv-heatmap-controls { width:100%; } .side-panel { grid-column:span 12; display:flex; flex-direction:row; gap:1rem; } .stat-grid, .leaders-grid { grid-template-columns:repeat(2, 1fr); } .video-layout { grid-template-columns:1fr; height:auto; } .video-player-container { height:300px; } .events-sidebar { height:300px; } }
         @media (max-width: 600px) { .leaders-grid, .stat-grid, .squad-grid { grid-template-columns:1fr; } .side-panel { flex-direction:column; } .report-item { flex-direction:column; align-items:flex-start; gap:1rem; } }
     </style>
@@ -264,7 +274,7 @@
         <header class="header">
             <div class="header-title"><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Análisis del partido vs. Colegio Alerce</p></div>
             <div class="top-actions">
-                <button class="btn-primary" onclick="window.open('https://wa.me/56912345678', '_blank')"><i class="fab fa-whatsapp"></i> Nuevo Análisis</button>
+                <button class="btn-primary" onclick="document.getElementById('videoInput').click()"><i class="fas fa-cloud-upload-alt"></i> Nuevo Análisis</button>
                 <div style="position: relative;">
                     <div class="profile-btn" onclick="toggleProfileMenu()"><div class="avatar">PM</div><i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></div>
                     <div class="dropdown-menu" id="profileDropdown">
@@ -288,7 +298,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -328,9 +338,14 @@
             
             <div class="video-layout">
                 <div class="video-player-container">
-                    <video id="matchVideo" controls poster="https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg" crossorigin="anonymous">
-                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
-                    </video>
+                    <video id="matchVideo" style="display:none;" controls poster="" crossorigin="anonymous"></video>
+                    
+                    <div id="videoPlaceholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Sube tu archivo de video</h3>
+                        <p>Formatos soportados: MP4, MOV, WEBM</p>
+                        <button class="btn-outline" style="margin-top:1rem; border-color:var(--primary); color:var(--primary);" onclick="document.getElementById('videoInput').click()">Seleccionar Archivo</button>
+                    </div>
                     
                     <canvas id="aiCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
                     
@@ -424,14 +439,21 @@
         setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
     }
 
-    // UPLOAD VIDEO
+    // UPLOAD VIDEO (LÓGICA ACTUALIZADA PARA EMPTY STATE)
     document.getElementById('videoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const url = URL.createObjectURL(file);
             const video = document.getElementById('matchVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            // Ocultar Placeholder, Mostrar Video
+            placeholder.style.display = 'none';
+            video.style.display = 'block';
+            
             video.src = url;
-            video.play();
+            //video.play(); // Auto-play opcional
+            
             showToast(`Partido "${file.name}" cargado.`);
             
             // CLEAN START LOGIC
@@ -465,6 +487,12 @@
             aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
             document.getElementById('aiStatsOverlay').style.display = 'none';
             showToast("Tracking Pausado");
+            return;
+        }
+        
+        // Check if video is loaded
+        if (videoElement.style.display === 'none') {
+            showToast("Primero sube un video", "error");
             return;
         }
 
@@ -662,6 +690,8 @@
                 const p2 = squadDB.find(p => p.id == pass.to);
                 if (p1 && p2) {
                     const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+                    // Logic to find coordinates would go here if we tracked node positions live
+                    // For now, simpler demo lines
                     l.setAttribute("x1", "50%"); l.setAttribute("y1", "50%");
                     l.setAttribute("x2", "60%"); l.setAttribute("y2", "60%");
                     l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
@@ -739,6 +769,7 @@
                         document.onmouseup = null; 
                         // SAVE
                         let rect = el.getBoundingClientRect();
+                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                         let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
                         let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
                         MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
@@ -846,7 +877,7 @@
     
     function renderSquad() { 
         const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
-        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter) && p.name.toLowerCase().includes(currentSearch));
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
         fil.forEach(p => {
             let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
              grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
