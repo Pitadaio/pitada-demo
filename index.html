@@ -99,13 +99,35 @@
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
         
-        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
+        .action-zone { 
+            fill: var(--primary); 
+            fill-opacity: 0.15; 
+            stroke: var(--primary); 
+            stroke-width: 1; 
+            stroke-opacity: 0.4;
+            transition: all 0.3s ease; 
+        }
         .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
         .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
         .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
         .action-center { fill:white; stroke:none; pointer-events:none; }
         
-        .tactical-tooltip { position:fixed; background:rgba(17,24,39,0.95); color:white; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; pointer-events:none; z-index:9999; border:1px solid var(--border); display:none; backdrop-filter:blur(4px); white-space:nowrap; box-shadow:0 10px 25px rgba(0,0,0,0.5); }
+        /* TOOLTIP MEJORADO */
+        .tactical-tooltip { 
+            position:fixed; 
+            background:rgba(17,24,39,0.95); 
+            color:white; 
+            padding:0.6rem 1rem; 
+            border-radius:8px; 
+            font-size:0.85rem; 
+            pointer-events:none; 
+            z-index:9999; 
+            border:1px solid var(--border); 
+            display:none; 
+            backdrop-filter:blur(4px); 
+            white-space:nowrap; 
+            box-shadow:0 10px 25px rgba(0,0,0,0.5); 
+        }
         
         .mode-switch { display:flex; background:var(--border); padding:4px; border-radius:8px; gap:4px; overflow-x:auto; }
         .mode-btn { padding:0.4rem 0.8rem; border-radius:6px; border:none; cursor:pointer; font-size:0.85rem; font-weight:500; color:var(--text-muted); background:transparent; transition:all 0.2s; white-space:nowrap; }
@@ -159,20 +181,19 @@
         .tag-yellow { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3); }
         .tag-red { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
 
-        .reports-list { display:flex; flex-direction:column; gap:1rem; }
-        .report-item { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; transition:all 0.2s; }
-        .report-item:hover { border-color:var(--primary); transform:translateX(5px); }
-        .report-icon { width:45px; height:45px; border-radius:10px; background:rgba(99,102,241,0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-right:1rem; }
-        .report-info h4 { margin:0; color:var(--text-main); font-size:1rem; } .report-info p { margin:0; color:var(--text-muted); font-size:0.8rem; }
-        .report-status { font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:4px; background:rgba(16,185,129,0.1); color:var(--success); }
-        .report-status.pending { background:rgba(245,158,11,0.1); color:var(--warning); }
-
-        /* VIDEO PLACEHOLDER */
+        /* VIDEO PLACEHOLDER (ESTADO VACIO PROFESIONAL) */
         #videoPlaceholder {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; height: 100%; color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: var(--text-muted);
             background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-            border: 1px dashed var(--border); border-radius: 12px; text-align: center;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
         }
         #videoPlaceholder i { font-size: 3rem; margin-bottom: 1rem; color: var(--primary); opacity: 0.8; }
         #videoPlaceholder h3 { color: var(--text-main); font-weight: 600; margin-bottom: 0.5rem; }
