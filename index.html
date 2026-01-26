@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE === */
+        /* === ESTILOS BASE (INTACTOS) === */
         :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -100,8 +100,20 @@
         .player-node:active { cursor: grabbing; box-shadow: 0 0 15px var(--primary); border-color: var(--primary); }
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; }
-        .action-zone { fill-opacity:0.2; stroke-width:2; transition:all 0.3s ease; cursor:pointer; }
-        .zone-def { fill:var(--primary); stroke:var(--primary); } .zone-mid { fill:var(--warning); stroke:var(--warning); } .zone-fwd { fill:var(--danger); stroke:var(--danger); }
+        
+        /* ZONAS DE INFLUENCIA (NUEVO ESTILO RADIO) */
+        .action-zone { 
+            fill: var(--primary); 
+            fill-opacity: 0.15; 
+            stroke: var(--primary); 
+            stroke-width: 1; 
+            stroke-opacity: 0.4;
+            transition: all 0.3s ease; 
+        }
+        .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } /* Rojo defensa */
+        .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } /* Amarillo medio */
+        .action-zone.zone-del { fill: #10b981; stroke: #10b981; } /* Verde ataque */
+        .action-center { fill:white; stroke:none; pointer-events:none; }
         
         .tactical-tooltip { position:fixed; background:rgba(17,24,39,0.95); color:white; padding:0.5rem 1rem; border-radius:6px; font-size:0.8rem; pointer-events:none; z-index:9999; border:1px solid var(--border); display:none; backdrop-filter:blur(4px); white-space:nowrap; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
         
@@ -278,7 +290,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -397,7 +409,7 @@
         possession: { local: 0, visit: 0 },
         heatmapPoints: [],
         shots: [],
-        passes: [] // NEW: Stores pass connections
+        passes: [] 
     };
     
     // Tracker de Balón
@@ -589,12 +601,14 @@
         const shotContainer = document.getElementById('shotmapContainer');
         const passContainer = document.getElementById('passLinesSvg');
         const nodesLayer = document.getElementById('passNodesLayer');
+        const actionContainer = document.getElementById('actionSvg');
         
         if(!container) return;
         container.innerHTML = ''; 
         shotContainer.innerHTML = '';
         if(passContainer) passContainer.innerHTML = '';
         if(nodesLayer) nodesLayer.innerHTML = '';
+        if(actionContainer) actionContainer.innerHTML = '';
 
         // DUMMY DATA (SI NO HAY IA AÚN)
         let dataToShow = MATCH_DATA.heatmapPoints;
@@ -634,7 +648,7 @@
             shotContainer.appendChild(el);
         });
 
-        // PASS NETWORK (NEW + DRAG FIX)
+        // PASS NETWORK (AUTO-FORMATION 4-3-3 ALGORITHM)
         if (passContainer && nodesLayer) {
             const positions = { 'POR': {x: 10, y: 50}, 'DEF': {x: 30, y: 50}, 'MED': {x: 50, y: 50}, 'DEL': {x: 80, y: 50} };
             MATCH_DATA.passes.forEach(pass => {
@@ -642,13 +656,14 @@
                 const p2 = squadDB.find(p => p.id == pass.to);
                 if (p1 && p2) {
                     const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+                    // Logic to find coordinates would go here if we tracked node positions live
                     l.setAttribute("x1", "50%"); l.setAttribute("y1", "50%");
                     l.setAttribute("x2", "60%"); l.setAttribute("y2", "60%");
                     l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
                     passContainer.appendChild(l);
                 }
             });
-            
+
             // ALGORTIMO DE DISTRIBUCIÓN
             let roleCounts = { POR:0, DEF:0, MED:0, DEL:0 };
             let roleTotals = { POR:0, DEF:0, MED:0, DEL:0 };
@@ -657,9 +672,8 @@
             squadDB.forEach(p => {
                 const el = document.createElement('div');
                 el.className = 'player-node';
-                
-                // Calcular posición automática (4-3-3 visual)
                 let baseX = 50, baseY = 50;
+                
                 if (p.pos === 'POR') { baseX = 8; baseY = 50; }
                 if (p.pos === 'DEF') { baseX = 25; roleCounts.DEF++; baseY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF; }
                 if (p.pos === 'MED') { baseX = 50; roleCounts.MED++; baseY = (100 / (roleTotals.MED + 1)) * roleCounts.MED; }
@@ -668,39 +682,55 @@
                 el.style.left = baseX + "%"; el.style.top = baseY + "%";
                 el.textContent = p.num;
                 
-                // DRAG LOGIC REFINED
+                // DRAG LOGIC
                 el.onmousedown = function(e) {
                     let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                     let shiftX = e.clientX - el.getBoundingClientRect().left;
                     let shiftY = e.clientY - el.getBoundingClientRect().top;
                     el.style.zIndex = 1000;
-                    
                     function moveAt(pageX, pageY) {
                         let newLeft = pageX - shiftX - containerRect.left;
                         let newTop = pageY - shiftY - containerRect.top;
-                        
-                        // CLAMP (JAULA)
                         if(newLeft < 0) newLeft = 0;
                         if(newLeft > containerRect.width - 30) newLeft = containerRect.width - 30;
                         if(newTop < 0) newTop = 0;
                         if(newTop > containerRect.height - 30) newTop = containerRect.height - 30;
-
-                        // TO PERCENTAGE FOR RESPONSIVENESS
                         el.style.left = (newLeft / containerRect.width * 100) + '%';
                         el.style.top = (newTop / containerRect.height * 100) + '%';
+                        
+                        // UPDATE ZONE IF EXISTS
+                        const zone = document.getElementById(`zone-${p.id}`);
+                        if(zone) {
+                            // Simple heuristic update for circle
+                            zone.setAttribute("cx", (newLeft/containerRect.width*100) + "%");
+                            zone.setAttribute("cy", (newTop/containerRect.height*100) + "%");
+                        }
                     }
-                    
                     function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
-                    
                     document.addEventListener('mousemove', onMouseMove);
-                    
-                    document.onmouseup = function() {
-                        document.removeEventListener('mousemove', onMouseMove);
-                        document.onmouseup = null;
-                    };
+                    document.onmouseup = function() { document.removeEventListener('mousemove', onMouseMove); document.onmouseup = null; };
                 };
                 el.ondragstart = function() { return false; };
                 nodesLayer.appendChild(el);
+                
+                // RADIO / ACTION ZONES (NEW)
+                if(actionContainer) {
+                    let rx = 5, ry = 5;
+                    let shape = "ellipse";
+                    
+                    if(p.pos === 'DEF') { rx = 8; ry = 15; } // Tall vertical zone? No, wide usually. Let's say wide.
+                    if(p.pos === 'MED') { rx = 12; ry = 12; } // Circle
+                    if(p.pos === 'DEL') { rx = 15; ry = 8; } // Wide
+                    
+                    const zone = document.createElementNS("http://www.w3.org/2000/svg", shape);
+                    zone.setAttribute("cx", baseX + "%");
+                    zone.setAttribute("cy", baseY + "%");
+                    zone.setAttribute("rx", rx + "%");
+                    zone.setAttribute("ry", ry + "%");
+                    zone.setAttribute("id", `zone-${p.id}`);
+                    zone.setAttribute("class", `action-zone zone-${p.pos.toLowerCase()}`);
+                    actionContainer.appendChild(zone);
+                }
             });
         }
 
@@ -776,7 +806,7 @@
     
     function renderSquad() { 
         const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
-        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter) && p.name.toLowerCase().includes(currentSearch));
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
         fil.forEach(p => {
             let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
              grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
@@ -806,12 +836,13 @@
     
     window.setBoardMode = function(m, b) { 
         document.querySelectorAll('.mode-btn').forEach(btn=>btn.classList.remove('active')); b.classList.add('active');
-        ['heatmapContainer', 'shotmapContainer', 'passmapContainer'].forEach(id => {
+        ['heatmapContainer', 'shotmapContainer', 'passmapContainer', 'actionmapContainer'].forEach(id => {
             const el = document.getElementById(id); if(el) el.classList.add('hidden-layer');
         });
         if(m==='heatmap') document.getElementById('heatmapContainer').classList.remove('hidden-layer');
         if(m==='shotmap') document.getElementById('shotmapContainer').classList.remove('hidden-layer');
         if(m==='passmap') document.getElementById('passmapContainer').classList.remove('hidden-layer');
+        if(m==='actionmap') document.getElementById('actionmapContainer').classList.remove('hidden-layer');
     };
     
     // STUBS
