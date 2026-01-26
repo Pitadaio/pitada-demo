@@ -66,7 +66,10 @@
         .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
         .card:hover { border-color:var(--primary); }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; }
+        .card-header { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; 
+            flex-wrap: wrap; gap: 15px;
+        }
         .card-title { margin-right: auto; }
 
         .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
@@ -99,7 +102,14 @@
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
         
-        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
+        .action-zone { 
+            fill: var(--primary); 
+            fill-opacity: 0.15; 
+            stroke: var(--primary); 
+            stroke-width: 1; 
+            stroke-opacity: 0.4;
+            transition: all 0.3s ease; 
+        }
         .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
         .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
         .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
@@ -388,6 +398,7 @@
                     
                     <div class="tagging-controls">
                         <button class="tag-btn btn-goal" onclick="tagEvent('gol')"><i class="fas fa-futbol"></i> Gol</button>
+                        <button class="tag-btn" style="background:#8b5cf6" onclick="tagEvent('tiro')"><i class="fas fa-bullseye"></i> Tiro</button>
                         <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
                         <button class="tag-btn btn-corner" onclick="tagEvent('corner')"><i class="fas fa-flag"></i> Córner</button>
                         
@@ -769,7 +780,6 @@
                         document.onmouseup = null; 
                         // SAVE
                         let rect = el.getBoundingClientRect();
-                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                         let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
                         let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
                         MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
@@ -877,7 +887,7 @@
     
     function renderSquad() { 
         const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
-        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter) && p.name.toLowerCase().includes(currentSearch));
         fil.forEach(p => {
             let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
              grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
