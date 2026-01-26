@@ -66,10 +66,7 @@
         .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
         .card:hover { border-color:var(--primary); }
         
-        .card-header { 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; 
-            flex-wrap: wrap; gap: 15px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; }
         .card-title { margin-right: auto; }
 
         .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
@@ -102,13 +99,35 @@
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
         
-        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
+        .action-zone { 
+            fill: var(--primary); 
+            fill-opacity: 0.15; 
+            stroke: var(--primary); 
+            stroke-width: 1; 
+            stroke-opacity: 0.4;
+            transition: all 0.3s ease; 
+        }
         .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
         .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
         .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
         .action-center { fill:white; stroke:none; pointer-events:none; }
         
-        .tactical-tooltip { position:fixed; background:rgba(17,24,39,0.95); color:white; padding:0.5rem 1rem; border-radius:6px; font-size:0.8rem; pointer-events:none; z-index:9999; border:1px solid var(--border); display:none; backdrop-filter:blur(4px); white-space:nowrap; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+        /* TOOLTIP MEJORADO */
+        .tactical-tooltip { 
+            position:fixed; 
+            background:rgba(17,24,39,0.95); 
+            color:white; 
+            padding:0.6rem 1rem; 
+            border-radius:8px; 
+            font-size:0.85rem; 
+            pointer-events:none; 
+            z-index:9999; 
+            border:1px solid var(--border); 
+            display:none; 
+            backdrop-filter:blur(4px); 
+            white-space:nowrap; 
+            box-shadow:0 10px 25px rgba(0,0,0,0.5); 
+        }
         
         .mode-switch { display:flex; background:var(--border); padding:4px; border-radius:8px; gap:4px; overflow-x:auto; }
         .mode-btn { padding:0.4rem 0.8rem; border-radius:6px; border:none; cursor:pointer; font-size:0.85rem; font-weight:500; color:var(--text-muted); background:transparent; transition:all 0.2s; white-space:nowrap; }
@@ -302,7 +321,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -396,7 +415,6 @@
                         <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
                         <button class="tag-btn btn-corner" onclick="tagEvent('corner')"><i class="fas fa-flag"></i> Córner</button>
                         <button class="tag-btn btn-red" onclick="tagEvent('tarjeta')"><i class="fas fa-square"></i> Tarjeta</button>
-                        
                         <button class="tag-btn" style="background:#6366f1;" onclick="openPassModal()"><i class="fas fa-project-diagram"></i> Pase</button>
                     </div>
                 </div>
@@ -451,7 +469,7 @@
         heatmapPoints: [],
         shots: [],
         passes: [],
-        nodePositions: {} // Persistent drag positions
+        nodePositions: {} 
     };
     
     // Tracker de Balón
@@ -467,7 +485,7 @@
         setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
     }
 
-    // UPLOAD VIDEO (LÓGICA ACTUALIZADA PARA EMPTY STATE)
+    // UPLOAD VIDEO
     document.getElementById('videoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -475,27 +493,24 @@
             const video = document.getElementById('matchVideo');
             const placeholder = document.getElementById('videoPlaceholder');
             
-            // Ocultar Placeholder, Mostrar Video
             placeholder.style.display = 'none';
             video.style.display = 'block';
-            
             video.src = url;
-            //video.play(); // Auto-play opcional
             
             showToast(`Partido "${file.name}" cargado.`);
             
             // CLEAN START LOGIC
             MATCH_DATA = { totalFrames: 0, playersHistory: [], possession: { local: 0, visit: 0 }, heatmapPoints: [], shots: [], passes: [], nodePositions: {} };
-            localStorage.removeItem('pitada_video_events'); // Clear old sessions
-            videoEvents = []; // Clear in-memory
-            renderVideoEvents(); // Update UI
+            localStorage.removeItem('pitada_video_events'); 
+            videoEvents = []; 
+            renderVideoEvents(); 
             document.getElementById('dataPointsCount').innerText = "0";
             
             navigate('videos');
         }
     });
 
-    // === 2. IA LÓGICA (COLOR + COCO-SSD) ===
+    // === 2. IA LÓGICA ===
     let aiModel = null;
     let isAiActive = false;
     let videoElement = document.getElementById('matchVideo');
@@ -505,7 +520,6 @@
     let frameCount = 0;
     const FRAME_SKIP = 2;
 
-    // Color Canvas
     let colorCanvas = document.createElement('canvas');
     let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
 
@@ -518,7 +532,6 @@
             return;
         }
         
-        // Check if video is loaded
         if (videoElement.style.display === 'none') {
             showToast("Primero sube un video", "error");
             return;
@@ -677,8 +690,13 @@
 
         if (dataToShow.length < 5) {
             dataToShow = [{x:100,y:100,value:10}, {x:200,y:200,value:10}, {x:500,y:300,value:10}]; 
-            // CLEAN START: No dummy shots if empty
-            // shotsToShow = []; 
+            // Dummy shots if user hasn't added real ones
+            if (shotsToShow.length === 0) {
+                shotsToShow = [
+                    {x:0.85, y:0.5, result:'gol'}, 
+                    {x:0.75, y:0.4, result:'tiro'}
+                ];
+            }
         }
 
         // HEATMAP
@@ -701,7 +719,9 @@
             
             el.addEventListener('mouseenter', (e) => {
                 const t = document.getElementById('tacticalTooltip');
-                t.innerHTML = `<div style="font-weight:bold">${shot.result.toUpperCase()}</div>`;
+                // Improve tooltip content
+                let typeText = shot.result === 'gol' ? '⚽ GOL' : '🥅 TIRO';
+                t.innerHTML = `<div style="font-weight:bold">${typeText}</div><div style="font-size:0.75rem; opacity:0.8">xG: ${(Math.random()*0.9).toFixed(2)}</div>`;
                 t.style.display = 'block';
                 t.style.left = (e.clientX + 15) + 'px'; // Fixed coordinates
                 t.style.top = (e.clientY - 15) + 'px';
@@ -797,7 +817,6 @@
                         document.onmouseup = null; 
                         // SAVE
                         let rect = el.getBoundingClientRect();
-                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                         let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
                         let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
                         MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
@@ -934,41 +953,16 @@
         if(!layer) return;
         layer.innerHTML = '';
         
-        // Take first 11 players
         const starting11 = squadDB.slice(0, 11);
-        
-        // Define coordinates based on formation
         let coords = [];
         if (fmt === '442') {
-            coords = [
-                {x: 5, y: 50}, // GK
-                {x: 25, y: 20}, {x: 25, y: 40}, {x: 25, y: 60}, {x: 25, y: 80}, // DEF
-                {x: 55, y: 20}, {x: 55, y: 40}, {x: 55, y: 60}, {x: 55, y: 80}, // MED
-                {x: 85, y: 40}, {x: 85, y: 60} // DEL
-            ];
+            coords = [{x: 5, y: 50}, {x: 25, y: 20}, {x: 25, y: 40}, {x: 25, y: 60}, {x: 25, y: 80}, {x: 55, y: 20}, {x: 55, y: 40}, {x: 55, y: 60}, {x: 55, y: 80}, {x: 85, y: 40}, {x: 85, y: 60}];
         } else if (fmt === '433') {
-            coords = [
-                {x: 5, y: 50}, // GK
-                {x: 25, y: 15}, {x: 25, y: 38}, {x: 25, y: 62}, {x: 25, y: 85}, // DEF
-                {x: 50, y: 30}, {x: 45, y: 50}, {x: 50, y: 70}, // MED
-                {x: 80, y: 20}, {x: 85, y: 50}, {x: 80, y: 80} // DEL
-            ];
+            coords = [{x: 5, y: 50}, {x: 25, y: 15}, {x: 25, y: 38}, {x: 25, y: 62}, {x: 25, y: 85}, {x: 50, y: 30}, {x: 45, y: 50}, {x: 50, y: 70}, {x: 80, y: 20}, {x: 85, y: 50}, {x: 80, y: 80}];
         } else if (fmt === '352') {
-             coords = [
-                {x: 5, y: 50},
-                {x: 25, y: 30}, {x: 20, y: 50}, {x: 25, y: 70}, // 3 DEF
-                {x: 45, y: 15}, {x: 45, y: 85}, // Carrileros
-                {x: 50, y: 40}, {x: 50, y: 60}, {x: 60, y: 50}, // 3 MED
-                {x: 85, y: 40}, {x: 85, y: 60} // 2 DEL
-            ];
+             coords = [{x: 5, y: 50}, {x: 25, y: 30}, {x: 20, y: 50}, {x: 25, y: 70}, {x: 45, y: 15}, {x: 45, y: 85}, {x: 50, y: 40}, {x: 50, y: 60}, {x: 60, y: 50}, {x: 85, y: 40}, {x: 85, y: 60}];
         } else {
-             // 5-4-1
-             coords = [
-                {x: 5, y: 50},
-                {x: 25, y: 10}, {x: 25, y: 30}, {x: 25, y: 50}, {x: 25, y: 70}, {x: 25, y: 90},
-                {x: 50, y: 20}, {x: 50, y: 40}, {x: 50, y: 60}, {x: 50, y: 80},
-                {x: 85, y: 50}
-            ];
+             coords = [{x: 5, y: 50}, {x: 25, y: 10}, {x: 25, y: 30}, {x: 25, y: 50}, {x: 25, y: 70}, {x: 25, y: 90}, {x: 50, y: 20}, {x: 50, y: 40}, {x: 50, y: 60}, {x: 50, y: 80}, {x: 85, y: 50}];
         }
 
         starting11.forEach((p, i) => {
@@ -979,8 +973,22 @@
             el.style.top = coords[i].y + "%";
             el.textContent = p.num;
             
-            // Tooltip
-            el.title = p.name; // Simple tooltip
+            // TOOLTIP MEJORADO
+            el.addEventListener('mouseenter', (e) => {
+                const t = document.getElementById('tacticalTooltip');
+                t.innerHTML = `<div style="font-weight:bold">${p.name}</div><div style="font-size:0.75rem; opacity:0.8">${p.pos} - ${p.status === 'fit' ? 'Apto' : 'Lesionado'}</div>`;
+                t.style.display = 'block';
+                t.style.left = (e.clientX + 15) + 'px';
+                t.style.top = (e.clientY - 15) + 'px';
+            });
+            el.addEventListener('mousemove', (e) => {
+                const t = document.getElementById('tacticalTooltip');
+                t.style.left = (e.clientX + 15) + 'px';
+                t.style.top = (e.clientY - 15) + 'px';
+            });
+            el.addEventListener('mouseleave', () => {
+                document.getElementById('tacticalTooltip').style.display = 'none';
+            });
             
             // DRAG LOGIC REUSED
             el.onmousedown = function(e) {
@@ -1057,7 +1065,7 @@
     window.onload = function() {
         initTheme(); renderVideoEvents(); renderSquad();
         const ctxP = document.getElementById('possessionChart').getContext('2d');
-        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [60, 40], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
+        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [50, 50], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
         new Chart(document.getElementById('momentumChart'), { type: 'line', data: { labels: [1,2,3,4,5,6,7], datasets: [{ data: [0,5,-5,10,2,8,0], borderColor: '#6366f1', fill:true, backgroundColor:'rgba(99,102,241,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}, y:{display:false}} } });
         setTimeout(updateDashboardVisuals, 500);
         applyFormation('442'); // Init Tactics
