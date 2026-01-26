@@ -40,7 +40,7 @@
         .profile-btn { display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.5rem; border-radius:50px; transition:background 0.2s; }
         .profile-btn:hover { background:rgba(255,255,255,0.05); }
         .avatar { width:42px; height:42px; background:linear-gradient(to right, #8b5cf6, #d946ef); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; border:2px solid var(--bg-card); }
-        select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select { width:100%; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); background-color:var(--bg-body); color:var(--text-main); font-family:'Inter', sans-serif; font-size:0.9rem; outline:none; cursor:pointer; transition:all 0.2s; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:right 0.7rem top 50%; background-size:0.65rem auto; padding-right:2.5rem; }
+        select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select, .formation-select { width:100%; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); background-color:var(--bg-body); color:var(--text-main); font-family:'Inter', sans-serif; font-size:0.9rem; outline:none; cursor:pointer; transition:all 0.2s; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:right 0.7rem top 50%; background-size:0.65rem auto; padding-right:2.5rem; }
         select:focus, .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-glow); }
         
         .dropdown-menu { position:absolute; top:120%; right:0; width:240px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.5rem; display:none; z-index:1000; box-shadow:0 10px 25px -5px rgba(0,0,0,0.5); animation:fadeIn 0.2s ease; }
@@ -102,14 +102,7 @@
 
         .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
         
-        .action-zone { 
-            fill: var(--primary); 
-            fill-opacity: 0.15; 
-            stroke: var(--primary); 
-            stroke-width: 1; 
-            stroke-opacity: 0.4;
-            transition: all 0.3s ease; 
-        }
+        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
         .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
         .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
         .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
@@ -274,6 +267,7 @@
         <nav class="nav-menu">
             <a class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
             <a class="nav-item" onclick="navigate('videos')" id="nav-videos"><i class="fas fa-video"></i> Video Análisis</a>
+            <a class="nav-item" onclick="navigate('tacticas')" id="nav-tacticas"><i class="fas fa-chess"></i> Tácticas</a>
             <a class="nav-item" onclick="navigate('plantilla')" id="nav-plantilla"><i class="fas fa-users"></i> Plantilla</a>
             <a class="nav-item" onclick="navigate('reportes')" id="nav-reportes"><i class="fas fa-file-alt"></i> Reportes</a>
         </nav>
@@ -308,7 +302,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -401,9 +395,32 @@
                         <button class="tag-btn" style="background:#8b5cf6" onclick="tagEvent('tiro')"><i class="fas fa-bullseye"></i> Tiro</button>
                         <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
                         <button class="tag-btn btn-corner" onclick="tagEvent('corner')"><i class="fas fa-flag"></i> Córner</button>
+                        <button class="tag-btn btn-red" onclick="tagEvent('tarjeta')"><i class="fas fa-square"></i> Tarjeta</button>
                         
                         <button class="tag-btn" style="background:#6366f1;" onclick="openPassModal()"><i class="fas fa-project-diagram"></i> Pase</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-tacticas" class="view-section">
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div><h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Laboratorio Táctico</h2><p style="color: var(--text-muted);">Diseña y ajusta formaciones en tiempo real.</p></div>
+                <div style="display:flex; gap:10px;">
+                    <select class="formation-select" style="width:150px;" id="tacticalFormationSelect" onchange="applyFormation(this.value)">
+                        <option value="442">4-4-2 Clásico</option>
+                        <option value="433">4-3-3 Ofensivo</option>
+                        <option value="352">3-5-2 Carrileros</option>
+                        <option value="541">5-4-1 Defensivo</option>
+                    </select>
+                    <button class="btn-primary" onclick="resetTactics()">Reset</button>
+                </div>
+            </div>
+            
+            <div class="card" style="height: 600px; position:relative;">
+                <div class="cancha-wrapper" id="tacticsWrapper" style="height:100%;">
+                    <div class="cancha-bg-clip"><div style="position: absolute; left: 50%; height: 100%; width: 2px; background: rgba(255,255,255,0.4); transform: translateX(-50%);"></div><div style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div><div style="position: absolute; top: 50%; left: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div><div style="position: absolute; top: 50%; right: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div></div>
+                    <div id="tacticsLayer" style="width:100%; height:100%; position:relative;"></div>
                 </div>
             </div>
         </div>
@@ -780,6 +797,7 @@
                         document.onmouseup = null; 
                         // SAVE
                         let rect = el.getBoundingClientRect();
+                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                         let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
                         let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
                         MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
@@ -878,21 +896,125 @@
         }
         if(id === 'videos') document.querySelectorAll('.nav-item')[1].classList.add('active');
         if(id === 'plantilla') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        if(id === 'tacticas') {
+            document.querySelectorAll('.nav-item')[2].classList.add('active'); // Reuse plantilla active for now
+            setTimeout(() => applyFormation('442'), 200); // Init tactics
+        }
     };
     
-    // Plantilla Logic
-    const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }];
+    // Plantilla Logic & Tactics Logic
+    const defaultSquad = [
+        { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, 
+        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, 
+        { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, 
+        { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' },
+        { id: 3, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' },
+        { id: 5, name: 'Paulo Diaz', num: 5, pos: 'DEF', status: 'fit' },
+        { id: 20, name: 'Charles Aranguiz', num: 20, pos: 'MED', status: 'fit' },
+        { id: 13, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'fit' },
+        { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' },
+        { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' },
+        { id: 6, name: 'Guillermo Maripan', num: 3, pos: 'DEF', status: 'fit' }
+    ];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
     let currentFilter='all', currentSearch='';
     
     function renderSquad() { 
         const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
-        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter) && p.name.toLowerCase().includes(currentSearch));
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
         fil.forEach(p => {
             let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
              grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
         });
     }
+
+    // TACTICAL LAB LOGIC
+    window.applyFormation = function(fmt) {
+        const layer = document.getElementById('tacticsLayer');
+        if(!layer) return;
+        layer.innerHTML = '';
+        
+        // Take first 11 players
+        const starting11 = squadDB.slice(0, 11);
+        
+        // Define coordinates based on formation
+        let coords = [];
+        if (fmt === '442') {
+            coords = [
+                {x: 5, y: 50}, // GK
+                {x: 25, y: 20}, {x: 25, y: 40}, {x: 25, y: 60}, {x: 25, y: 80}, // DEF
+                {x: 55, y: 20}, {x: 55, y: 40}, {x: 55, y: 60}, {x: 55, y: 80}, // MED
+                {x: 85, y: 40}, {x: 85, y: 60} // DEL
+            ];
+        } else if (fmt === '433') {
+            coords = [
+                {x: 5, y: 50}, // GK
+                {x: 25, y: 15}, {x: 25, y: 38}, {x: 25, y: 62}, {x: 25, y: 85}, // DEF
+                {x: 50, y: 30}, {x: 45, y: 50}, {x: 50, y: 70}, // MED
+                {x: 80, y: 20}, {x: 85, y: 50}, {x: 80, y: 80} // DEL
+            ];
+        } else if (fmt === '352') {
+             coords = [
+                {x: 5, y: 50},
+                {x: 25, y: 30}, {x: 20, y: 50}, {x: 25, y: 70}, // 3 DEF
+                {x: 45, y: 15}, {x: 45, y: 85}, // Carrileros
+                {x: 50, y: 40}, {x: 50, y: 60}, {x: 60, y: 50}, // 3 MED
+                {x: 85, y: 40}, {x: 85, y: 60} // 2 DEL
+            ];
+        } else {
+             // 5-4-1
+             coords = [
+                {x: 5, y: 50},
+                {x: 25, y: 10}, {x: 25, y: 30}, {x: 25, y: 50}, {x: 25, y: 70}, {x: 25, y: 90},
+                {x: 50, y: 20}, {x: 50, y: 40}, {x: 50, y: 60}, {x: 50, y: 80},
+                {x: 85, y: 50}
+            ];
+        }
+
+        starting11.forEach((p, i) => {
+            if (!coords[i]) return;
+            const el = document.createElement('div');
+            el.className = 'player-node';
+            el.style.left = coords[i].x + "%"; 
+            el.style.top = coords[i].y + "%";
+            el.textContent = p.num;
+            
+            // Tooltip
+            el.title = p.name; // Simple tooltip
+            
+            // DRAG LOGIC REUSED
+            el.onmousedown = function(e) {
+                let containerRect = document.getElementById('tacticsWrapper').getBoundingClientRect();
+                let shiftX = e.clientX - el.getBoundingClientRect().left;
+                let shiftY = e.clientY - el.getBoundingClientRect().top;
+                el.style.zIndex = 1000;
+                
+                function moveAt(pageX, pageY) {
+                    let newLeft = pageX - shiftX - containerRect.left;
+                    let newTop = pageY - shiftY - containerRect.top;
+                    // Clamp
+                    if(newLeft < 0) newLeft = 0; if(newLeft > containerRect.width - 30) newLeft = containerRect.width - 30;
+                    if(newTop < 0) newTop = 0; if(newTop > containerRect.height - 30) newTop = containerRect.height - 30;
+                    
+                    el.style.left = (newLeft / containerRect.width * 100) + '%';
+                    el.style.top = (newTop / containerRect.height * 100) + '%';
+                }
+                function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
+                document.addEventListener('mousemove', onMouseMove);
+                document.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.onmouseup = null;
+                };
+            };
+            el.ondragstart = function() { return false; };
+            
+            layer.appendChild(el);
+        });
+    };
+    
+    window.resetTactics = function() {
+        applyFormation(document.getElementById('tacticalFormationSelect').value);
+    };
 
     // EXPOSE UI HELPERS
     window.filterSquad = function(c, b){currentFilter=c; document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderSquad();};
@@ -935,9 +1057,10 @@
     window.onload = function() {
         initTheme(); renderVideoEvents(); renderSquad();
         const ctxP = document.getElementById('possessionChart').getContext('2d');
-        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [50, 50], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
+        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [60, 40], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
         new Chart(document.getElementById('momentumChart'), { type: 'line', data: { labels: [1,2,3,4,5,6,7], datasets: [{ data: [0,5,-5,10,2,8,0], borderColor: '#6366f1', fill:true, backgroundColor:'rgba(99,102,241,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}, y:{display:false}} } });
         setTimeout(updateDashboardVisuals, 500);
+        applyFormation('442'); // Init Tactics
     };
 </script>
 </body>
