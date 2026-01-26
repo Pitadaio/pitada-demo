@@ -17,7 +17,7 @@
     
     <style>
         /* === ESTILOS BASE === */
-        :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; }
+        :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
         
@@ -88,7 +88,6 @@
         .shot-marker { position:absolute; width:14px; height:14px; border-radius:50%; border:2px solid white; transform:translate(-50%, -50%); transition:transform 0.2s; z-index:10; cursor:pointer; }
         .shot-gol { background-color:var(--success); } .shot-atajada { background-color:var(--warning); border-radius:3px; } .shot-fuera { background-color:var(--danger); }
         
-        /* NODOS DRAGGABLE (MEJORADOS) */
         .player-node { 
             position:absolute; width:34px; height:34px; 
             background:var(--bg-card); border:2px solid var(--text-main); border-radius:50%; 
@@ -279,7 +278,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Reset Táctico</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -398,7 +397,7 @@
         possession: { local: 0, visit: 0 },
         heatmapPoints: [],
         shots: [],
-        passes: [] 
+        passes: [] // NEW: Stores pass connections
     };
     
     // Tracker de Balón
@@ -635,7 +634,7 @@
             shotContainer.appendChild(el);
         });
 
-        // PASS NETWORK (AUTO-FORMATION 4-3-3 ALGORITHM)
+        // PASS NETWORK (NEW + DRAG FIX)
         if (passContainer && nodesLayer) {
             const positions = { 'POR': {x: 10, y: 50}, 'DEF': {x: 30, y: 50}, 'MED': {x: 50, y: 50}, 'DEL': {x: 80, y: 50} };
             MATCH_DATA.passes.forEach(pass => {
@@ -643,20 +642,16 @@
                 const p2 = squadDB.find(p => p.id == pass.to);
                 if (p1 && p2) {
                     const l = document.createElementNS("http://www.w3.org/2000/svg","line");
-                    // Logic to find coordinates would go here if we tracked node positions live
-                    // For now, simpler demo lines
                     l.setAttribute("x1", "50%"); l.setAttribute("y1", "50%");
                     l.setAttribute("x2", "60%"); l.setAttribute("y2", "60%");
                     l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
                     passContainer.appendChild(l);
                 }
             });
-
+            
             // ALGORTIMO DE DISTRIBUCIÓN
             let roleCounts = { POR:0, DEF:0, MED:0, DEL:0 };
             let roleTotals = { POR:0, DEF:0, MED:0, DEL:0 };
-            
-            // Contar totales
             squadDB.forEach(p => { if(roleTotals[p.pos] !== undefined) roleTotals[p.pos]++ });
 
             squadDB.forEach(p => {
@@ -665,23 +660,10 @@
                 
                 // Calcular posición automática (4-3-3 visual)
                 let baseX = 50, baseY = 50;
-                
                 if (p.pos === 'POR') { baseX = 8; baseY = 50; }
-                if (p.pos === 'DEF') { 
-                    baseX = 25; 
-                    roleCounts.DEF++;
-                    baseY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF;
-                }
-                if (p.pos === 'MED') { 
-                    baseX = 50; 
-                    roleCounts.MED++;
-                    baseY = (100 / (roleTotals.MED + 1)) * roleCounts.MED;
-                }
-                if (p.pos === 'DEL') { 
-                    baseX = 75; 
-                    roleCounts.DEL++;
-                    baseY = (100 / (roleTotals.DEL + 1)) * roleCounts.DEL;
-                }
+                if (p.pos === 'DEF') { baseX = 25; roleCounts.DEF++; baseY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF; }
+                if (p.pos === 'MED') { baseX = 50; roleCounts.MED++; baseY = (100 / (roleTotals.MED + 1)) * roleCounts.MED; }
+                if (p.pos === 'DEL') { baseX = 75; roleCounts.DEL++; baseY = (100 / (roleTotals.DEL + 1)) * roleCounts.DEL; }
 
                 el.style.left = baseX + "%"; el.style.top = baseY + "%";
                 el.textContent = p.num;
@@ -788,7 +770,7 @@
     };
     
     // Plantilla Logic
-    const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 3, name: 'Guillermo Maripán', num: 3, pos: 'DEF', status: 'fit' }, { id: 4, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' }, { id: 6, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'injured' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }, { id: 20, name: 'Charles Aránguiz', num: 20, pos: 'MED', status: 'red' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' }, { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' }, { id: 12, name: 'Gabriel Arias', num: 12, pos: 'POR', status: 'fit' }, { id: 13, name: 'Paulo Díaz', num: 5, pos: 'DEF', status: 'fit' }];
+    const defaultSquad = [{ id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' }];
     let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
     let currentFilter='all', currentSearch='';
     
