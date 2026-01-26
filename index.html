@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
-        /* === ESTILOS BASE === */
+        /* === ESTILOS INTACTOS === */
         :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
@@ -126,7 +126,6 @@
         .legend-item { display:flex; align-items:center; gap:0.4rem; }
         .dot { width:8px; height:8px; border-radius:50%; }
 
-        /* LEADERS, CHARTS */
         .leaders-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; }
         .leader-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; align-items:center; gap:1rem; position:relative; transition:transform 0.2s; }
         .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
@@ -289,7 +288,7 @@
                         <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
                         <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
                         <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
-                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar Mapa</button>
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
                         </div>
                     </div>
                     <div class="cancha-wrapper" id="canchaWrapper">
@@ -434,8 +433,14 @@
             video.src = url;
             video.play();
             showToast(`Partido "${file.name}" cargado.`);
+            
+            // CLEAN START LOGIC
             MATCH_DATA = { totalFrames: 0, playersHistory: [], possession: { local: 0, visit: 0 }, heatmapPoints: [], shots: [], passes: [], nodePositions: {} };
+            localStorage.removeItem('pitada_video_events'); // Clear old sessions
+            videoEvents = []; // Clear in-memory
+            renderVideoEvents(); // Update UI
             document.getElementById('dataPointsCount').innerText = "0";
+            
             navigate('videos');
         }
     });
@@ -616,7 +621,8 @@
 
         if (dataToShow.length < 5) {
             dataToShow = [{x:100,y:100,value:10}, {x:200,y:200,value:10}, {x:500,y:300,value:10}]; 
-            shotsToShow = [{x:0.85, y:0.5, result:'gol'}, {x:0.75, y:0.4, result:'tiro'}];
+            // CLEAN START: No dummy shots if empty
+            // shotsToShow = []; 
         }
 
         // HEATMAP
@@ -656,8 +662,6 @@
                 const p2 = squadDB.find(p => p.id == pass.to);
                 if (p1 && p2) {
                     const l = document.createElementNS("http://www.w3.org/2000/svg","line");
-                    // Logic to find coordinates would go here if we tracked node positions live
-                    // For now, simpler demo lines
                     l.setAttribute("x1", "50%"); l.setAttribute("y1", "50%");
                     l.setAttribute("x2", "60%"); l.setAttribute("y2", "60%");
                     l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
@@ -670,43 +674,23 @@
             let roleTotals = { POR:0, DEF:0, MED:0, DEL:0 };
             squadDB.forEach(p => { if(roleTotals[p.pos] !== undefined) roleTotals[p.pos]++ });
 
-            // DRAW NODES FIRST TO CALCULATE POSITIONS
-            let computedPositions = {};
-
             squadDB.forEach(p => {
                 const el = document.createElement('div');
                 el.className = 'player-node';
+                let baseX = 50, baseY = 50;
                 
-                // RESTORE FROM MEMORY IF EXISTS
-                let finalX, finalY;
+                if (p.pos === 'POR') { baseX = 8; baseY = 50; }
+                if (p.pos === 'DEF') { baseX = 25; roleCounts.DEF++; baseY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF; }
+                if (p.pos === 'MED') { baseX = 50; roleCounts.MED++; baseY = (100 / (roleTotals.MED + 1)) * roleCounts.MED; }
+                if (p.pos === 'DEL') { baseX = 75; roleCounts.DEL++; baseY = (100 / (roleTotals.DEL + 1)) * roleCounts.DEL; }
 
+                // Check Memory
                 if (MATCH_DATA.nodePositions[p.id]) {
-                    finalX = MATCH_DATA.nodePositions[p.id].x;
-                    finalY = MATCH_DATA.nodePositions[p.id].y;
-                } else {
-                    // AUTO FORMATION
-                    if (p.pos === 'POR') { finalX = 8; finalY = 50; }
-                    if (p.pos === 'DEF') { 
-                        roleCounts.DEF++;
-                        finalX = 25; 
-                        finalY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF;
-                    }
-                    if (p.pos === 'MED') { 
-                        roleCounts.MED++;
-                        finalX = 50; 
-                        finalY = (100 / (roleTotals.MED + 1)) * roleCounts.MED;
-                    }
-                    if (p.pos === 'DEL') { 
-                        roleCounts.DEL++;
-                        finalX = 75; 
-                        finalY = (100 / (roleTotals.DEL + 1)) * roleCounts.DEL;
-                    }
+                    baseX = MATCH_DATA.nodePositions[p.id].x;
+                    baseY = MATCH_DATA.nodePositions[p.id].y;
                 }
 
-                computedPositions[p.id] = {x: finalX, y: finalY};
-
-                el.style.left = finalX + "%"; 
-                el.style.top = finalY + "%";
+                el.style.left = baseX + "%"; el.style.top = baseY + "%";
                 el.textContent = p.num;
 
                 // TOOLTIP (NOMBRES FLOTANTES)
@@ -726,54 +710,38 @@
                     document.getElementById('tacticalTooltip').style.display = 'none';
                 });
                 
-                // DRAG LOGIC REFINED
+                // DRAG LOGIC
                 el.onmousedown = function(e) {
                     let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                     let shiftX = e.clientX - el.getBoundingClientRect().left;
                     let shiftY = e.clientY - el.getBoundingClientRect().top;
                     el.style.zIndex = 1000;
-                    
                     function moveAt(pageX, pageY) {
                         let newLeft = pageX - shiftX - containerRect.left;
                         let newTop = pageY - shiftY - containerRect.top;
-                        
-                        // CLAMP (JAULA)
                         if(newLeft < 0) newLeft = 0;
                         if(newLeft > containerRect.width - 30) newLeft = containerRect.width - 30;
                         if(newTop < 0) newTop = 0;
                         if(newTop > containerRect.height - 30) newTop = containerRect.height - 30;
-
-                        // TO PERCENTAGE FOR RESPONSIVENESS
+                        
                         let pctX = (newLeft / containerRect.width * 100);
                         let pctY = (newTop / containerRect.height * 100);
-                        
                         el.style.left = pctX + '%';
                         el.style.top = pctY + '%';
                         
-                        // UPDATE ZONE IF EXISTS
                         const zone = document.getElementById(`zone-${p.id}`);
-                        if(zone) {
-                            zone.setAttribute("cx", pctX + "%");
-                            zone.setAttribute("cy", pctY + "%");
-                        }
+                        if(zone) { zone.setAttribute("cx", pctX + "%"); zone.setAttribute("cy", pctY + "%"); }
                     }
-                    
                     function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
-                    
                     document.addEventListener('mousemove', onMouseMove);
-                    
-                    document.onmouseup = function() {
-                        document.removeEventListener('mousemove', onMouseMove);
-                        document.onmouseup = null;
-                        
-                        // SAVE POSITION TO MEMORY
+                    document.onmouseup = function() { 
+                        document.removeEventListener('mousemove', onMouseMove); 
+                        document.onmouseup = null; 
+                        // SAVE
                         let rect = el.getBoundingClientRect();
-                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
                         let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
                         let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
-                        
-                        MATCH_DATA.nodePositions[p.id] = { x: finalPctX, y: finalPctY };
-                        // RE-RENDER TO UPDATE LINES
+                        MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
                         updateDashboardVisuals();
                     };
                 };
@@ -783,33 +751,19 @@
                 // RADIO / ACTION ZONES
                 if(actionContainer) {
                     let rx = 5, ry = 5;
-                    if(p.pos === 'DEF') { rx = 8; ry = 18; } // Wide
-                    if(p.pos === 'MED') { rx = 14; ry = 14; } // Circle
-                    if(p.pos === 'DEL') { rx = 18; ry = 10; } // Vertical
-                    if(p.pos === 'POR') { rx = 5; ry = 10; } // Box
+                    if(p.pos === 'DEF') { rx = 8; ry = 18; }
+                    if(p.pos === 'MED') { rx = 14; ry = 14; } 
+                    if(p.pos === 'DEL') { rx = 18; ry = 10; }
+                    if(p.pos === 'POR') { rx = 5; ry = 10; }
                     
                     const zone = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-                    zone.setAttribute("cx", finalX + "%");
-                    zone.setAttribute("cy", finalY + "%");
+                    zone.setAttribute("cx", baseX + "%");
+                    zone.setAttribute("cy", baseY + "%");
                     zone.setAttribute("rx", rx + "%");
                     zone.setAttribute("ry", ry + "%");
                     zone.setAttribute("id", `zone-${p.id}`);
                     zone.setAttribute("class", `action-zone zone-${p.pos.toLowerCase()}`);
                     actionContainer.appendChild(zone);
-                }
-            });
-
-            // DRAW LINES AFTER KNOWING POSITIONS
-            MATCH_DATA.passes.forEach(pass => {
-                const p1Pos = computedPositions[pass.from];
-                const p2Pos = computedPositions[pass.to];
-                
-                if (p1Pos && p2Pos) {
-                    const l = document.createElementNS("http://www.w3.org/2000/svg","line");
-                    l.setAttribute("x1", p1Pos.x + "%"); l.setAttribute("y1", p1Pos.y + "%");
-                    l.setAttribute("x2", p2Pos.x + "%"); l.setAttribute("y2", p2Pos.y + "%");
-                    l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
-                    passContainer.appendChild(l);
                 }
             });
         }
@@ -820,7 +774,7 @@
         // GRÁFICO POSESION
         if(possessionChart) {
             const tot = MATCH_DATA.possession.local + MATCH_DATA.possession.visit;
-            const pL = tot > 0 ? Math.round((MATCH_DATA.possession.local/tot)*100) : 60;
+            const pL = tot > 0 ? Math.round((MATCH_DATA.possession.local/tot)*100) : 0; // CLEAN START 0
             possessionChart.data.datasets[0].data = [pL, 100-pL]; 
             possessionChart.update();
             document.getElementById('kpiPossession').innerText = pL + '%';
@@ -829,16 +783,15 @@
     
     // EXPOSE FUNCTIONS GLOBALLY
     window.forceHeatmapUpdate = function() { 
-        // Logic: if Reset is clicked, clear memory
         if(document.getElementById('passNodesLayer').innerHTML !== '') {
-             MATCH_DATA.nodePositions = {}; // Clear drag memory
+             MATCH_DATA.nodePositions = {}; 
         }
         updateDashboardVisuals(); 
         showToast("Mapa regenerado"); 
     };
 
     // === 4. TAGGING LOGIC ===
-    let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || [{time: 15, type: 'gol', label: 'Gol'}];
+    let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || []; // CLEAN START
     function renderVideoEvents() { const l = document.getElementById('eventsList'); if(!l) return; l.innerHTML=''; videoEvents.forEach((ev,i) => { l.innerHTML+=`<div class="event-row" onclick="jumpToVideo(${ev.time})"><div class="event-time">${Math.floor(ev.time)}'</div><div>⚽</div><div style="flex:1">${ev.label}</div></div>`; }); }
     
     window.tagEvent = function(t){ 
@@ -893,7 +846,7 @@
     
     function renderSquad() { 
         const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
-        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter) && p.name.toLowerCase().includes(currentSearch));
         fil.forEach(p => {
             let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
              grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
@@ -941,7 +894,7 @@
     window.onload = function() {
         initTheme(); renderVideoEvents(); renderSquad();
         const ctxP = document.getElementById('possessionChart').getContext('2d');
-        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [60, 40], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
+        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [50, 50], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
         new Chart(document.getElementById('momentumChart'), { type: 'line', data: { labels: [1,2,3,4,5,6,7], datasets: [{ data: [0,5,-5,10,2,8,0], borderColor: '#6366f1', fill:true, backgroundColor:'rgba(99,102,241,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}, y:{display:false}} } });
         setTimeout(updateDashboardVisuals, 500);
     };
