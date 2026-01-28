@@ -17,435 +17,1050 @@
     
     <style>
         /* === ESTILOS BASE === */
-        :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; }
+        :root { --bg-body:#0b0f19; --bg-card:#111827; --text-main:#f3f4f6; --text-muted:#9ca3af; --border:#374151; --sidebar-bg:#111827; --primary:#6366f1; --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --radius-md:12px; --shadow-card:0 4px 6px -1px rgba(0,0,0,0.05); }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; }
+        body { font-family:'Inter', sans-serif; background-color:var(--bg-body); color:var(--text-main); background-image:radial-gradient(circle at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16,185,129,0.05) 0%, transparent 20%); min-height:100vh; transition:background 0.3s, color 0.3s; }
         
         .app-container { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
-        .sidebar { background:var(--sidebar-bg); border-right:1px solid var(--border); padding:2rem 1.5rem; display:flex; flex-direction:column; gap:2rem; position:sticky; top:0; height:100vh; z-index:100; }
+        .sidebar { background:var(--sidebar-bg); border-right:1px solid var(--border); padding:2rem 1.5rem; display:flex; flex-direction:column; gap:2rem; position:sticky; top:0; height:100vh; z-index:100; transition:background 0.3s; }
         .main-content { padding:2rem 3rem; overflow-y:auto; overflow-x:hidden; }
-        
-        /* LOGO & NAV */
         .logo { font-family:'Outfit', sans-serif; font-size:1.5rem; font-weight:700; display:flex; align-items:center; gap:0.75rem; color:var(--text-main); }
-        .logo-icon { width:40px; height:40px; background:linear-gradient(135deg, var(--primary), var(--success)); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; }
+        .logo-icon { width:40px; height:40px; background:linear-gradient(135deg, var(--primary), var(--success)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:white; box-shadow:0 0 15px var(--primary-glow); }
         .nav-item { display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:8px; color:var(--text-muted); text-decoration:none; transition:all 0.3s ease; font-weight:500; cursor:pointer; }
         .nav-item:hover, .nav-item.active { background:rgba(99,102,241,0.1); color:var(--primary); }
         .nav-item.active { border-left:3px solid var(--primary); }
-        
-        /* COMPONENTES UI */
         .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem; }
-        .btn-primary { background:linear-gradient(135deg, var(--primary), #4f46e5); color:white; padding:0.75rem 1.5rem; border-radius:50px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.5rem; transition:transform 0.2s; }
+        .header-title h1 { font-family:'Outfit', sans-serif; font-size:2rem; font-weight:600; }
+        .header-title p { color:var(--text-muted); }
+        
+        .btn-primary { background:linear-gradient(135deg, var(--primary), #4f46e5); color:white; padding:0.75rem 1.5rem; border-radius:50px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 15px var(--primary-glow); transition:transform 0.2s; }
         .btn-primary:hover { transform:translateY(-2px); }
-        .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; min-width:0; }
+        .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.5rem 1rem; border-radius:50px; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; transition:all 0.2s; }
+        .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+        .profile-btn { display:flex; align-items:center; gap:0.75rem; cursor:pointer; padding:0.5rem; border-radius:50px; transition:background 0.2s; }
+        .profile-btn:hover { background:rgba(255,255,255,0.05); }
+        .avatar { width:42px; height:42px; background:linear-gradient(to right, #8b5cf6, #d946ef); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; border:2px solid var(--bg-card); }
+        select.player-selector, .comparison-controls select, .form-input, .indiv-heatmap-controls select, .formation-select { width:100%; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); background-color:var(--bg-body); color:var(--text-main); font-family:'Inter', sans-serif; font-size:0.9rem; outline:none; cursor:pointer; transition:all 0.2s; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:right 0.7rem top 50%; background-size:0.65rem auto; padding-right:2.5rem; }
+        select:focus, .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-glow); }
         
-        /* GRID LAYOUTS */
-        .dashboard-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:1.5rem; }
-        .stat-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
-        .kpi-card { background:linear-gradient(145deg, var(--bg-card), rgba(99,102,241,0.03)); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; display:flex; align-items:center; gap:1rem; }
+        .dropdown-menu { position:absolute; top:120%; right:0; width:240px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.5rem; display:none; z-index:1000; box-shadow:0 10px 25px -5px rgba(0,0,0,0.5); animation:fadeIn 0.2s ease; }
+        .dropdown-menu.show { display:block; }
+        .menu-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:8px; transition:all 0.2s; cursor:pointer; font-size:0.9rem; }
+        .menu-item:hover { background:rgba(99,102,241,0.1); color:var(--text-main); }
+        .menu-header { padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem; }
+        .modal { display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6); backdrop-filter:blur(5px); animation:fadeIn 0.2s; }
+        .modal-content { background-color:var(--bg-card); margin:10% auto; padding:2rem; border:1px solid var(--border); width:100%; max-width:400px; border-radius:var(--radius-md); box-shadow:0 20px 25px -5px rgba(0,0,0,0.5); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .modal-title { font-size:1.25rem; font-weight:700; color:var(--text-main); }
+        .close-modal { color:var(--text-muted); font-size:1.5rem; font-weight:bold; cursor:pointer; }
+        .form-group { margin-bottom:1rem; }
+        .form-label { display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem; }
+        .form-actions { display:flex; gap:1rem; margin-top:1.5rem; }
+        .btn-cancel { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.75rem; border-radius:50px; flex:1; cursor:pointer; }
+
+        .view-section { display:none; animation:fadeIn 0.3s ease; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+        .dashboard-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:1.5rem; width:100%; }
+        .card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; position:relative; transition:border-color 0.3s; min-width:0; overflow:visible; }
+        .card:hover { border-color:var(--primary); }
         
-        /* PIZARRA TACTICA */
+        .card-header { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; 
+            flex-wrap: wrap; gap: 15px;
+        }
+        .card-title { margin-right: auto; }
+
+        .stat-grid { grid-column:span 12; display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom:1.5rem; }
+        .kpi-card { background:linear-gradient(145deg, var(--bg-card), rgba(99,102,241,0.03)); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.5rem; display:flex; align-items:center; gap:1rem; box-shadow:var(--shadow-card); }
+        .kpi-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0; }
+        .kpi-value { font-size:1.75rem; font-weight:700; font-family:'Outfit'; color:var(--text-main); }
+        .kpi-label { font-size:0.85rem; color:var(--text-muted); }
+
         .tactical-board { grid-column:span 8; }
         .side-panel { grid-column:span 4; display:flex; flex-direction:column; gap:1.5rem; }
-        .cancha-wrapper { width:100%; height:400px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; overflow:visible; border:2px solid rgba(255,255,255,0.1); }
-        .cancha-bg-clip { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-        /* LINEAS CANCHA */
-        .cancha-line-center { position:absolute; left:50%; height:100%; width:2px; background:rgba(255,255,255,0.3); }
-        .cancha-circle { position:absolute; top:50%; left:50%; width:100px; height:100px; border:2px solid rgba(255,255,255,0.3); border-radius:50%; transform:translate(-50%, -50%); }
-        .cancha-area-l { position:absolute; top:50%; left:0; width:60px; height:200px; border:2px solid rgba(255,255,255,0.3); transform:translateY(-50%); border-left:none; }
-        .cancha-area-r { position:absolute; top:50%; right:0; width:60px; height:200px; border:2px solid rgba(255,255,255,0.3); transform:translateY(-50%); border-right:none; }
-
-        .layer-overlay { width:100%; height:100%; position:absolute; top:0; left:0; }
-        .hidden-layer { display:none !important; }
-
-        /* JUGADORES */
-        .player-node { 
-            position:absolute; width:32px; height:32px; background:var(--bg-card); 
-            border:2px solid var(--text-main); border-radius:50%; 
-            display:flex; align-items:center; justify-content:center; 
-            font-size:0.75rem; font-weight:700; color:var(--text-main); 
-            transform:translate(-50%, -50%); cursor:grab; z-index:20; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-        .player-node:active { cursor:grabbing; transform:translate(-50%, -50%) scale(1.1); border-color:var(--primary); }
-
-        .pass-line { stroke:rgba(255,255,255,0.3); stroke-width:2; stroke-dasharray:5,5; pointer-events:none; }
+        .cancha-wrapper { width:100%; height:400px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; overflow:visible; box-shadow:inset 0 0 50px rgba(0,0,0,0.5); border:2px solid rgba(255,255,255,0.1); }
+        .cancha-bg-clip { position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; border-radius:6px; pointer-events:none; }
+        .layer-overlay { width:100%; height:100%; position:absolute; top:0; left:0; transition:opacity 0.3s; } 
+        .hidden-layer { opacity:0; pointer-events:none !important; }
         
-        /* VIDEO PLAYER */
-        .video-layout { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; height:calc(100vh - 150px); }
-        .video-player-container { background:black; border-radius:12px; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; }
-        #videoPlaceholder { text-align:center; color:var(--text-muted); z-index:10; }
-        #videoPlaceholder i { font-size:3rem; margin-bottom:1rem; color:var(--primary); }
-        #matchVideo { width:100%; height:100%; display:none; object-fit:contain; z-index:5; }
-        #aiCanvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:20; }
-
-        /* VIEWS */
-        .view-section { display:none; opacity:0; transition:opacity 0.3s; }
-        .view-section.active { display:block; opacity:1; }
-
-        /* TOAST */
-        .toast-container { position:fixed; bottom:2rem; right:2rem; z-index:9999; display:flex; flex-direction:column; gap:0.5rem; }
-        .toast { background:var(--bg-card); color:white; padding:1rem; border-radius:8px; border-left:4px solid var(--primary); box-shadow:0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.3s; }
-        @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) { 
-            .app-container { grid-template-columns:1fr; } 
-            .sidebar { display:none; } 
-            .tactical-board, .side-panel, .card { grid-column:span 12; }
-            .stat-grid { grid-template-columns:repeat(2, 1fr); }
-            .video-layout { grid-template-columns:1fr; height:auto; }
+        .shot-marker { position:absolute; width:14px; height:14px; border-radius:50%; border:2px solid white; transform:translate(-50%, -50%); transition:transform 0.2s; z-index:10; cursor:pointer; }
+        .shot-gol { background-color:var(--success); } .shot-atajada { background-color:var(--warning); border-radius:3px; } .shot-fuera { background-color:var(--danger); }
+        
+        /* NODOS DRAGGABLE */
+        .player-node { 
+            position:absolute; width:34px; height:34px; 
+            background:var(--bg-card); border:2px solid var(--text-main); border-radius:50%; 
+            display:flex; align-items:center; justify-content:center; 
+            font-size:0.85rem; font-weight:700; color:var(--text-main); 
+            transform:translate(-50%, -50%); box-shadow:0 4px 10px rgba(0,0,0,0.5); 
+            z-index:20; cursor: grab; transition: box-shadow 0.1s;
         }
+        .player-node:hover { border-color:var(--primary); transform:translate(-50%, -50%) scale(1.1); }
+        .player-node:active { cursor: grabbing; box-shadow: 0 0 15px var(--primary); border-color: var(--primary); }
+
+        .pass-line { stroke:var(--text-muted); stroke-linecap:round; transition:all 0.1s; opacity:0.6; pointer-events:none; }
+        
+        .action-zone { fill: var(--primary); fill-opacity: 0.15; stroke: var(--primary); stroke-width: 1; stroke-opacity: 0.4; transition: all 0.3s ease; }
+        .action-zone.zone-def { fill: #ef4444; stroke: #ef4444; } 
+        .action-zone.zone-mid { fill: #f59e0b; stroke: #f59e0b; } 
+        .action-zone.zone-del { fill: #10b981; stroke: #10b981; } 
+        .action-center { fill:white; stroke:none; pointer-events:none; }
+        
+        .tactical-tooltip { position:fixed; background:rgba(17,24,39,0.95); color:white; padding:0.5rem 1rem; border-radius:6px; font-size:0.8rem; pointer-events:none; z-index:9999; border:1px solid var(--border); display:none; backdrop-filter:blur(4px); white-space:nowrap; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+        
+        .mode-switch { display:flex; background:var(--border); padding:4px; border-radius:8px; gap:4px; overflow-x:auto; }
+        .mode-btn { padding:0.4rem 0.8rem; border-radius:6px; border:none; cursor:pointer; font-size:0.85rem; font-weight:500; color:var(--text-muted); background:transparent; transition:all 0.2s; white-space:nowrap; }
+        .mode-btn.active { background:var(--bg-card); color:var(--text-main); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+        .sub-controls { display:flex; gap:0.5rem; margin-left:1rem; }
+        .sub-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:0.3rem 0.8rem; border-radius:6px; cursor:pointer; font-size:0.8rem; }
+        .sub-btn.active { border-color:var(--primary); color:var(--primary); background:rgba(99,102,241,0.1); }
+        .legend-container { display:flex; gap:1rem; margin-top:1rem; font-size:0.85rem; color:var(--text-muted); flex-wrap:wrap; }
+        .legend-item { display:flex; align-items:center; gap:0.4rem; }
+        .dot { width:8px; height:8px; border-radius:50%; }
+
+        /* LEADERS, CHARTS */
+        .leaders-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; }
+        .leader-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; align-items:center; gap:1rem; position:relative; transition:transform 0.2s; }
+        .leader-avatar { position:relative; flex-shrink:0; } .avatar-img { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
+        .leader-info { flex:1; min-width:0; } .leader-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .leader-value { font-weight:700; color:var(--text-main); font-family:'Outfit'; font-size:1.1rem; }
+        .progress-mini { width:100%; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:5px; } .progress-mini .bar { height:100%; border-radius:2px; }
+        .radar-card, .comparison-card { grid-column:span 6; } .radar-wrapper { display:flex; gap:2rem; align-items:center; justify-content:center; min-height:300px; }
+        .player-info-panel { flex:1; display:flex; flex-direction:column; gap:1rem; } .player-stats-list { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; }
+        .p-stat { background:var(--bg-body); padding:0.5rem; border-radius:6px; font-size:0.8rem; display:flex; justify-content:space-between; } .p-stat strong { color:var(--text-main); }
+        .chart-radar-container { flex:1; height:300px; position:relative; width:100%; }
+        .indiv-heatmap-card { grid-column:span 12; display:flex; gap:1.5rem; } .indiv-heatmap-controls { width:250px; display:flex; flex-direction:column; gap:1rem; flex-shrink:0; } .indiv-heatmap-wrapper { flex:1; height:350px; background:linear-gradient(to bottom right, #1a4d2e, #14532d); border-radius:8px; position:relative; border:2px solid rgba(255,255,255,0.1); box-shadow:inset 0 0 50px rgba(0,0,0,0.5); }
+        .indiv-stat-row { display:flex; justify-content:space-between; padding:0.75rem; background:var(--bg-body); border-radius:8px; font-size:0.9rem; }
+        .reco-item { background:rgba(99,102,241,0.05); border-left:3px solid var(--primary); padding:1rem; border-radius:0 8px 8px 0; margin-bottom:0.75rem; }
+        .reco-item.alert { border-color:var(--danger); background:rgba(239,68,68,0.05); }
+        .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.3s; }
+        .upload-zone:hover { border-color:var(--primary); background:rgba(99,102,241,0.05); }
+
+        .squad-filters { display:flex; gap:1rem; margin-bottom:2rem; overflow-x:auto; padding-bottom:0.5rem; }
+        .filter-btn { background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); padding:0.5rem 1.2rem; border-radius:50px; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+        .filter-btn.active, .filter-btn:hover { background:var(--primary); color:white; border-color:var(--primary); }
+        .search-box { margin-bottom:1.5rem; position:relative; max-width:400px; }
+        .search-box i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--text-muted); }
+        .search-input { width:100%; padding:0.75rem 1rem 0.75rem 2.5rem; border-radius:50px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-main); font-family:'Inter'; transition:all 0.2s; }
+        .search-input:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 3px var(--primary-glow); }
+        .squad-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:1.5rem; }
+        .player-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:visible; position:relative; transition:transform 0.2s; }
+        .player-card:hover { transform:translateY(-5px); border-color:var(--primary); }
+        .player-card-header { padding:1.5rem; display:flex; align-items:center; gap:1rem; border-bottom:1px solid var(--border); }
+        .p-avatar { width:50px; height:50px; border-radius:50%; background:var(--bg-body); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:700; color:var(--text-main); flex-shrink:0; }
+        .p-info h3 { margin:0; font-size:1rem; color:var(--text-main); } .p-info p { margin:0; font-size:0.8rem; color:var(--text-muted); }
+        .p-number { position:absolute; top:1rem; right:1rem; font-size:1.2rem; font-weight:800; color:rgba(255,255,255,0.05); font-family:'Outfit'; }
+        .player-card-body { padding:1rem; display:flex; justify-content:space-between; align-items:center; }
+        .delete-btn { color:var(--text-muted); cursor:pointer; transition:color 0.2s; font-size:0.9rem; margin-left:10px; }
+        .delete-btn:hover { color:var(--danger); }
+        .p-tags { flex:1; }
+        .status-btn { border:none; cursor:pointer; transition:all 0.2s; white-space:nowrap; display:flex; align-items:center; gap:6px; width:100%; justify-content:center; font-size:0.75rem; padding:0.4rem 0.8rem; border-radius:6px; font-weight:600; text-transform:uppercase; }
+        .status-btn:hover { filter:brightness(1.1); transform:scale(1.02); }
+        .tag-fit { background:rgba(16,185,129,0.1); color:var(--success); border:1px solid rgba(16,185,129,0.2); }
+        .tag-injured { background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); }
+        .tag-yellow { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3); }
+        .tag-red { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+
+        .reports-list { display:flex; flex-direction:column; gap:1rem; }
+        .report-item { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; transition:all 0.2s; }
+        .report-item:hover { border-color:var(--primary); transform:translateX(5px); }
+        .report-icon { width:45px; height:45px; border-radius:10px; background:rgba(99,102,241,0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-right:1rem; }
+        .report-info h4 { margin:0; color:var(--text-main); font-size:1rem; } .report-info p { margin:0; color:var(--text-muted); font-size:0.8rem; }
+        .report-status { font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:4px; background:rgba(16,185,129,0.1); color:var(--success); }
+        .report-status.pending { background:rgba(245,158,11,0.1); color:var(--warning); }
+
+        .video-layout { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; height:calc(100vh - 150px); }
+        .video-player-container { background:black; border-radius:12px; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+        .video-player-container video { width:100%; height:100%; object-fit:contain; }
+        .events-sidebar { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; display:flex; flex-direction:column; overflow:hidden; }
+        .events-header { padding:1rem; border-bottom:1px solid var(--border); font-weight:600; color:var(--text-main); display:flex; justify-content:space-between; align-items:center; }
+        .events-list { flex:1; overflow-y:auto; padding:0.5rem; }
+        .event-row { display:flex; align-items:center; gap:0.8rem; padding:0.8rem; border-radius:8px; cursor:pointer; transition:all 0.2s; border-bottom:1px solid rgba(255,255,255,0.02); }
+        .event-row:hover { background:rgba(99,102,241,0.1); }
+        .event-time { font-family:'Outfit'; font-weight:700; color:var(--primary); width:40px; }
+        .event-desc { flex:1; font-size:0.9rem; color:var(--text-main); }
+        .event-icon { font-size:1.2rem; }
+        .tagging-controls { display:flex; gap:0.5rem; padding:1rem; border-top:1px solid var(--border); background:var(--bg-card); }
+        .tag-btn { flex:1; border:none; border-radius:6px; padding:0.6rem; color:white; font-weight:600; cursor:pointer; transition:transform 0.1s; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.75rem; }
+        .tag-btn:hover { transform:scale(1.05); }
+        .tag-btn i { font-size:1rem; }
+        .btn-goal { background:#10b981; } .btn-foul { background:#f59e0b; } .btn-corner { background:#6366f1; } .btn-red { background:#ef4444; }
+        
+        /* TOAST */
+        .toast-container { position:fixed; bottom:2rem; right:2rem; z-index:3000; display:flex; flex-direction:column; gap:0.5rem; }
+        .toast { background:var(--bg-card); color:var(--text-main); padding:1rem 1.5rem; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-left:4px solid var(--primary); display:flex; align-items:center; gap:1rem; animation:slideIn 0.3s ease; font-size:0.9rem; font-weight:500; }
+        .toast.success { border-color:var(--success); } .toast.error { border-color:var(--danger); }
+        @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        @keyframes slideOut { to { transform:translateX(100%); opacity:0; } }
+        @keyframes pulse { 0% { opacity:1; } 50% { opacity:0.4; } 100% { opacity:1; } }
+
+        /* VIDEO PLACEHOLDER (ESTADO VACIO PROFESIONAL) */
+        #videoPlaceholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: var(--text-muted);
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+        #videoPlaceholder i { font-size: 3rem; margin-bottom: 1rem; color: var(--primary); opacity: 0.8; }
+        #videoPlaceholder h3 { color: var(--text-main); font-weight: 600; margin-bottom: 0.5rem; }
+        #videoPlaceholder p { font-size: 0.9rem; opacity: 0.7; }
+
+        @media (max-width: 1024px) { .app-container { grid-template-columns:1fr; } .sidebar { display:none; } .tactical-board, .radar-card, .comparison-card, .indiv-heatmap-card, .card { grid-column:span 12; } .radar-wrapper, .indiv-heatmap-card { flex-direction:column; } .indiv-heatmap-controls { width:100%; } .side-panel { grid-column:span 12; display:flex; flex-direction:row; gap:1rem; } .stat-grid, .leaders-grid { grid-template-columns:repeat(2, 1fr); } .video-layout { grid-template-columns:1fr; height:auto; } .video-player-container { height:300px; } .events-sidebar { height:300px; } }
+        @media (max-width: 600px) { .leaders-grid, .stat-grid, .squad-grid { grid-template-columns:1fr; } .side-panel { flex-direction:column; } .report-item { flex-direction:column; align-items:flex-start; gap:1rem; } }
     </style>
 </head>
 <body>
 
 <div id="toastContainer" class="toast-container"></div>
 
+<div id="passModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-title">Registrar Pase</span>
+            <span class="close-modal" onclick="closePassModal()">&times;</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label">¿Quién pasó?</label>
+            <select id="passFrom" class="form-input"></select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">¿A quién?</label>
+            <select id="passTo" class="form-input"></select>
+        </div>
+        <div class="form-actions">
+            <button class="btn-cancel" onclick="closePassModal()">Cancelar</button>
+            <button class="btn-primary" style="flex:1; justify-content:center;" onclick="savePass()">Guardar Pase</button>
+        </div>
+    </div>
+</div>
+
+<div id="addPlayerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><span class="modal-title">Fichar Jugador</span><span class="close-modal" onclick="closeAddPlayerModal()">&times;</span></div>
+        <div class="form-group"><label class="form-label">Nombre Completo</label><input type="text" id="newPlayerName" class="form-input" placeholder="Ej: Arturo Vidal"></div>
+        <div class="form-group"><label class="form-label">Dorsal (#)</label><input type="number" id="newPlayerNum" class="form-input" placeholder="Ej: 23"></div>
+        <div class="form-group"><label class="form-label">Posición</label><select id="newPlayerPos" class="form-input"><option value="POR">Portero</option><option value="DEF">Defensa</option><option value="MED">Mediocentro</option><option value="DEL">Delantero</option></select></div>
+        <div class="form-actions"><button class="btn-cancel" onclick="closeAddPlayerModal()">Cancelar</button><button class="btn-primary" style="flex:1; justify-content:center;" onclick="saveNewPlayer()">Guardar Fichaje</button></div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+        <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem;">¿Estás seguro?</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Esta acción eliminará al jugador de la plantilla permanentemente.</p>
+        <div class="form-actions"><button class="btn-cancel" onclick="document.getElementById('deleteModal').style.display='none'">Cancelar</button><button class="btn-primary" style="flex:1; justify-content:center; background: var(--danger);" onclick="confirmDeletePlayer()">Eliminar</button></div>
+    </div>
+</div>
+
 <div class="app-container">
     <aside class="sidebar">
         <div class="logo"><div class="logo-icon"><i class="fas fa-bolt"></i></div><span>Pitada.io</span></div>
-        <nav style="display:flex; flex-direction:column; gap:0.5rem;">
-            <a class="nav-item active" id="nav-dashboard" onclick="switchView('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</a>
-            <a class="nav-item" id="nav-videos" onclick="switchView('videos')"><i class="fas fa-video"></i> Video Análisis</a>
-            <a class="nav-item" id="nav-tacticas" onclick="switchView('tacticas')"><i class="fas fa-chess"></i> Tácticas</a>
-            <a class="nav-item" id="nav-plantilla" onclick="switchView('plantilla')"><i class="fas fa-users"></i> Plantilla</a>
-            <a class="nav-item" id="nav-reportes" onclick="switchView('reportes')"><i class="fas fa-file-alt"></i> Reportes</a>
+        <nav class="nav-menu">
+            <a class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a class="nav-item" onclick="navigate('videos')" id="nav-videos"><i class="fas fa-video"></i> Video Análisis</a>
+            <a class="nav-item" onclick="navigate('tacticas')" id="nav-tacticas"><i class="fas fa-chess"></i> Tácticas</a>
+            <a class="nav-item" onclick="navigate('plantilla')" id="nav-plantilla"><i class="fas fa-users"></i> Plantilla</a>
+            <a class="nav-item" onclick="navigate('reportes')" id="nav-reportes"><i class="fas fa-file-alt"></i> Reportes</a>
         </nav>
+        <div style="margin-top: auto; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid var(--border);"><div style="font-size: 0.85rem; color: var(--text-muted);">Plan Actual</div><div style="font-weight: 600; margin-bottom: 0.5rem;">Entrenador Pro</div><div style="height: 4px; background: #374151; border-radius: 2px;"><div style="width: 70%; height: 100%; background: var(--success); border-radius: 2px;"></div></div><div style="font-size: 0.75rem; margin-top: 0.5rem; color: var(--text-muted);">7/10 análisis usados</div></div>
     </aside>
 
     <main class="main-content">
         <header class="header">
-            <h1 style="font-family:'Outfit'; font-size:1.8rem;">Suite Técnica</h1>
-            <button class="btn-primary" onclick="document.getElementById('videoInput').click()"><i class="fas fa-upload"></i> Subir Video</button>
-            <input type="file" id="videoInput" hidden accept="video/*">
+            <div class="header-title"><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Análisis del partido vs. Colegio Alerce</p></div>
+            <div class="top-actions">
+                <button class="btn-primary" onclick="document.getElementById('videoInput').click()"><i class="fas fa-cloud-upload-alt"></i> Nuevo Análisis</button>
+                <div style="position: relative;">
+                    <div class="profile-btn" onclick="toggleProfileMenu()"><div class="avatar">PM</div><i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></div>
+                    <div class="dropdown-menu" id="profileDropdown">
+                        <div class="menu-header"><div class="menu-user-name">Marcelo Salas</div><div class="menu-user-role">DT Sub-17</div></div>
+                        <div class="menu-item"><i class="fas fa-user-circle"></i> Mi Perfil</div><div class="menu-item" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i> <span id="themeText">Modo Claro</span></div><div class="menu-item danger" style="color:var(--danger);"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</div>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <div id="view-dashboard" class="view-section active">
             <div class="stat-grid">
-                <div class="kpi-card"><i class="fas fa-running kpi-icon" style="color:var(--primary)"></i><div><div style="font-size:1.5rem; font-weight:700;">11</div><div style="font-size:0.8rem; color:gray">Jugadores</div></div></div>
-                <div class="kpi-card"><i class="fas fa-bullseye kpi-icon" style="color:var(--success)"></i><div><div style="font-size:1.5rem; font-weight:700;" id="kpiPossession">52%</div><div style="font-size:0.8rem; color:gray">Posesión</div></div></div>
-                <div class="kpi-card"><i class="fas fa-futbol kpi-icon" style="color:var(--warning)"></i><div><div style="font-size:1.5rem; font-weight:700;" id="kpiShots">0</div><div style="font-size:0.8rem; color:gray">Tiros</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-running"></i></div><div><div class="kpi-value" id="kpiPlayers">0</div><div class="kpi-label">Jugadores</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-bullseye"></i></div><div><div class="kpi-value" id="kpiPossession">50%</div><div class="kpi-label">Posesión</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-futbol"></i></div><div><div class="kpi-value" id="kpiFrames">0</div><div class="kpi-label">Cuadros</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-stopwatch"></i></div><div><div class="kpi-value">En Vivo</div><div class="kpi-label">Estado IA</div></div></div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card tactical-board">
-                    <div class="card-header" style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                        <h3><i class="fas fa-chess-board"></i> Pizarra Táctica</h3>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-outline" onclick="setBoardMode('heatmap')">Calor</button>
-                            <button class="btn-outline" onclick="setBoardMode('network')">Red</button>
-                            <button class="btn-outline" onclick="setBoardMode('shots')">Tiros</button>
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--text-main); font-weight: 600; white-space: nowrap;"><i class="fas fa-chess-board"></i> Pizarra</div>
+                        <div class="mode-switch"><button class="mode-btn active" onclick="setBoardMode('heatmap', this)"><i class="fas fa-fire"></i> Calor</button><button class="mode-btn" onclick="setBoardMode('shotmap', this)"><i class="fas fa-crosshairs"></i> Tiros</button><button class="mode-btn" onclick="setBoardMode('passmap', this)"><i class="fas fa-project-diagram"></i> Red</button><button class="mode-btn" onclick="setBoardMode('actionmap', this)"><i class="fas fa-bullseye"></i> Radio</button></div>
+                        <div class="sub-controls" id="heatmapControls" style="margin-left: auto;">
+                            <button class="btn-primary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; margin-left: 10px;" onclick="forceHeatmapUpdate()">🔄 Generar</button>
                         </div>
                     </div>
-                    <div class="cancha-wrapper" id="dashboardBoard">
-                        <div class="cancha-bg-clip">
-                            <div class="cancha-line-center"></div><div class="cancha-circle"></div>
-                            <div class="cancha-area-l"></div><div class="cancha-area-r"></div>
-                        </div>
-                        <div id="layer-heatmap" class="layer-overlay"></div>
-                        <div id="layer-network" class="layer-overlay hidden-layer" style="position:relative; width:100%; height:100%;">
-                            <svg id="networkSvg" style="width:100%; height:100%; position:absolute; top:0; left:0;"></svg>
-                            <div id="networkNodes"></div>
-                        </div>
-                        <div id="layer-shots" class="layer-overlay hidden-layer"></div>
+                    <div class="cancha-wrapper" id="canchaWrapper">
+                        <div class="cancha-bg-clip"><div style="position: absolute; left: 50%; height: 100%; width: 2px; background: rgba(255,255,255,0.4); transform: translateX(-50%);"></div><div style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div><div style="position: absolute; top: 50%; left: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div><div style="position: absolute; top: 50%; right: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div></div>
+                        <div id="heatmapContainer" class="layer-overlay"></div><div id="shotmapContainer" class="layer-overlay hidden-layer"></div><div id="passmapContainer" class="layer-overlay hidden-layer" style="z-index: 5;"><svg id="passLinesSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;"></svg><div id="passNodesLayer"></div></div><div id="actionmapContainer" class="layer-overlay hidden-layer" style="z-index: 4;"><svg id="actionSvg" width="100%" height="100%" style="position:absolute; top:0; left:0;" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div><div id="tacticalTooltip" class="tactical-tooltip"></div>
                     </div>
+                    <div class="legend-container" id="boardLegend"></div>
                 </div>
-
                 <div class="side-panel">
+                    <div class="card"><div class="card-header"><div class="card-title" style="color: var(--text-main);"><i class="fas fa-robot"></i> Coach IA</div></div><div class="reco-item alert"><h4>🚨 Definición Imprecisa</h4><p>Solo 30% de tiros a puerta.</p></div><div class="reco-item"><h4>✅ Balón Parado</h4><p>2 ocasiones claras de córner.</p></div></div>
                     <div class="card">
-                        <h3>Posesión</h3>
-                        <canvas id="chartPossession" style="max-height:150px;"></canvas>
-                    </div>
-                    <div class="card">
-                        <h3>Momentum</h3>
-                        <canvas id="chartMomentum" style="max-height:150px;"></canvas>
+                        <div class="card-header"><span class="card-title" style="color:white; font-weight:600;">Posesión Real</span></div>
+                        <div style="height:150px; display:flex; justify-content:center;">
+                            <canvas id="possessionChart"></canvas>
+                        </div>
                     </div>
                 </div>
+                <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-wave-square"></i> Historia del Partido</div></div><div style="position: relative; height: 250px; width: 100%;"><div id="timelineEvents" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></div><canvas id="momentumChart"></canvas></div></div>
+                <div class="card" style="grid-column: span 12;"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-trophy" style="color: var(--warning);"></i> Líderes del Partido</div></div><div class="leaders-grid"><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #FF6B6B, #EE5253);">AV</div><div class="leader-medal">🏃‍♂️</div></div><div class="leader-info"><div class="leader-metric">Distancia</div><div class="leader-name">Arturo Vidal</div><div class="leader-value">11.8 km</div><div class="progress-mini"><div class="bar" style="width: 100%; background: #EE5253;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #48DBFB, #0ABDE3);">AS</div><div class="leader-medal">⚡</div></div><div class="leader-info"><div class="leader-metric">Velocidad Máx</div><div class="leader-name">Alexis Sánchez</div><div class="leader-value">34.2 km/h</div><div class="progress-mini"><div class="bar" style="width: 95%; background: #0ABDE3;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #1DD1A1, #10AC84);">CA</div><div class="leader-medal">🎯</div></div><div class="leader-info"><div class="leader-metric">Precisión Pases</div><div class="leader-name">Charles Aránguiz</div><div class="leader-value">94%</div><div class="progress-mini"><div class="bar" style="width: 94%; background: #10AC84;"></div></div></div></div><div class="leader-card"><div class="leader-rank">#1</div><div class="leader-avatar"><div class="avatar-img" style="background: linear-gradient(135deg, #F368E0, #C0392B);">GM</div><div class="leader-medal">🛡️</div></div><div class="leader-info"><div class="leader-metric">Recuperaciones</div><div class="leader-name">Gary Medel</div><div class="leader-value">14</div><div class="progress-mini"><div class="bar" style="width: 88%; background: #C0392B;"></div></div></div></div></div></div>
+                <div class="card indiv-heatmap-card"><div class="indiv-heatmap-controls"><div class="card-header" style="margin-bottom: 0.5rem;"><div class="card-title"><i class="fas fa-fire-alt"></i> Mapa Individual</div></div><select id="indivPlayerSelector" class="player-selector" onchange="updateIndividualHeatmap(this.value)"><option value="17">Gary Medel</option><option value="8">Arturo Vidal</option><option value="7">Alexis Sánchez</option><option value="4">Mauricio Isla</option></select><div style="margin-top: auto;"><div class="indiv-stat-row" style="margin-bottom: 0.5rem;"><span>Distancia</span><strong id="indivDist">9.2 km</strong></div><div class="indiv-stat-row"><span>Sprints</span><strong id="indivSprints">18</strong></div></div></div><div class="indiv-heatmap-wrapper"><div class="cancha-bg-clip" style="border: 2px solid rgba(255,255,255,0.1); border-radius: 8px;"></div><div id="indivHeatmapContainer" style="width: 100%; height: 100%;"></div></div></div>
+                <div class="card radar-card"><div class="card-header"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-chart-pie"></i> Rendimiento</div><select id="playerSelector" class="player-selector" onchange="changePlayer(this.value)"><option value="7">Alexis Sánchez</option><option value="8">Arturo Vidal</option><option value="17">Gary Medel</option><option value="10">Ben Brereton</option></select></div><div class="radar-wrapper"><div class="player-info-panel"><div class="player-detail"><div class="player-photo-lg" id="playerInitials">AS</div><div><h3 id="playerName" style="margin: 0; color: var(--text-main);">Alexis Sánchez</h3><p id="playerPosition" style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Delantero</p></div></div><div class="player-stats-list"><div class="p-stat"><span>xG</span> <strong id="statXG">0.45</strong></div><div class="p-stat"><span>Pases</span> <strong id="statPass">82%</strong></div><div class="p-stat"><span>Duelos</span> <strong id="statDuel">45%</strong></div><div class="p-stat"><span>Km</span> <strong id="statDist">10.2</strong></div></div></div><div class="chart-radar-container"><canvas id="playerRadarChart"></canvas></div></div></div>
+                <div class="card comparison-card"><div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 1rem;"><div class="card-title" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-balance-scale"></i> Comparación VS</div><div class="comparison-controls" style="width: 100%;"><select id="compPlayer1" onchange="updateComparison()"><option value="7">Alexis Sánchez</option><option value="10">Ben Brereton</option><option value="11">Eduardo Vargas</option></select><span style="color: var(--text-muted); font-weight: 700;">VS</span><select id="compPlayer2" onchange="updateComparison()"><option value="10">Ben Brereton</option><option value="7">Alexis Sánchez</option><option value="11">Eduardo Vargas</option></select></div></div><div class="chart-radar-container" style="height: 300px;"><canvas id="comparisonChart"></canvas></div></div>
             </div>
         </div>
 
         <div id="view-videos" class="view-section">
+            <div style="margin-bottom: 2rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Video Análisis Táctico</h2>
+                    <p style="color: var(--text-muted);">Sube tu partido, etiqueta eventos o activa la IA de visión.</p>
+                </div>
+                <button class="btn-primary" onclick="document.getElementById('videoInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i> Subir Video
+                </button>
+                <input type="file" id="videoInput" hidden accept="video/*">
+            </div>
+            
             <div class="video-layout">
                 <div class="video-player-container">
+                    <video id="matchVideo" style="display:none;" controls poster="" crossorigin="anonymous"></video>
+                    
                     <div id="videoPlaceholder">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <h3>Sube tu video para comenzar</h3>
+                        <h3>Sube tu archivo de video</h3>
+                        <p>Formatos soportados: MP4, MOV, WEBM</p>
+                        <button class="btn-outline" style="margin-top:1rem; border-color:var(--primary); color:var(--primary);" onclick="document.getElementById('videoInput').click()">Seleccionar Archivo</button>
                     </div>
-                    <video id="matchVideo" controls crossorigin="anonymous"></video>
-                    <canvas id="aiCanvas"></canvas>
+                    
+                    <canvas id="aiCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
+                    
+                    <div id="aiStatsOverlay" style="position: absolute; top: 1rem; right: 1rem; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 25; display: none; font-size: 0.8rem;">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.4rem; color: #a5b4fc;">
+                                <i class="fas fa-database"></i> Puntos: <span id="dataPointsCount">0</span>
+                            </div>
+                            <div style="height: 15px; width: 1px; background: rgba(255,255,255,0.2); margin:0 10px;"></div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; color: #10b981;">
+                                <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span> Live
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="aiLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 1rem 2rem; border-radius: 8px; display: none; z-index: 30;">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando Motor Neuronal...
+                    </div>
                 </div>
-                <div class="card" style="display:flex; flex-direction:column;">
-                    <div style="padding:1rem; border-bottom:1px solid var(--border); font-weight:bold;">Eventos</div>
-                    <div id="eventList" style="flex:1; overflow-y:auto; padding:0.5rem;"></div>
-                    <div style="padding:1rem; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                        <button class="btn-primary" style="background:#10b981;" onclick="addEvent('Gol')">⚽ Gol</button>
-                        <button class="btn-primary" style="background:#8b5cf6;" onclick="addEvent('Tiro')">🥅 Tiro</button>
-                        <button class="btn-primary" style="background:#f59e0b;" onclick="addEvent('Falta')">⚠️ Falta</button>
-                        <button class="btn-primary" style="background:#ef4444;" onclick="addEvent('Tarjeta')">🟥 Tarjeta</button>
+                
+                <div class="events-sidebar">
+                    
+                    <div class="team-setup" style="padding: 1rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Local</label>
+                                <input type="color" id="colorLocal" value="#0044ff" style="border:none; width:25px; height:25px; cursor:pointer; background:none; padding:0; border-radius:4px;">
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <label style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Visita</label>
+                                <input type="color" id="colorVisit" value="#ff0000" style="border:none; width:25px; height:25px; cursor:pointer; background:none; padding:0; border-radius:4px;">
+                            </div>
+                        </div>
+                        <button class="btn-outline" style="font-size:0.7rem; padding:0.4rem 0.8rem; border-color:var(--primary); color:var(--primary);" onclick="toggleAI()">
+                            <i class="fas fa-play"></i> Tracking
+                        </button>
+                    </div>
+
+                    <div class="events-list" id="eventsList"></div>
+                    
+                    <div class="tagging-controls">
+                        <button class="tag-btn btn-goal" onclick="tagEvent('gol')"><i class="fas fa-futbol"></i> Gol</button>
+                        <button class="tag-btn" style="background:#8b5cf6" onclick="tagEvent('tiro')"><i class="fas fa-bullseye"></i> Tiro</button>
+                        <button class="tag-btn btn-foul" onclick="tagEvent('falta')"><i class="fas fa-exclamation-triangle"></i> Falta</button>
+                        <button class="tag-btn btn-corner" onclick="tagEvent('corner')"><i class="fas fa-flag"></i> Córner</button>
+                        <button class="tag-btn btn-red" onclick="tagEvent('tarjeta')"><i class="fas fa-square"></i> Tarjeta</button>
+                        
+                        <button class="tag-btn" style="background:#6366f1;" onclick="openPassModal()"><i class="fas fa-project-diagram"></i> Pase</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="view-tacticas" class="view-section">
-            <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                <h2>Laboratorio Táctico</h2>
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div><h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Laboratorio Táctico</h2><p style="color: var(--text-muted);">Diseña y ajusta formaciones en tiempo real.</p></div>
                 <div style="display:flex; gap:10px;">
-                    <select id="formationSelect" class="btn-outline" onchange="applyTactics(this.value)">
-                        <option value="442">4-4-2</option>
-                        <option value="433">4-3-3</option>
-                        <option value="352">3-5-2</option>
+                    <select class="formation-select" style="width:150px;" id="tacticalFormationSelect" onchange="applyFormation(this.value)">
+                        <option value="442">4-4-2 Clásico</option>
+                        <option value="433">4-3-3 Ofensivo</option>
+                        <option value="352">3-5-2 Carrileros</option>
+                        <option value="541">5-4-1 Defensivo</option>
                     </select>
-                    <button class="btn-primary" onclick="applyTactics(document.getElementById('formationSelect').value)">Reset</button>
+                    <button class="btn-primary" onclick="resetTactics()">Reset</button>
                 </div>
             </div>
-            <div class="card" style="height:600px;">
-                <div class="cancha-wrapper" id="tacticsBoard" style="height:100%;">
-                    <div class="cancha-bg-clip">
-                        <div class="cancha-line-center"></div><div class="cancha-circle"></div>
-                        <div class="cancha-area-l"></div><div class="cancha-area-r"></div>
-                    </div>
-                    <div id="tacticsNodes" style="width:100%; height:100%; position:relative;"></div>
+            
+            <div class="card" style="height: 600px; position:relative;">
+                <div class="cancha-wrapper" id="tacticsWrapper" style="height:100%;">
+                    <div class="cancha-bg-clip"><div style="position: absolute; left: 50%; height: 100%; width: 2px; background: rgba(255,255,255,0.4); transform: translateX(-50%);"></div><div style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div><div style="position: absolute; top: 50%; left: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div><div style="position: absolute; top: 50%; right: -2px; width: 100px; height: 250px; border: 2px solid rgba(255,255,255,0.4); transform: translateY(-50%);"></div></div>
+                    <div id="tacticsLayer" style="width:100%; height:100%; position:relative;"></div>
                 </div>
             </div>
         </div>
-        
-        <div id="view-plantilla" class="view-section"><h2 style="text-align:center; margin-top:2rem;">Gestión de Plantilla</h2></div>
-        <div id="view-reportes" class="view-section"><h2 style="text-align:center; margin-top:2rem;">Reportes PDF</h2></div>
 
+        <div id="view-plantilla" class="view-section">
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div><h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Plantilla del Equipo</h2><p style="color: var(--text-muted);">Gestiona los jugadores, tarjetas y lesiones.</p></div>
+                <button class="btn-primary" onclick="openAddPlayerModal()"><i class="fas fa-plus"></i> Añadir Jugador</button>
+            </div>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="squadSearch" class="search-input" placeholder="Buscar por nombre..." onkeyup="filterSquadByName(this.value)"></div>
+            <div class="squad-filters"><button class="filter-btn active" onclick="filterSquad('all', this)">Todos</button><button class="filter-btn" onclick="filterSquad('POR', this)">Porteros</button><button class="filter-btn" onclick="filterSquad('DEF', this)">Defensas</button><button class="filter-btn" onclick="filterSquad('MED', this)">Mediocentros</button><button class="filter-btn" onclick="filterSquad('DEL', this)">Delanteros</button></div>
+            <div class="squad-grid" id="squadGrid"></div>
+        </div>
+
+        <div id="view-reportes" class="view-section">
+            <div style="margin-bottom: 2rem;"><h2 style="font-family: 'Outfit'; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Centro de Reportes</h2><p style="color: var(--text-muted);">Descarga los análisis tácticos generados por la IA.</p></div>
+            <div class="reports-list" id="reportsList"></div>
+        </div>
     </main>
 </div>
 
 <script>
-    // --- 1. ESTADO GLOBAL ---
-    const STATE = {
-        squad: [
-            {id:1, name:'C. Bravo', pos:'POR'}, {id:2, name:'G. Medel', pos:'DEF'},
-            {id:3, name:'M. Isla', pos:'DEF'}, {id:4, name:'P. Diaz', pos:'DEF'},
-            {id:5, name:'G. Maripan', pos:'DEF'}, {id:8, name:'A. Vidal', pos:'MED'},
-            {id:20, name:'C. Aranguiz', pos:'MED'}, {id:13, name:'E. Pulgar', pos:'MED'},
-            {id:7, name:'A. Sanchez', pos:'DEL'}, {id:10, name:'B. Brereton', pos:'DEL'},
-            {id:11, name:'E. Vargas', pos:'DEL'}
-        ],
-        events: [],
-        tacticsPositions: {}, // Memoria de tácticas
-        networkPositions: {}, // Memoria de red de pases
-        shots: []
+    // === 1. MEMORIA GLOBAL ===
+    let MATCH_DATA = {
+        totalFrames: 0,
+        playersHistory: [],
+        possession: { local: 0, visit: 0 },
+        heatmapPoints: [],
+        shots: [],
+        passes: [],
+        nodePositions: {} // Persistent drag positions
     };
+    
+    // Tracker de Balón
+    let latestBallPos = { x: 0.5, y: 0.5 };
 
-    // --- 2. FUNCIONES DE NAVEGACION ---
-    window.switchView = function(viewId) {
-        // Ocultar todas
-        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        
-        // Mostrar target
-        const target = document.getElementById('view-' + viewId);
-        const nav = document.getElementById('nav-' + viewId);
-        if(target) target.classList.add('active');
-        if(nav) nav.classList.add('active');
-
-        // Renderizado Lazy (para evitar error de tamaño 0)
-        if(viewId === 'dashboard') {
-            setTimeout(renderPassNetwork, 100);
-        }
-        if(viewId === 'tacticas') {
-            setTimeout(() => {
-                if(Object.keys(STATE.tacticsPositions).length === 0) applyTactics('442');
-                else renderTacticsNodes(); // Restaurar posiciones
-            }, 100);
-        }
-    };
-
-    window.showToast = function(msg) {
+    // TOAST
+    function showToast(msg, type = 'success') {
         const c = document.getElementById('toastContainer');
-        const d = document.createElement('div');
-        d.className = 'toast'; d.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-        c.appendChild(d);
-        setTimeout(() => d.remove(), 3000);
-    };
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
+        c.appendChild(t);
+        setTimeout(() => { t.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+    }
 
-    // --- 3. LÓGICA DE VIDEO ---
-    document.getElementById('videoInput').onchange = function(e) {
+    // UPLOAD VIDEO (LÓGICA ACTUALIZADA PARA EMPTY STATE)
+    document.getElementById('videoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
-        if(!file) return;
-        
-        const url = URL.createObjectURL(file);
-        const video = document.getElementById('matchVideo');
-        const placeholder = document.getElementById('videoPlaceholder');
-        
-        video.src = url;
-        video.style.display = 'block';
-        placeholder.style.display = 'none';
-        
-        STATE.events = []; // Reset events on new video
-        renderEvents();
-        window.switchView('videos');
-        showToast('Video cargado correctamente');
-    };
-
-    window.addEvent = function(type) {
-        const video = document.getElementById('matchVideo');
-        if(video.style.display === 'none') { showToast('Sube un video primero'); return; }
-        
-        const time = Math.floor(video.currentTime / 60) + ":" + Math.floor(video.currentTime % 60).toString().padStart(2,'0');
-        STATE.events.push({ time, type });
-        if(type === 'Gol' || type === 'Tiro') {
-            // Add dummy shot to map
-            STATE.shots.push({ x: Math.random()*0.8 + 0.1, y: Math.random()*0.8 + 0.1, type });
+        if (file) {
+            const url = URL.createObjectURL(file);
+            const video = document.getElementById('matchVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            // Ocultar Placeholder, Mostrar Video
+            placeholder.style.display = 'none';
+            video.style.display = 'block';
+            
+            video.src = url;
+            //video.play(); // Auto-play opcional
+            
+            showToast(`Partido "${file.name}" cargado.`);
+            
+            // CLEAN START LOGIC
+            MATCH_DATA = { totalFrames: 0, playersHistory: [], possession: { local: 0, visit: 0 }, heatmapPoints: [], shots: [], passes: [], nodePositions: {} };
+            localStorage.removeItem('pitada_video_events'); // Clear old sessions
+            videoEvents = []; // Clear in-memory
+            renderVideoEvents(); // Update UI
+            document.getElementById('dataPointsCount').innerText = "0";
+            
+            navigate('videos');
         }
-        renderEvents();
-        showToast(`${type} registrado en ${time}`);
-    };
+    });
 
-    function renderEvents() {
-        const list = document.getElementById('eventList');
-        list.innerHTML = STATE.events.map(e => `
-            <div style="padding:0.5rem; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
-                <span>${e.type}</span> <span style="font-family:'Outfit'; color:#6366f1">${e.time}</span>
-            </div>
-        `).join('');
-    }
+    // === 2. IA LÓGICA (COLOR + COCO-SSD) ===
+    let aiModel = null;
+    let isAiActive = false;
+    let videoElement = document.getElementById('matchVideo');
+    let canvasElement = document.getElementById('aiCanvas');
+    let aiContext = canvasElement.getContext('2d');
+    let trackedObjects = [];
+    let frameCount = 0;
+    const FRAME_SKIP = 2;
 
-    // --- 4. PIZARRA Y TÁCTICAS ---
-    window.setBoardMode = function(mode) {
-        ['layer-heatmap', 'layer-network', 'layer-shots'].forEach(id => {
-            document.getElementById(id).classList.add('hidden-layer');
-        });
-        document.getElementById('layer-' + mode).classList.remove('hidden-layer');
-        if(mode === 'network') renderPassNetwork();
-        if(mode === 'shots') renderShots();
-    };
+    // Color Canvas
+    let colorCanvas = document.createElement('canvas');
+    let colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
 
-    // LOGICA DE ARRASTRE GENERICA
-    function makeDraggable(el, id, memoryStore) {
-        el.onmousedown = function(e) {
-            e.preventDefault(); // Evitar selección
-            const parent = el.parentElement.getBoundingClientRect();
-            
-            function moveAt(pageX, pageY) {
-                let x = ((pageX - parent.left) / parent.width) * 100;
-                let y = ((pageY - parent.top) / parent.height) * 100;
-                // Limits
-                x = Math.max(0, Math.min(95, x));
-                y = Math.max(0, Math.min(95, y));
-                
-                el.style.left = x + '%';
-                el.style.top = y + '%';
-                
-                // Guardar en memoria
-                memoryStore[id] = {x, y};
+    async function toggleAI() {
+        if (isAiActive) {
+            isAiActive = false;
+            aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            document.getElementById('aiStatsOverlay').style.display = 'none';
+            showToast("Tracking Pausado");
+            return;
+        }
+        
+        // Check if video is loaded
+        if (videoElement.style.display === 'none') {
+            showToast("Primero sube un video", "error");
+            return;
+        }
+
+        document.getElementById('aiLoading').style.display = 'block';
+        if (!aiModel) {
+            showToast("Iniciando motor de visión...");
+            try {
+                aiModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
+                showToast("IA Lista", "success");
+            } catch (error) {
+                console.error(error);
+                document.getElementById('aiLoading').style.display = 'none';
+                return;
             }
-            
-            function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
-            
-            document.addEventListener('mousemove', onMouseMove);
-            document.onmouseup = function() {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.onmouseup = null;
-            };
-        };
+        }
+        document.getElementById('aiLoading').style.display = 'none';
+        document.getElementById('aiStatsOverlay').style.display = 'block';
+        isAiActive = true;
+        resizeCanvas();
+        detectFrame();
+        videoElement.play();
     }
 
-    // RENDERIZAR RED DE PASES (DASHBOARD)
-    function renderPassNetwork() {
-        const container = document.getElementById('networkNodes');
-        if(container.children.length > 0) return; // Ya renderizado
+    function resizeCanvas() {
+        canvasElement.width = videoElement.videoWidth; canvasElement.height = videoElement.videoHeight;
+        colorCanvas.width = videoElement.videoWidth; colorCanvas.height = videoElement.videoHeight;
+    }
 
-        // Posiciones Default 4-3-3 limpio
-        const defaults = [
-            {x:5,y:50}, {x:25,y:20}, {x:25,y:50}, {x:25,y:80},
-            {x:50,y:30}, {x:50,y:70}, {x:60,y:50},
-            {x:80,y:20}, {x:80,y:80}, {x:85,y:50}, {x:20, y:50}
-        ];
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    }
+    function getColorDistance(c1, c2) { return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2)); }
 
-        container.innerHTML = '';
-        STATE.squad.slice(0,11).forEach((p, i) => {
-            const pos = STATE.networkPositions[p.id] || defaults[i] || {x:50,y:50};
-            const el = document.createElement('div');
-            el.className = 'player-node';
-            el.textContent = p.id;
-            el.title = `${p.name} (${p.pos})`; // Tooltip nativo rápido
-            el.style.left = pos.x + '%';
-            el.style.top = pos.y + '%';
+    function getTeamByColor(x, y, w, h) {
+        const sx = Math.floor(x + w * 0.35); 
+        const sy = Math.floor(y + h * 0.15); 
+        const sw = Math.floor(w * 0.3);      
+        const sh = Math.floor(h * 0.3);      
+        if (sw <= 0 || sh <= 0) return '#10b981'; 
+
+        const imgData = colorContext.getImageData(sx, sy, sw, sh).data;
+        let r=0, g=0, b=0;
+        for(let i=0; i<imgData.length; i+=4) { r += imgData[i]; g += imgData[i+1]; b += imgData[i+2]; }
+        r = Math.floor(r / (imgData.length/4)); g = Math.floor(g / (imgData.length/4)); b = Math.floor(b / (imgData.length/4));
+
+        const detectedRGB = {r, g, b};
+        const localRGB = hexToRgb(document.getElementById('colorLocal').value);
+        const visitRGB = hexToRgb(document.getElementById('colorVisit').value);
+        const distLocal = getColorDistance(detectedRGB, localRGB);
+        const distVisit = getColorDistance(detectedRGB, visitRGB);
+
+        if (distLocal > 380 && distVisit > 380) return '#10b981'; 
+        if (distLocal <= distVisit) return document.getElementById('colorLocal').value;
+        return document.getElementById('colorVisit').value;
+    }
+
+    async function detectFrame() {
+        if (!isAiActive || videoElement.paused || videoElement.ended) {
+            if(isAiActive && !videoElement.paused) requestAnimationFrame(detectFrame);
+            return;
+        }
+
+        if (frameCount % FRAME_SKIP === 0) {
+            colorContext.drawImage(videoElement, 0, 0, colorCanvas.width, colorCanvas.height);
+            try {
+                const predictions = await aiModel.detect(videoElement);
+                let freshDetections = predictions.filter(p => (p.class === 'person' && p.score > 0.35) || (p.class === 'sports ball' && p.score > 0.4));
+                freshDetections = freshDetections.filter(p => p.bbox[2] < videoElement.videoWidth * 0.4);
+                freshDetections = freshDetections.map(p => {
+                    let teamColor = '#10b981';
+                    if (p.class === 'person') teamColor = getTeamByColor(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
+                    // TRACK BALL FOR SHOTS
+                    if(p.class === 'sports ball') {
+                        latestBallPos = {
+                            x: (p.bbox[0] + p.bbox[2]/2) / videoElement.videoWidth,
+                            y: (p.bbox[1] + p.bbox[3]/2) / videoElement.videoHeight
+                        };
+                    }
+                    return { ...p, color: teamColor };
+                });
+                updateTracker(freshDetections);
+            } catch (e) {}
+        }
+        frameCount++;
+        drawSmartTracking();
+        requestAnimationFrame(detectFrame);
+    }
+
+    function updateTracker(detections) {
+        trackedObjects.forEach(obj => obj.life--);
+        detections.forEach(det => {
+            const match = trackedObjects.find(obj => {
+                const dx = obj.bbox[0] - det.bbox[0]; const dy = obj.bbox[1] - det.bbox[1];
+                return Math.sqrt(dx*dx + dy*dy) < 60;
+            });
+            if (match) { match.bbox = det.bbox; match.score = det.score; match.life = 10; match.color = det.color; } 
+            else { trackedObjects.push({ bbox: det.bbox, class: det.class, score: det.score, life: 10, color: det.color }); }
             
-            makeDraggable(el, p.id, STATE.networkPositions);
-            container.appendChild(el);
+            // GUARDAR DATOS
+            if(det.class === 'person') {
+                MATCH_DATA.heatmapPoints.push({
+                    x: Math.floor((det.bbox[0] + det.bbox[2]/2) / canvasElement.width * 1000), 
+                    y: Math.floor((det.bbox[1] + det.bbox[3]) / canvasElement.height * 600),   
+                    value: 1
+                });
+                if(det.color === document.getElementById('colorLocal').value) MATCH_DATA.possession.local++;
+                else if(det.color === document.getElementById('colorVisit').value) MATCH_DATA.possession.visit++;
+            }
         });
-    }
-
-    // RENDERIZAR TIROS
-    function renderShots() {
-        const c = document.getElementById('layer-shots');
-        c.innerHTML = '';
-        STATE.shots.forEach(s => {
-            const el = document.createElement('div');
-            el.className = 'shot-marker';
-            el.style.left = s.x * 100 + '%';
-            el.style.top = s.y * 100 + '%';
-            el.style.backgroundColor = s.type === 'Gol' ? '#10b981' : '#f59e0b';
-            c.appendChild(el);
-        });
-        document.getElementById('kpiShots').innerText = STATE.shots.length;
-    }
-
-    // APLICAR TACTICA (PESTAÑA TACTICAS)
-    window.applyTactics = function(fmt) {
-        STATE.tacticsPositions = {}; // Resetear memoria al cambiar formación
+        trackedObjects = trackedObjects.filter(obj => obj.life > 0);
         
-        let coords = [];
-        // Coordenadas fijas para formaciones limpias
-        if(fmt === '442') coords = [{x:5,y:50}, {x:25,y:20}, {x:25,y:40}, {x:25,y:60}, {x:25,y:80}, {x:50,y:20}, {x:50,y:40}, {x:50,y:60}, {x:50,y:80}, {x:80,y:40}, {x:80,y:60}];
-        if(fmt === '433') coords = [{x:5,y:50}, {x:25,y:15}, {x:25,y:45}, {x:25,y:55}, {x:25,y:85}, {x:50,y:30}, {x:50,y:50}, {x:50,y:70}, {x:80,y:15}, {x:80,y:50}, {x:80,y:85}];
-        if(fmt === '352') coords = [{x:5,y:50}, {x:25,y:30}, {x:25,y:50}, {x:25,y:70}, {x:45,y:10}, {x:45,y:90}, {x:50,y:40}, {x:50,y:60}, {x:60,y:50}, {x:80,y:40}, {x:80,y:60}];
+        // ACTUALIZAR CONTADOR VISIBLE
+        document.getElementById('dataPointsCount').innerText = MATCH_DATA.heatmapPoints.length;
+        if(MATCH_DATA.heatmapPoints.length > 5000) MATCH_DATA.heatmapPoints.splice(0, 1000);
+        MATCH_DATA.totalFrames++;
+    }
 
-        STATE.squad.slice(0,11).forEach((p, i) => {
-            if(coords[i]) STATE.tacticsPositions[p.id] = coords[i];
+    function drawSmartTracking() {
+        aiContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        trackedObjects.forEach(obj => {
+            const [x, y, width, height] = obj.bbox;
+            const isBall = obj.class === 'sports ball';
+            const color = isBall ? '#f59e0b' : obj.color;
+            aiContext.beginPath();
+            aiContext.ellipse(x + width / 2, y + height, width / 2, width / 5, 0, 0, 2 * Math.PI);
+            aiContext.fillStyle = color; aiContext.globalAlpha = 0.4; aiContext.fill();
+            aiContext.globalAlpha = 1.0; aiContext.lineWidth = 2; aiContext.strokeStyle = color; aiContext.stroke();
+            if(obj.class === 'person') { aiContext.fillStyle = color; aiContext.fillRect(x, y - 10, 10, 10); } 
         });
-        renderTacticsNodes();
+    }
+
+    // === 3. DASHBOARD (SOLUCIÓN NUCLEAR: RE-CREAR) ===
+    let heatmapInstance = null;
+    let possessionChart = null;
+
+    function updateDashboardVisuals() {
+        const container = document.getElementById('heatmapContainer');
+        const shotContainer = document.getElementById('shotmapContainer');
+        const passContainer = document.getElementById('passLinesSvg');
+        const nodesLayer = document.getElementById('passNodesLayer');
+        const actionContainer = document.getElementById('actionSvg');
+        
+        if(!container) return;
+        container.innerHTML = ''; 
+        shotContainer.innerHTML = '';
+        if(passContainer) passContainer.innerHTML = '';
+        if(nodesLayer) nodesLayer.innerHTML = '';
+        if(actionContainer) actionContainer.innerHTML = '';
+
+        // DUMMY DATA (SI NO HAY IA AÚN)
+        let dataToShow = MATCH_DATA.heatmapPoints;
+        let shotsToShow = MATCH_DATA.shots;
+
+        if (dataToShow.length < 5) {
+            dataToShow = [{x:100,y:100,value:10}, {x:200,y:200,value:10}, {x:500,y:300,value:10}]; 
+            // CLEAN START: No dummy shots if empty
+            // shotsToShow = []; 
+        }
+
+        // HEATMAP
+        heatmapInstance = h337.create({ container: container, radius: 25 });
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        const finalData = dataToShow.map(p => ({
+            x: Math.floor((p.x / 1000) * w) || p.x, 
+            y: Math.floor((p.y / 600) * h) || p.y,
+            value: 10
+        }));
+        heatmapInstance.setData({ max: 50, data: finalData });
+        
+        // SHOTMAP (FIXED TOOLTIP)
+        shotsToShow.forEach(shot => {
+            const el = document.createElement('div');
+            el.className = `shot-marker shot-${shot.result==='gol'?'gol':'atajada'}`;
+            el.style.left = `${shot.x * 100}%`;
+            el.style.top = `${shot.y * 100}%`;
+            
+            el.addEventListener('mouseenter', (e) => {
+                const t = document.getElementById('tacticalTooltip');
+                t.innerHTML = `<div style="font-weight:bold">${shot.result.toUpperCase()}</div>`;
+                t.style.display = 'block';
+                t.style.left = (e.clientX + 15) + 'px'; // Fixed coordinates
+                t.style.top = (e.clientY - 15) + 'px';
+            });
+            el.addEventListener('mouseleave', () => document.getElementById('tacticalTooltip').style.display='none');
+            shotContainer.appendChild(el);
+        });
+
+        // PASS NETWORK (AUTO-FORMATION 4-3-3 ALGORITHM)
+        if (passContainer && nodesLayer) {
+            const positions = { 'POR': {x: 10, y: 50}, 'DEF': {x: 30, y: 50}, 'MED': {x: 50, y: 50}, 'DEL': {x: 80, y: 50} };
+            MATCH_DATA.passes.forEach(pass => {
+                const p1 = squadDB.find(p => p.id == pass.from);
+                const p2 = squadDB.find(p => p.id == pass.to);
+                if (p1 && p2) {
+                    const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+                    // Logic to find coordinates would go here if we tracked node positions live
+                    // For now, simpler demo lines
+                    l.setAttribute("x1", "50%"); l.setAttribute("y1", "50%");
+                    l.setAttribute("x2", "60%"); l.setAttribute("y2", "60%");
+                    l.setAttribute("class", "pass-line"); l.setAttribute("stroke-width", "2");
+                    passContainer.appendChild(l);
+                }
+            });
+
+            // ALGORTIMO DE DISTRIBUCIÓN
+            let roleCounts = { POR:0, DEF:0, MED:0, DEL:0 };
+            let roleTotals = { POR:0, DEF:0, MED:0, DEL:0 };
+            squadDB.forEach(p => { if(roleTotals[p.pos] !== undefined) roleTotals[p.pos]++ });
+
+            squadDB.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'player-node';
+                let baseX = 50, baseY = 50;
+                
+                if (p.pos === 'POR') { baseX = 8; baseY = 50; }
+                if (p.pos === 'DEF') { baseX = 25; roleCounts.DEF++; baseY = (100 / (roleTotals.DEF + 1)) * roleCounts.DEF; }
+                if (p.pos === 'MED') { baseX = 50; roleCounts.MED++; baseY = (100 / (roleTotals.MED + 1)) * roleCounts.MED; }
+                if (p.pos === 'DEL') { baseX = 75; roleCounts.DEL++; baseY = (100 / (roleTotals.DEL + 1)) * roleCounts.DEL; }
+
+                // Check Memory
+                if (MATCH_DATA.nodePositions[p.id]) {
+                    baseX = MATCH_DATA.nodePositions[p.id].x;
+                    baseY = MATCH_DATA.nodePositions[p.id].y;
+                }
+
+                el.style.left = baseX + "%"; el.style.top = baseY + "%";
+                el.textContent = p.num;
+
+                // TOOLTIP (NOMBRES FLOTANTES)
+                el.addEventListener('mouseenter', (e) => {
+                    const t = document.getElementById('tacticalTooltip');
+                    t.innerHTML = `<div style="font-weight:bold">${p.name}</div><div style="font-size:0.75rem; opacity:0.8">${p.pos}</div>`;
+                    t.style.display = 'block';
+                    t.style.left = (e.clientX + 15) + 'px';
+                    t.style.top = (e.clientY - 15) + 'px';
+                });
+                el.addEventListener('mousemove', (e) => {
+                    const t = document.getElementById('tacticalTooltip');
+                    t.style.left = (e.clientX + 15) + 'px';
+                    t.style.top = (e.clientY - 15) + 'px';
+                });
+                el.addEventListener('mouseleave', () => {
+                    document.getElementById('tacticalTooltip').style.display = 'none';
+                });
+                
+                // DRAG LOGIC
+                el.onmousedown = function(e) {
+                    let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
+                    let shiftX = e.clientX - el.getBoundingClientRect().left;
+                    let shiftY = e.clientY - el.getBoundingClientRect().top;
+                    el.style.zIndex = 1000;
+                    function moveAt(pageX, pageY) {
+                        let newLeft = pageX - shiftX - containerRect.left;
+                        let newTop = pageY - shiftY - containerRect.top;
+                        if(newLeft < 0) newLeft = 0;
+                        if(newLeft > containerRect.width - 30) newLeft = containerRect.width - 30;
+                        if(newTop < 0) newTop = 0;
+                        if(newTop > containerRect.height - 30) newTop = containerRect.height - 30;
+                        
+                        let pctX = (newLeft / containerRect.width * 100);
+                        let pctY = (newTop / containerRect.height * 100);
+                        el.style.left = pctX + '%';
+                        el.style.top = pctY + '%';
+                        
+                        const zone = document.getElementById(`zone-${p.id}`);
+                        if(zone) { zone.setAttribute("cx", pctX + "%"); zone.setAttribute("cy", pctY + "%"); }
+                    }
+                    function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.onmouseup = function() { 
+                        document.removeEventListener('mousemove', onMouseMove); 
+                        document.onmouseup = null; 
+                        // SAVE
+                        let rect = el.getBoundingClientRect();
+                        let containerRect = document.getElementById('canchaWrapper').getBoundingClientRect();
+                        let finalPctX = ((rect.left - containerRect.left) / containerRect.width) * 100;
+                        let finalPctY = ((rect.top - containerRect.top) / containerRect.height) * 100;
+                        MATCH_DATA.nodePositions[p.id] = {x: finalPctX, y: finalPctY};
+                        updateDashboardVisuals();
+                    };
+                };
+                el.ondragstart = function() { return false; };
+                nodesLayer.appendChild(el);
+
+                // RADIO / ACTION ZONES
+                if(actionContainer) {
+                    let rx = 5, ry = 5;
+                    if(p.pos === 'DEF') { rx = 8; ry = 18; }
+                    if(p.pos === 'MED') { rx = 14; ry = 14; } 
+                    if(p.pos === 'DEL') { rx = 18; ry = 10; }
+                    if(p.pos === 'POR') { rx = 5; ry = 10; }
+                    
+                    const zone = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    zone.setAttribute("cx", baseX + "%");
+                    zone.setAttribute("cy", baseY + "%");
+                    zone.setAttribute("rx", rx + "%");
+                    zone.setAttribute("ry", ry + "%");
+                    zone.setAttribute("id", `zone-${p.id}`);
+                    zone.setAttribute("class", `action-zone zone-${p.pos.toLowerCase()}`);
+                    actionContainer.appendChild(zone);
+                }
+            });
+        }
+
+        // NUMEROS
+        document.getElementById('kpiFrames').innerText = MATCH_DATA.totalFrames || 0;
+        
+        // GRÁFICO POSESION
+        if(possessionChart) {
+            const tot = MATCH_DATA.possession.local + MATCH_DATA.possession.visit;
+            const pL = tot > 0 ? Math.round((MATCH_DATA.possession.local/tot)*100) : 0; // CLEAN START 0
+            possessionChart.data.datasets[0].data = [pL, 100-pL]; 
+            possessionChart.update();
+            document.getElementById('kpiPossession').innerText = pL + '%';
+        }
+    }
+    
+    // EXPOSE FUNCTIONS GLOBALLY
+    window.forceHeatmapUpdate = function() { 
+        if(document.getElementById('passNodesLayer').innerHTML !== '') {
+             MATCH_DATA.nodePositions = {}; 
+        }
+        updateDashboardVisuals(); 
+        showToast("Mapa regenerado"); 
     };
 
-    function renderTacticsNodes() {
-        const container = document.getElementById('tacticsNodes');
-        container.innerHTML = '';
-        
-        STATE.squad.slice(0,11).forEach(p => {
-            const pos = STATE.tacticsPositions[p.id];
-            if(!pos) return;
-            
-            const el = document.createElement('div');
-            el.className = 'player-node';
-            el.textContent = p.id;
-            el.style.left = pos.x + '%';
-            el.style.top = pos.y + '%';
-            el.title = p.name; // Tooltip simple
-            
-            makeDraggable(el, p.id, STATE.tacticsPositions);
-            container.appendChild(el);
+    // === 4. TAGGING LOGIC ===
+    let videoEvents = JSON.parse(localStorage.getItem('pitada_video_events')) || []; // CLEAN START
+    function renderVideoEvents() { const l = document.getElementById('eventsList'); if(!l) return; l.innerHTML=''; videoEvents.forEach((ev,i) => { l.innerHTML+=`<div class="event-row" onclick="jumpToVideo(${ev.time})"><div class="event-time">${Math.floor(ev.time)}'</div><div>⚽</div><div style="flex:1">${ev.label}</div></div>`; }); }
+    
+    window.tagEvent = function(t){ 
+        const time = videoElement.currentTime/60;
+        videoEvents.push({time: time, type:t, label:t}); 
+        localStorage.setItem('pitada_video_events', JSON.stringify(videoEvents)); 
+        if(t==='gol' || t==='tiro' || t==='falta'){ MATCH_DATA.shots.push({x: latestBallPos.x, y: latestBallPos.y, result: t}); showToast(t.toUpperCase() + " en mapa"); }
+        else { showToast("Clip guardado"); }
+        renderVideoEvents(); 
+    };
+    
+    window.jumpToVideo = function(t){ videoElement.currentTime = t*60; videoElement.play(); };
+    
+    // PASS NETWORK MODAL
+    window.openPassModal = function() {
+        const fromSel = document.getElementById('passFrom');
+        const toSel = document.getElementById('passTo');
+        fromSel.innerHTML = ''; toSel.innerHTML = '';
+        squadDB.forEach(p => {
+            const opt = `<option value="${p.id}">${p.num} - ${p.name}</option>`;
+            fromSel.innerHTML += opt; toSel.innerHTML += opt;
+        });
+        document.getElementById('passModal').style.display = 'flex';
+    };
+    window.closePassModal = function() { document.getElementById('passModal').style.display = 'none'; };
+    window.savePass = function() {
+        const from = document.getElementById('passFrom').value;
+        const to = document.getElementById('passTo').value;
+        if(from && to && from !== to) {
+            MATCH_DATA.passes.push({from: from, to: to, time: videoElement.currentTime});
+            showToast("Pase registrado");
+            closePassModal();
+        }
+    };
+
+    window.navigate = function(id) { 
+        document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); 
+        document.getElementById('view-'+id).classList.add('active'); 
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if(id === 'dashboard') {
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+            setTimeout(updateDashboardVisuals, 200); 
+        }
+        if(id === 'videos') document.querySelectorAll('.nav-item')[1].classList.add('active');
+        if(id === 'plantilla') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        if(id === 'tacticas') {
+            document.querySelectorAll('.nav-item')[2].classList.add('active'); // Reuse plantilla active for now
+            setTimeout(() => applyFormation('442'), 200); // Init tactics
+        }
+    };
+    
+    // Plantilla Logic & Tactics Logic
+    const defaultSquad = [
+        { id: 1, name: 'Claudio Bravo', num: 1, pos: 'POR', status: 'fit' }, 
+        { id: 2, name: 'Gary Medel', num: 17, pos: 'DEF', status: 'yellow' }, 
+        { id: 7, name: 'Alexis Sánchez', num: 7, pos: 'DEL', status: 'fit' }, 
+        { id: 8, name: 'Arturo Vidal', num: 8, pos: 'MED', status: 'fit' },
+        { id: 3, name: 'Mauricio Isla', num: 4, pos: 'DEF', status: 'fit' },
+        { id: 5, name: 'Paulo Diaz', num: 5, pos: 'DEF', status: 'fit' },
+        { id: 20, name: 'Charles Aranguiz', num: 20, pos: 'MED', status: 'fit' },
+        { id: 13, name: 'Erick Pulgar', num: 13, pos: 'MED', status: 'fit' },
+        { id: 10, name: 'Ben Brereton', num: 22, pos: 'DEL', status: 'fit' },
+        { id: 11, name: 'Eduardo Vargas', num: 11, pos: 'DEL', status: 'fit' },
+        { id: 6, name: 'Guillermo Maripan', num: 3, pos: 'DEF', status: 'fit' }
+    ];
+    let squadDB = JSON.parse(localStorage.getItem('pitada_squad')) || defaultSquad;
+    let currentFilter='all', currentSearch='';
+    
+    function renderSquad() { 
+        const grid=document.getElementById('squadGrid'); if(!grid)return; grid.innerHTML='';
+        const fil = squadDB.filter(p => (currentFilter==='all'||p.pos===currentFilter));
+        fil.forEach(p => {
+            let sc='tag-fit',st='Apto',si='✅'; if(p.status==='injured'){sc='tag-injured';st='Lesionado';si='🚑';} if(p.status==='yellow'){sc='tag-yellow';st='Amarilla';si='🟨';} if(p.status==='red'){sc='tag-red';st='Roja';si='🟥';}
+             grid.innerHTML+=`<div class="player-card"><div class="player-card-header"><div class="p-avatar">${p.name.charAt(0)}</div><div class="p-info"><h3>${p.name}</h3><p>${p.pos}</p></div><div class="p-number">${p.num}</div></div><div class="player-card-body"><div class="p-tags"><button class="tag status-btn ${sc}" onclick="changeStatus(${p.id})">${si} ${st}</button></div><div class="delete-btn" onclick="deletePlayer(${p.id})"><i class="fas fa-trash-alt"></i></div></div></div></div>`;
         });
     }
 
-    // --- 5. INICIALIZACION (CHARTS) ---
+    // TACTICAL LAB LOGIC
+    window.applyFormation = function(fmt) {
+        const layer = document.getElementById('tacticsLayer');
+        if(!layer) return;
+        layer.innerHTML = '';
+        
+        // Take first 11 players
+        const starting11 = squadDB.slice(0, 11);
+        
+        // Define coordinates based on formation
+        let coords = [];
+        if (fmt === '442') {
+            coords = [
+                {x: 5, y: 50}, // GK
+                {x: 25, y: 20}, {x: 25, y: 40}, {x: 25, y: 60}, {x: 25, y: 80}, // DEF
+                {x: 55, y: 20}, {x: 55, y: 40}, {x: 55, y: 60}, {x: 55, y: 80}, // MED
+                {x: 85, y: 40}, {x: 85, y: 60} // DEL
+            ];
+        } else if (fmt === '433') {
+            coords = [
+                {x: 5, y: 50}, // GK
+                {x: 25, y: 15}, {x: 25, y: 38}, {x: 25, y: 62}, {x: 25, y: 85}, // DEF
+                {x: 50, y: 30}, {x: 45, y: 50}, {x: 50, y: 70}, // MED
+                {x: 80, y: 20}, {x: 85, y: 50}, {x: 80, y: 80} // DEL
+            ];
+        } else if (fmt === '352') {
+             coords = [
+                {x: 5, y: 50},
+                {x: 25, y: 30}, {x: 20, y: 50}, {x: 25, y: 70}, // 3 DEF
+                {x: 45, y: 15}, {x: 45, y: 85}, // Carrileros
+                {x: 50, y: 40}, {x: 50, y: 60}, {x: 60, y: 50}, // 3 MED
+                {x: 85, y: 40}, {x: 85, y: 60} // 2 DEL
+            ];
+        } else {
+             // 5-4-1
+             coords = [
+                {x: 5, y: 50},
+                {x: 25, y: 10}, {x: 25, y: 30}, {x: 25, y: 50}, {x: 25, y: 70}, {x: 25, y: 90},
+                {x: 50, y: 20}, {x: 50, y: 40}, {x: 50, y: 60}, {x: 50, y: 80},
+                {x: 85, y: 50}
+            ];
+        }
+
+        starting11.forEach((p, i) => {
+            if (!coords[i]) return;
+            const el = document.createElement('div');
+            el.className = 'player-node';
+            el.style.left = coords[i].x + "%"; 
+            el.style.top = coords[i].y + "%";
+            el.textContent = p.num;
+            
+            // Tooltip
+            el.title = p.name; // Simple tooltip
+            
+            // DRAG LOGIC REUSED
+            el.onmousedown = function(e) {
+                let containerRect = document.getElementById('tacticsWrapper').getBoundingClientRect();
+                let shiftX = e.clientX - el.getBoundingClientRect().left;
+                let shiftY = e.clientY - el.getBoundingClientRect().top;
+                el.style.zIndex = 1000;
+                
+                function moveAt(pageX, pageY) {
+                    let newLeft = pageX - shiftX - containerRect.left;
+                    let newTop = pageY - shiftY - containerRect.top;
+                    // Clamp
+                    if(newLeft < 0) newLeft = 0; if(newLeft > containerRect.width - 30) newLeft = containerRect.width - 30;
+                    if(newTop < 0) newTop = 0; if(newTop > containerRect.height - 30) newTop = containerRect.height - 30;
+                    
+                    el.style.left = (newLeft / containerRect.width * 100) + '%';
+                    el.style.top = (newTop / containerRect.height * 100) + '%';
+                }
+                function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
+                document.addEventListener('mousemove', onMouseMove);
+                document.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.onmouseup = null;
+                };
+            };
+            el.ondragstart = function() { return false; };
+            
+            layer.appendChild(el);
+        });
+    };
+    
+    window.resetTactics = function() {
+        applyFormation(document.getElementById('tacticalFormationSelect').value);
+    };
+
+    // EXPOSE UI HELPERS
+    window.filterSquad = function(c, b){currentFilter=c; document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderSquad();};
+    window.filterSquadByName = function(v){currentSearch=v.toLowerCase(); renderSquad();};
+    window.openAddPlayerModal = function(){document.getElementById('addPlayerModal').style.display='block'};
+    window.closeAddPlayerModal = function(){document.getElementById('addPlayerModal').style.display='none'};
+    window.saveNewPlayer = function(){ 
+        const n=document.getElementById('newPlayerName').value, m=document.getElementById('newPlayerNum').value, o=document.getElementById('newPlayerPos').value; 
+        if(n&&m){ squadDB.push({id:Date.now(),name:n,num:m,pos:o,status:'fit'}); localStorage.setItem('pitada_squad', JSON.stringify(squadDB)); closeAddPlayerModal(); renderSquad(); showToast("Fichado"); } 
+    };
+    
+    let playerToDelete=null;
+    window.deletePlayer = function(id){playerToDelete=id;document.getElementById('deleteModal').style.display='block'};
+    window.confirmDeletePlayer = function(){if(playerToDelete){squadDB=squadDB.filter(p=>p.id!==playerToDelete);localStorage.setItem('pitada_squad',JSON.stringify(squadDB));renderSquad();document.getElementById('deleteModal').style.display='none';showToast("Eliminado");}};
+    window.changeStatus = function(id){const p=squadDB.find(x=>x.id===id);if(p.status==='fit')p.status='injured';else if(p.status==='injured')p.status='yellow';else if(p.status==='yellow')p.status='red';else p.status='fit';localStorage.setItem('pitada_squad',JSON.stringify(squadDB));renderSquad();};
+
+    window.toggleProfileMenu = function() { document.getElementById('profileDropdown').classList.toggle('show'); };
+    window.onclick = function(e) { if(!e.target.closest('.profile-btn'))document.getElementById('profileDropdown').classList.remove('show'); };
+    
+    function initTheme(){if(localStorage.getItem('theme')==='light')document.documentElement.classList.remove('dark');}
+    window.toggleTheme = function(){const h=document.documentElement; h.classList.toggle('dark'); localStorage.setItem('theme', h.classList.contains('dark')?'dark':'light');};
+    
+    window.setBoardMode = function(m, b) { 
+        document.querySelectorAll('.mode-btn').forEach(btn=>btn.classList.remove('active')); b.classList.add('active');
+        ['heatmapContainer', 'shotmapContainer', 'passmapContainer', 'actionmapContainer'].forEach(id => {
+            const el = document.getElementById(id); if(el) el.classList.add('hidden-layer');
+        });
+        if(m==='heatmap') document.getElementById('heatmapContainer').classList.remove('hidden-layer');
+        if(m==='shotmap') document.getElementById('shotmapContainer').classList.remove('hidden-layer');
+        if(m==='passmap') document.getElementById('passmapContainer').classList.remove('hidden-layer');
+        if(m==='actionmap') document.getElementById('actionmapContainer').classList.remove('hidden-layer');
+    };
+    
+    // STUBS
+    window.updateHeatmap = function(t, b) { /* Stub */ };
+    window.changePlayer = function() { /* Stub */ };
+    window.updateComparison = function() { /* Stub */ };
+    window.updateIndividualHeatmap = function() { /* Stub */ };
+    
     window.onload = function() {
-        // Init Charts (Dummy Data)
-        try {
-            new Chart(document.getElementById('chartPossession'), {
-                type: 'doughnut',
-                data: { labels:['Nosotros','Rival'], datasets:[{data:[52,48], backgroundColor:['#6366f1','#374151'], borderWidth:0}] },
-                options: { cutout:'70%', plugins:{legend:{display:false}} }
-            });
-            new Chart(document.getElementById('chartMomentum'), {
-                type: 'line',
-                data: { labels:[0,15,30,45,60,75,90], datasets:[{data:[0,10,-5,20,5,15,0], borderColor:'#10b981', tension:0.4, fill:true, backgroundColor:'rgba(16,185,129,0.1)'}] },
-                options: { scales:{x:{display:false}, y:{display:false}}, plugins:{legend:{display:false}} }
-            });
-            
-            // Heatmap Dummy
-            const h = h337.create({ container: document.getElementById('layer-heatmap'), radius:25 });
-            h.setData({max:10, data:[{x:100,y:200,value:8}, {x:400,y:150,value:10}]});
-            
-        } catch(e) { console.warn("Error cargando gráficos", e); }
+        initTheme(); renderVideoEvents(); renderSquad();
+        const ctxP = document.getElementById('possessionChart').getContext('2d');
+        possessionChart = new Chart(ctxP, { type: 'doughnut', data: { labels: ['Local', 'Visita'], datasets: [{ data: [60, 40], backgroundColor: ['#3b82f6', '#ef4444'], borderWidth:0 }] }, options: { cutout: '70%', plugins: { legend: { display: false } } } });
+        new Chart(document.getElementById('momentumChart'), { type: 'line', data: { labels: [1,2,3,4,5,6,7], datasets: [{ data: [0,5,-5,10,2,8,0], borderColor: '#6366f1', fill:true, backgroundColor:'rgba(99,102,241,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}, y:{display:false}} } });
+        setTimeout(updateDashboardVisuals, 500);
+        applyFormation('442'); // Init Tactics
     };
 </script>
 </body>
